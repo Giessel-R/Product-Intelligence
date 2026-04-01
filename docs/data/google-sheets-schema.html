@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Sheets Schema — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="#">Data Layer</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Google Sheets Schema</span>
+    </div>
+    <div class="page-header">
+      <div class="page-header-meta">
+        <span class="badge badge-workflow"><span class="material-icons-round">table_chart</span> Data Layer</span>
+      </div>
+      <h1>Google Sheets Schema</h1>
+      <p class="page-subtitle">The raw data layer. One workbook, 7 tabs. Every workflow reads from or writes to at least one of these tabs.</p>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-icon"><span class="material-icons-round">info</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Workbook ID</div>
+        <div class="callout-text">Workbook ID: <code>1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo</code> · Google Sheets OAuth credential: <code>I253clwiMf9o1Oln</code></div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <h3>config — Competitor URL registry</h3>
+    <p style="margin-bottom:8px">One row per competitor URL. Add rows here to add new sources. Only rows with <code>active = TRUE</code> are processed by Market Watch.</p>
+    <table class="data-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>competitor_id</td><td class="field-type">string</td><td>Short identifier: <code>okta</code>, <code>auth0</code></td></tr>
+        <tr><td>name</td><td class="field-type">string</td><td>Display name: <code>Okta</code>, <code>Auth0</code></td></tr>
+        <tr><td>tier</td><td class="field-type">string</td><td><code>broad</code> (Phase 1 — all sources are broad tier)</td></tr>
+        <tr><td>source_type</td><td class="field-type">string</td><td><code>docs</code>, <code>changelog</code>, <code>blog</code>, <code>github</code>, <code>release-notes</code>, <code>website</code></td></tr>
+        <tr><td>url</td><td class="field-type">string</td><td>Full URL to monitor</td></tr>
+        <tr><td>active</td><td class="field-type">boolean</td><td><code>TRUE</code> to include in daily Market Watch runs</td></tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <h3>change_snapshots — MD5 hash per URL</h3>
+    <p style="margin-bottom:8px">Stores the last-known content fingerprint for each URL. Market Watch compares against this to detect changes.</p>
+    <table class="data-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>competitor_id</td><td class="field-type">string</td><td>References <code>config.competitor_id</code></td></tr>
+        <tr><td>source_type</td><td class="field-type">string</td><td>References <code>config.source_type</code></td></tr>
+        <tr><td>source_url</td><td class="field-type">string</td><td>The URL being tracked</td></tr>
+        <tr><td>last_hash</td><td class="field-type">string</td><td>MD5 hash of last-seen page content</td></tr>
+        <tr><td>last_checked</td><td class="field-type">timestamp</td><td>When Market Watch last visited this URL</td></tr>
+        <tr><td>last_changed</td><td class="field-type">timestamp</td><td>When the hash last differed from the previous hash</td></tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <h3>evidence_log — Raw Market Watch findings</h3>
+    <p style="margin-bottom:8px">Every finding from Market Watch. Status <code>new</code> → picked up by CI. Status <code>processed</code> → already analyzed. Status <code>archived</code> → excluded from newsletters.</p>
+    <table class="data-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ev_id</td><td class="field-type">string</td><td>Unique ID: <code>EV-{competitor}-{timestamp}</code></td></tr>
+        <tr><td>date_found</td><td class="field-type">date</td><td>Date this evidence was detected</td></tr>
+        <tr><td>week</td><td class="field-type">string</td><td>Week label, e.g. <code>2026-W13</code></td></tr>
+        <tr><td>competitor_id</td><td class="field-type">string</td><td><code>okta</code> or <code>auth0</code></td></tr>
+        <tr><td>source_type</td><td class="field-type">string</td><td>Type of source that changed</td></tr>
+        <tr><td>source_url</td><td class="field-type">string</td><td>URL where the change was detected</td></tr>
+        <tr><td>observed_fact</td><td class="field-type">string</td><td>What is explicitly stated in the source — no inference</td></tr>
+        <tr><td>analyst_interpretation</td><td class="field-type">string</td><td>What this might mean strategically — labeled as interpretation</td></tr>
+        <tr><td>lane</td><td class="field-type">string</td><td>One of the 6 strategic lanes</td></tr>
+        <tr><td>importance_score</td><td class="field-type">integer</td><td>1–5: How meaningful for Ping's product scope</td></tr>
+        <tr><td>confidence_score</td><td class="field-type">integer</td><td>1–5: How certain the claim is real</td></tr>
+        <tr><td>evidence_strength</td><td class="field-type">string</td><td><code>direct</code> | <code>inferred</code> | <code>weak</code> | <code>speculative</code></td></tr>
+        <tr><td>status</td><td class="field-type">string</td><td><code>new</code> | <code>processed</code> | <code>archived</code></td></tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <h3>internal_capability_map — Ping's own capabilities</h3>
+    <p style="margin-bottom:8px">Rebuilt every Monday by the Internal Product Specialist. The source of truth for gap analysis in CI. Support maturity vocabulary is controlled — only 5 values allowed.</p>
+    <table class="data-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>feature_id</td><td class="field-type">string</td><td>Unique capability identifier</td></tr>
+        <tr><td>lane</td><td class="field-type">string</td><td>One of the 6 strategic lanes</td></tr>
+        <tr><td>feature_name</td><td class="field-type">string</td><td>Name of the capability or feature</td></tr>
+        <tr><td>support_maturity</td><td class="field-type">string</td><td><code>production_mature</code> | <code>documented</code> | <code>partial</code> | <code>unclear</code> | <code>sample_only</code></td></tr>
+        <tr><td>source_type</td><td class="field-type">string</td><td>Type of source this was extracted from</td></tr>
+        <tr><td>source_url</td><td class="field-type">string</td><td>URL of the source document</td></tr>
+        <tr><td>evidence_summary</td><td class="field-type">string</td><td>What the source says about this capability</td></tr>
+        <tr><td>confidence_score</td><td class="field-type">integer</td><td>1–5: How certain this capability assessment is</td></tr>
+        <tr><td>maturity_reason</td><td class="field-type">string</td><td>Why this maturity level was assigned. Prefixed with <code>[parser-cap]</code> if a parser safety cap overrode Claude's output.</td></tr>
+        <tr><td>week</td><td class="field-type">string</td><td>Week this was extracted</td></tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <h3>structured_findings — Processed CI output</h3>
+    <p style="margin-bottom:8px">Written by Competitor Intelligence. Cleaner and more actionable than raw evidence_log. Read by the Newsletter every Friday.</p>
+    <table class="data-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>finding_id</td><td class="field-type">string</td><td>Unique ID: <code>SF-{competitor}-{timestamp}</code></td></tr>
+        <tr><td>week</td><td class="field-type">string</td><td>Week label</td></tr>
+        <tr><td>competitor_id</td><td class="field-type">string</td><td><code>okta</code> or <code>auth0</code></td></tr>
+        <tr><td>gap_vs_ping</td><td class="field-type">string</td><td>What competitors have that Ping may not (anchored vocabulary)</td></tr>
+        <tr><td>parity_vs_ping</td><td class="field-type">string</td><td>Where competitors and Ping appear to match (with calibration)</td></tr>
+        <tr><td>ping_advantage</td><td class="field-type">string</td><td>Where Ping appears stronger</td></tr>
+        <tr><td>recommended_action</td><td class="field-type">string</td><td><code>Watch</code> | <code>Validate</code> | <code>Draft Brief</code> — no other values</td></tr>
+        <tr><td>confidence_score</td><td class="field-type">integer</td><td>1–5: Overall confidence in this finding</td></tr>
+        <tr><td>review_flag</td><td class="field-type">boolean</td><td><code>TRUE</code> if Claude flagged this finding for human review</td></tr>
+        <tr><td>status</td><td class="field-type">string</td><td><code>new</code> | <code>reviewed</code> | <code>archived</code></td></tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <h3>execution_log — Orchestrator run history</h3>
+    <p style="margin-bottom:8px">Every Orchestrator run is bookended here: one row opened at start, updated at completion. Also receives weekly audit summaries from Memory &amp; Audit.</p>
+    <table class="data-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>run_id</td><td class="field-type">string</td><td>Unique run identifier, e.g. <code>RUN-2026-03-31T06-30-00</code></td></tr>
+        <tr><td>date</td><td class="field-type">date</td><td>Date of this run</td></tr>
+        <tr><td>workflow_name</td><td class="field-type">string</td><td>Name of the workflow (or <code>audit_summary</code> for weekly audit)</td></tr>
+        <tr><td>status</td><td class="field-type">string</td><td><code>running</code> | <code>success</code> | <code>failed</code></td></tr>
+        <tr><td>started_at</td><td class="field-type">timestamp</td><td>When this run began</td></tr>
+        <tr><td>ended_at</td><td class="field-type">timestamp</td><td>When this run completed (null if still running)</td></tr>
+        <tr><td>notes</td><td class="field-type">string</td><td>Audit summary or run notes</td></tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <h3>error_log — All workflow errors</h3>
+    <p style="margin-bottom:8px">Permanent audit trail of every failure across all workflows. Written by Error Handler.</p>
+    <table class="data-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>id</td><td class="field-type">string</td><td>Unique error identifier</td></tr>
+        <tr><td>timestamp</td><td class="field-type">timestamp</td><td>When the error occurred</td></tr>
+        <tr><td>run_id</td><td class="field-type">string</td><td>Orchestrator run ID when this error occurred</td></tr>
+        <tr><td>workflow_name</td><td class="field-type">string</td><td>Which workflow crashed</td></tr>
+        <tr><td>node_name</td><td class="field-type">string</td><td>Which node inside that workflow crashed</td></tr>
+        <tr><td>error_message</td><td class="field-type">string</td><td>The raw error message from n8n</td></tr>
+        <tr><td>severity</td><td class="field-type">string</td><td><code>critical</code> | <code>non-critical</code></td></tr>
+        <tr><td>resolved</td><td class="field-type">boolean</td><td>Manually set to TRUE once investigated</td></tr>
+      </tbody>
+    </table>
+
+    <div class="nav-footer">
+      <a href="../workflows/error-handler.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">Error Handler</div></div>
+      </a>
+      <a href="notion-databases.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Notion Databases</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js" data-page="google-sheets-schema"></script>
+</body>
+</html>

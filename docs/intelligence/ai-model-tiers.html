@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Model Tiers — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="strategic-lanes.html">Intelligence Model</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">AI Model Tiers</span>
+    </div>
+
+    <div class="page-header">
+      <h1>AI Model Tiers</h1>
+      <p class="page-subtitle">The system uses three Claude models, each matched to the complexity of its task. The guiding principle: use the cheapest model that can do the job correctly.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Haiku -->
+    <div style="margin-bottom:40px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px">
+        <h2 style="margin:0">Claude Haiku</h2>
+        <span class="badge badge-haiku"><span class="material-icons-round">bolt</span> Tier 1 · Fast</span>
+      </div>
+      <p>The background scanning model. Haiku runs on every changed page in Market Watch — potentially dozens of calls per day. It's fast, cheap (~$0.001/call), and accurate enough for classification and relevance scoring tasks where the prompt is structured and the output schema is fixed.</p>
+      <div style="margin-top:16px; background:#111; border:1px solid #1e1e1e; border-radius:8px; padding:16px">
+        <div class="section-heading" style="margin-bottom:10px">Used by</div>
+        <p style="margin-bottom:8px"><strong>Market Watch</strong> — Receives 3,000 characters of page content. Returns a structured JSON object with: <code>summary</code>, <code>observed_fact</code>, <code>analyst_interpretation</code>, <code>lane</code>, <code>importance_score</code>, <code>confidence_score</code>, <code>evidence_strength</code>, <code>not_enough_evidence</code>.</p>
+        <div style="margin-top:12px; color:#64748b; font-size:11px">~$0.001 per call · Input cap: 3,000 chars of page content</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Sonnet -->
+    <div style="margin-bottom:40px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px">
+        <h2 style="margin:0">Claude Sonnet</h2>
+        <span class="badge badge-sonnet"><span class="material-icons-round">psychology</span> Tier 2 · Deep Analysis</span>
+      </div>
+      <p>The reasoning model. Sonnet is used for tasks that require nuanced judgment: understanding Ping's own product documentation, comparing capability tiers against competitor evidence, and writing the newsletter. Sonnet is significantly more capable than Haiku for tasks involving long context, structured reasoning, and multi-step instructions.</p>
+      <div style="margin-top:16px; background:#111; border:1px solid #1e1e1e; border-radius:8px; padding:16px">
+        <div class="section-heading" style="margin-bottom:10px">Used by</div>
+        <p style="margin-bottom:8px"><strong>Internal Product Specialist</strong> — Reads Ping documentation pages, extracts structured capability records into the <code>internal_capability_map</code> schema. Applies per-source extraction guidance and maturity vocabulary.</p>
+        <p style="margin-bottom:8px"><strong>Competitor Intelligence</strong> — Receives tiered capability map per lane and evidence batch. Produces gap/parity/advantage analysis with maturity-aware claims and confidence scoring.</p>
+        <p><strong>Newsletter</strong> — Writes the weekly competitive intelligence briefing in up to 600 words, structured across 6 sections. Returns formatted HTML for Gmail delivery and a Notion page body.</p>
+        <div style="margin-top:12px; color:#64748b; font-size:11px">~$0.01–$0.05 per call · Long context inputs · 3 workflows</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Opus -->
+    <div style="margin-bottom:40px">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px">
+        <h2 style="margin:0">Claude Opus</h2>
+        <span class="badge badge-stage4"><span class="material-icons-round">star</span> Tier 3 · Phase 3</span>
+      </div>
+      <p>Reserved for the Monthly Strategy Memo — a Phase 3 feature not yet built. Opus will synthesize a full month of competitive signals into an executive-level briefing: cross-competitor patterns, strategic themes, and recommended priorities. It runs once per month (1st Friday) and is not cost-effective for high-frequency tasks.</p>
+      <div style="margin-top:16px; background:#111; border:1px solid #1e1e1e; border-radius:8px; padding:16px">
+        <div class="section-heading" style="margin-bottom:10px">Planned for</div>
+        <p><strong>Monthly Strategy Memo</strong> (Phase 3) — Executive synthesis. Cross-competitor pattern detection. Long-horizon strategic framing. One call per month.</p>
+        <div style="margin-top:12px; color:#64748b; font-size:11px">Not yet built · Phase 3 · ~1 call/month</div>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-icon"><span class="material-icons-round">info</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Cost Design</div>
+        <div class="callout-text">The system is designed to stay under $15/month by using Haiku for all high-frequency scanning and reserving Sonnet for low-frequency deep analysis. The relevance gate (Stage 4) reduces Haiku calls further by dropping low-signal pages before they reach Claude.</div>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a href="hallucination-prevention.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">Hallucination Prevention</div></div>
+      </a>
+      <a href="../reference/ids-credentials.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">IDs &amp; Credentials</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+
+<script src="../assets/nav.js" data-page="ai-model-tiers"></script>
+</body>
+</html>

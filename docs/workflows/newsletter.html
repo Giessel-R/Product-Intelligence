@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsletter — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="#">Workflows</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Newsletter</span>
+    </div>
+    <div class="page-header">
+      <div class="page-header-meta">
+        <span class="badge badge-workflow"><span class="material-icons-round">newspaper</span> Workflow</span>
+        <span class="badge badge-friday"><span class="material-icons-round">schedule</span> Fridays</span>
+        <span class="badge badge-sonnet"><span class="material-icons-round">psychology</span> Claude Sonnet</span>
+      </div>
+      <h1>Newsletter</h1>
+      <p class="page-subtitle">Reads the week's structured findings, asks Claude Sonnet to write a competitive intelligence briefing, publishes it to Notion, and emails it every Friday morning.</p>
+    </div>
+
+    <table class="meta-table">
+      <tr><td>Workflow ID</td><td><span class="mono">mi4bUBXbiA1y5L8h</span></td></tr>
+      <tr><td>Triggered by</td><td>Master Orchestrator · Fridays</td></tr>
+      <tr><td>AI model</td><td>Claude Sonnet — newsletter writing</td></tr>
+      <tr><td>Writes to</td><td>Notion Weekly Newsletters · Gmail</td></tr>
+      <tr><td>Reads from</td><td><code>structured_findings</code> · <code>error_log</code></td></tr>
+    </table>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
+    <p>The Newsletter is the final synthesis step of the week. It reads from <code>structured_findings</code> — the processed intelligence layer built by Competitor Intelligence on Tuesday and Thursday — and from <code>error_log</code> for the system health section.</p>
+    <p style="margin-top:12px">The two data reads happen in parallel (Read This Week Findings + Read System Health Data), then merge. Claude Sonnet receives a structured prompt with 6 required sections and a hard 600-word limit. Low-confidence items are labeled <code>[LOW CONFIDENCE]</code> in the output — never silently included.</p>
+    <p style="margin-top:12px">The formatted HTML newsletter uses inline CSS so it renders correctly in Gmail. Dark navy header, orange accent headings, 600px card layout.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-icon"><span class="material-icons-round">info</span></div>
+      <div class="callout-body">
+        <div class="callout-title">week_label Format</div>
+        <div class="callout-text">The <code>week_label</code> field formats the week as <strong>March 2026</strong> — not <code>2026-03</code>. This is used in both the Gmail subject line (<em>PI Weekly Intel — March 2026</em>) and the Notion page title. The month-name format is intentional for readability.</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">account_tree</span> Node Breakdown</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-spine"><div class="step-num">1</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Called by Orchestrator</div><span class="step-tag">executeWorkflowTrigger</span></div>
+          <div class="step-desc">Entry point. Receives the <code>run_id</code> from the Orchestrator. Fridays only — after Competitor Intelligence has finished.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">2</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Read This Week Findings</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Reads all rows from <code>structured_findings</code>. Runs in parallel with node 3 — both reads happen simultaneously before merging.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">3</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Read System Health Data</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Reads all rows from <code>error_log</code>. Used to generate the system health section of the newsletter. Runs in parallel with node 2.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">4</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Aggregate Findings</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Filters findings to the current week (matching current year-month). Excludes anything with <code>status = "archived"</code>. Bundles the filtered findings for the merge step.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">5</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Aggregate System Health</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Filters errors to the last 7 days. Counts them and bundles the list. A clean week = 0 errors in this count.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">6</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Merge All Data</div><span class="step-tag">Merge</span></div>
+          <div class="step-desc">Joins the two parallel tracks (findings data + error data) back together using <code>combineBy: combineByPosition</code>. Required to re-unite the two streams before the next Code node.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">7</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Combine Data</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Merges the two merged streams into one clean object: <code>{ findings, findings_count, week_label, errors, error_count }</code>. This single object is passed to the Sonnet prompt.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">8</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Draft Newsletter (Sonnet)</div><span class="step-tag">HTTP Request → Anthropic</span></div>
+          <div class="step-desc">Sends all data to Claude Sonnet with a structured prompt. Required sections: Biggest Moves This Week, Risks (conf ≥ 4 only), Opportunities (conf ≥ 4 only), One Strategic Theme, Recommended Actions (max 2), System Health (one line). Rules: plain English, no jargon, max 600 words. Items below confidence 4 labeled <code>[LOW CONFIDENCE]</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">9</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Format HTML Email</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Converts Claude's Markdown output to inline-styled HTML. Dark navy header (<code>#0a0f1e</code>), orange <code>&lt;h2&gt;</code> accents, 600px card layout, all CSS inline for Gmail compatibility. Subject: <em>PI Weekly Intel — [week_label]</em>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">10</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Publish to Notion</div><span class="step-tag">HTTP Request → Notion API</span></div>
+          <div class="step-desc">Creates a new page in the Notion Weekly Newsletters database. Title: <em>Weekly Intel — [week_label]</em>. Properties: week, findings_count, generated_at. Uses HTTP Request (not n8n Notion node — rich_text bug).</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">11</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Send Gmail Newsletter</div><span class="step-tag">Gmail</span></div>
+          <div class="step-desc">Emails the full formatted HTML newsletter. <code>emailType: html</code>, <code>appendAttribution: false</code>. Uses the Gmail OAuth credential configured in n8n.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a href="competitor-intelligence.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">Competitor Intelligence</div></div>
+      </a>
+      <a href="memory-audit.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Memory &amp; Audit</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js" data-page="newsletter"></script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture Quirks — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="ids-credentials.html">Reference</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Architecture Quirks</span>
+    </div>
+
+    <div class="page-header">
+      <h1>Architecture Quirks</h1>
+      <p class="page-subtitle">Non-obvious rules that govern how this system is built. Each one was discovered the hard way — through failed test runs, broken nodes, or silent data loss. Read these before modifying any workflow.</p>
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-icon"><span class="material-icons-round">warning</span></div>
+      <div class="callout-body">
+        <div class="callout-title">These are live constraints</div>
+        <div class="callout-text">These rules reflect real bugs and limitations in n8n's runtime. Violating them will cause silent failures, data loss, or broken workflows that appear to succeed.</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="steps" style="margin-top:20px">
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">1</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Orchestrator IF nodes</div>
+            <span class="step-tag">Master Orchestrator</span>
+          </div>
+          <div class="step-desc">
+            Always reference <code>$('Initialize Run').first().json</code> — never <code>$json</code>. In the Orchestrator, <code>$json</code> reflects the output of the most recently executed node, which changes as sub-workflows return. The day-of-week flags (<code>is_monday</code>, <code>is_tue_thu</code>, <code>is_friday</code>) are set once at the start in <code>Initialize Run</code> and must be read from that specific node.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">2</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Notion node v2.2 rich_text bug</div>
+            <span class="step-tag">Newsletter</span>
+          </div>
+          <div class="step-desc">
+            The n8n Notion node (v2.2) is broken for <code>rich_text</code> properties — it silently discards content. Use an HTTP Request node instead: <code>POST https://api.notion.com/v1/pages</code> with <code>predefinedCredentialType: notionApi</code>. Never use the built-in Notion node for writing rich text blocks.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">3</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">HTTP Request raw body format</div>
+            <span class="step-tag">All HTTP Request nodes</span>
+          </div>
+          <div class="step-desc">
+            Use <code>contentType: "raw"</code> paired with <code>rawContentType: "application/json"</code> and <code>body: "={{ JSON.stringify({...}) }}"</code>. Do not use <code>"rawBody"</code> as the key — it is not a valid field and will be silently ignored, sending an empty body.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">4</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Code node sandbox blocks HTTP</div>
+            <span class="step-tag">All Code nodes</span>
+          </div>
+          <div class="step-desc">
+            <code>fetch</code> and <code>$helpers.httpRequest</code> are both blocked in n8n's Code node sandbox. Any HTTP call must use a dedicated HTTP Request node — a Code node cannot make network requests.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">5</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title"><code>$env</code> blocked in HTTP Request headers</div>
+            <span class="step-tag">Anthropic HTTP calls</span>
+          </div>
+          <div class="step-desc">
+            Environment variables (<code>$env.MY_KEY</code>) are blocked in HTTP Request node header fields. For Anthropic API calls, use <code>predefinedCredentialType: httpHeaderAuth</code> with credential ID <code>P6dgBaH33wjoGxqb</code> — the API key is stored securely in n8n's credential vault.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">6</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Sub-workflows cannot be tested via API</div>
+            <span class="step-tag">All sub-workflows</span>
+          </div>
+          <div class="step-desc">
+            Sub-workflows (Market Watch, IPS, CI, Newsletter, Memory &amp; Audit, Error Handler) all use <code>executeWorkflowTrigger</code> as their entry point. The <code>n8n_test_workflow</code> API tool cannot trigger this node type — it only works with webhooks and schedules. Test sub-workflows manually in the n8n UI by running them directly.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">7</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title"><code>n8n_update_full_workflow</code> requires <code>name</code></div>
+            <span class="step-tag">n8n API</span>
+          </div>
+          <div class="step-desc">
+            The <code>n8n_update_full_workflow</code> API call requires the <code>name</code> field to be present in the request body — even if you are not changing the workflow name. Omitting it returns a validation error. Always include the current workflow name when using this tool.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">8</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title"><code>n8n_update_partial_workflow</code> cannot update nested arrays</div>
+            <span class="step-tag">n8n API</span>
+          </div>
+          <div class="step-desc">
+            <code>n8n_update_partial_workflow</code> cannot update nested array items — for example, changing <code>conditions[0].leftValue</code> in an IF node. Use <code>n8n_update_full_workflow</code> for any change that touches condition arrays, parameters arrays, or any nested structure.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">9</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Chain resilience pattern</div>
+            <span class="step-tag">Master Orchestrator</span>
+          </div>
+          <div class="step-desc">
+            Every <code>executeWorkflow</code> node must have <code>continueOnFail: true</code> AND be followed by a guard Code node. The guard emits a synthetic <code>&#123; status: "success" &#125;</code> item if the sub-workflow returned 0 items — preventing the chain from silently halting. The guard must be wired as a connection — a Code node with 0 items flowing in never executes.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">10</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">CI evidence cutoff: 3 days</div>
+            <span class="step-tag">Competitor Intelligence</span>
+          </div>
+          <div class="step-desc">
+            Competitor Intelligence reads only evidence from the last 3 days from <code>evidence_log</code>. If the schedule is missed (e.g., a Tuesday run is skipped), that day's evidence is not recovered on Thursday. Consistent scheduling is required to avoid evidence gaps. The cutoff exists to prevent CI from reprocessing stale findings.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nav-footer">
+      <a href="ids-credentials.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">IDs &amp; Credentials</div></div>
+      </a>
+      <a href="stage-history.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Stage History</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+
+<script src="../assets/nav.js" data-page="architecture-quirks"></script>
+</body>
+</html>

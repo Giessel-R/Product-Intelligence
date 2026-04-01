@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market Watch — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="#">Workflows</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Market Watch</span>
+    </div>
+    <div class="page-header">
+      <div class="page-header-meta">
+        <span class="badge badge-workflow"><span class="material-icons-round">radar</span> Workflow</span>
+        <span class="badge badge-daily"><span class="material-icons-round">schedule</span> Every weekday</span>
+        <span class="badge badge-haiku"><span class="material-icons-round">psychology</span> Claude Haiku</span>
+        <span class="badge badge-stage4"><span class="material-icons-round">star</span> Stage 4</span>
+      </div>
+      <h1>Market Watch</h1>
+      <p class="page-subtitle">Visits every competitor URL in the config list, detects page changes via MD5 hashing, scores relevance, and asks Claude Haiku to classify findings into structured evidence records.</p>
+    </div>
+
+    <table class="meta-table">
+      <tr><td>Workflow ID</td><td><span class="mono">ppMzAEKShjv6L4EP</span></td></tr>
+      <tr><td>Triggered by</td><td>Master Orchestrator · every weekday</td></tr>
+      <tr><td>AI model</td><td>Claude Haiku — ~$0.001/call</td></tr>
+      <tr><td>Writes to</td><td><code>evidence_log</code> · <code>change_snapshots</code></td></tr>
+      <tr><td>Reads from</td><td><code>config</code> · <code>change_snapshots</code></td></tr>
+    </table>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
+    <p>Market Watch is the system's eyes. It visits each competitor URL from the <code>config</code> tab every day, downloads the page content, and generates an MD5 hash. If the hash is different from the last recorded hash in <code>change_snapshots</code>, the page has changed.</p>
+    <p style="margin-top:12px">Changed pages go through a <strong>Stage 4 relevance gate</strong> before reaching Claude. The gate scores each page against a keyword list and source-type base scores — only pages scoring ≥ 3 with at least 1 keyword match reach the Haiku classification step. Low-signal pages (blog posts about company culture, homepage CSS tweaks) are silently dropped before consuming any API budget.</p>
+    <p style="margin-top:12px">For pages that pass the gate, Claude Haiku summarizes what changed, assigns a strategic lane, and scores importance and confidence. If Claude flags <code>not_enough_evidence: true</code>, the record is dropped. Otherwise, it's written to <code>evidence_log</code> and the snapshot is updated.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-icon"><span class="material-icons-round">info</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Stage 4: Relevance Gate</div>
+        <div class="callout-text">Two nodes added between <code>Has Page Changed?</code> TRUE branch and <code>Build Haiku Prompt</code>: <strong>Score Relevance</strong> (Code node) computes <code>base_score(source_type) + title_matches×2 + body_matches×1</code>. <strong>Passes Relevance Gate?</strong> (IF node) routes <span class="branch-true">TRUE</span> to Haiku, <span class="branch-false">FALSE</span> to silent drop. Initial test: 10 changed docs pages, all passed.</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">account_tree</span> Node Breakdown</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-spine"><div class="step-num">1</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Called by Orchestrator</div><span class="step-tag">executeWorkflowTrigger</span></div>
+          <div class="step-desc">The entry point when this workflow is launched by the Master Orchestrator. Receives the <code>run_id</code> passed from the orchestrator so all evidence records can be tagged to this run.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">2</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Set Run ID</div><span class="step-tag">Set</span></div>
+          <div class="step-desc">Picks up the <code>run_id</code> from the orchestrator (or generates its own if run manually). Sets the current date and week — used to timestamp all records written during this run.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">3</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Read All Snapshots</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Reads the entire <code>change_snapshots</code> tab. This tab stores the last-known MD5 hash per competitor URL — the baseline for detecting changes. Each row: <code>competitor_id</code>, <code>source_url</code>, <code>last_hash</code>, <code>last_checked</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">4</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Aggregate Snapshots</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Consolidates snapshot rows into a single lookup object keyed by URL → hash. Makes the comparison in the next steps fast: "what was this URL's hash last time?"</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">5</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Read Competitor Config</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Reads the <code>config</code> tab — the list of competitors and URLs to monitor. Only rows with <code>active = TRUE</code> are used. Each row: <code>competitor_id</code>, <code>source_type</code>, <code>url</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">6</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Build URL Queue</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Combines the competitor config with snapshot data to build the full list of URLs to check. Each item in the queue includes the competitor name, tier, source type, URL, and the previous hash to compare against.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">7</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Split to Individual URLs</div><span class="step-tag">Split Out</span></div>
+          <div class="step-desc">Takes the URL queue (one big list) and splits it into individual items so downstream nodes process one URL at a time.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">8</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Fetch and Hash Page</div><span class="step-tag">HTTP Request</span></div>
+          <div class="step-desc">For each URL: fetches the page, downloads the HTML content, generates an MD5 hash. Compares new hash against the previous hash from snapshots. If different and content length &gt; 200 characters, marks as <code>changed = true</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">9</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Has Page Changed?</div><span class="step-tag">IF</span></div>
+          <div class="step-desc">Decision node. <span class="branch-true">TRUE</span> (changed) → Score Relevance gate → possibly Build Haiku Prompt. <span class="branch-false">FALSE</span> (unchanged) → Update Snapshot (Unchanged) and stop processing this URL.</div>
+        </div>
+      </div>
+      <div class="step highlight">
+        <div class="step-spine"><div class="step-num">10</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Score Relevance</div><span class="step-tag highlight">Stage 4</span></div>
+          <div class="step-desc">Stage 4 node. Computes a relevance score for the changed page. Formula: <code>base_score(source_type) + title_keyword_matches×2 + body_keyword_matches×1</code> (body capped at 5 matches). Base scores: <code>changelog</code>/<code>release_notes</code>/<code>documentation</code> = 3, <code>developer_portal</code> = 2, <code>github</code>/<code>blog</code> = 1, <code>homepage</code> = 0. GitHub repo-name check against curated list adds +2. Pass condition: <code>score &gt;= 3 AND keywords_matched &gt;= 1</code>.</div>
+        </div>
+      </div>
+      <div class="step highlight">
+        <div class="step-spine"><div class="step-num">11</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Passes Relevance Gate?</div><span class="step-tag highlight">Stage 4</span></div>
+          <div class="step-desc">Stage 4 IF node. Condition: <code>relevance_pass === true</code>. <span class="branch-true">TRUE</span> → Build Haiku Prompt (existing path). <span class="branch-false">FALSE</span> → Item dropped silently. Visible in n8n execution output as a terminated branch.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">12</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Build Haiku Prompt</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Constructs the Claude Haiku prompt with up to 3,000 characters of page content. Instructs Claude to summarize what changed, classify the strategic lane, and score importance (1–5) and confidence (1–5). Sets <code>not_enough_evidence: true</code> if the change is noise.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">13</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Summarize with Haiku</div><span class="step-tag">HTTP Request → Anthropic</span></div>
+          <div class="step-desc">Sends the prompt to Claude Haiku via the Anthropic API. Uses <code>predefinedCredentialType: httpHeaderAuth</code> with credential <code>P6dgBaH33wjoGxqb</code>. Returns structured JSON: <code>summary</code>, <code>observed_fact</code>, <code>analyst_interpretation</code>, <code>lane</code>, <code>importance_score</code>, <code>confidence_score</code>, <code>evidence_strength</code>, <code>not_enough_evidence</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">14</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Parse AI and Build Record</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Parses Claude's JSON response. If <code>not_enough_evidence: true</code>, the record is dropped — nothing logged. Otherwise, builds a clean evidence record with a unique ID (<code>EV-{competitor}-{timestamp}</code>), all timestamps, and classification fields.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">15</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Write to evidence_log</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Appends the new evidence record to the <code>evidence_log</code> tab. This is the raw findings table — the source for all downstream Competitor Intelligence analysis. Status set to <code>new</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">16</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Update Snapshot (Changed)</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Updates the <code>change_snapshots</code> tab with the new hash and <code>last_changed</code> timestamp. Next run, this new hash becomes the baseline. The parallel <strong>Update Snapshot (Unchanged)</strong> node does the same for pages that passed the hash check but didn't change — just updating <code>last_checked</code>.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-warning" style="margin-top:32px">
+      <div class="callout-icon"><span class="material-icons-round">warning_amber</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Keyword Tuning Deferred</div>
+        <div class="callout-text">Do not adjust the relevance gate keyword list yet. Wait and observe: homepage false positives via 3 body matches on broad terms (<code>developer</code>, <code>api</code>, <code>mobile</code>), and <code>developer</code>/<code>api</code> keyword noise inflating scores on non-relevant content. Revisit after first Tuesday or Friday production run where blog, homepage, and github sources also change.</div>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a href="master-orchestrator.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">Master Orchestrator</div></div>
+      </a>
+      <a href="internal-product-specialist.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Internal Product Specialist</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js" data-page="market-watch"></script>
+</body>
+</html>

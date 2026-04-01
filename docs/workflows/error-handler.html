@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error Handler — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="#">Workflows</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Error Handler</span>
+    </div>
+    <div class="page-header">
+      <div class="page-header-meta">
+        <span class="badge badge-workflow"><span class="material-icons-round">error_outline</span> Workflow</span>
+        <span class="badge badge-always-on"><span class="material-icons-round">bolt</span> Always on</span>
+      </div>
+      <h1>Error Handler</h1>
+      <p class="page-subtitle">Catches every crash across all workflows. Logs it to Google Sheets. Emails you immediately for critical failures. Runs automatically — you never trigger it manually.</p>
+    </div>
+
+    <table class="meta-table">
+      <tr><td>Workflow ID</td><td><span class="mono">yiv73Orxf8eRQ0sv</span></td></tr>
+      <tr><td>Triggered by</td><td>n8n Error Trigger — fires on any workflow crash</td></tr>
+      <tr><td>AI model</td><td>None</td></tr>
+      <tr><td>Writes to</td><td><code>error_log</code> (Google Sheets)</td></tr>
+      <tr><td>Alerts via</td><td>Gmail (critical failures only)</td></tr>
+    </table>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
+    <p>Every workflow in the system has its n8n Error Trigger set to route to this workflow. When any workflow throws an unhandled error, n8n automatically sends the error data here. The Error Handler never needs to be manually triggered — it's always listening.</p>
+    <p style="margin-top:12px">Failures are classified as <strong>critical</strong> or <strong>non-critical</strong>. Critical failures are those in the Master Orchestrator, Newsletter, or Error Handler itself — workflows that, if they fail, break the entire pipeline or leave you blind to other failures. Non-critical failures include individual URL scrape failures, one bad competitor page, or a single CI parsing error — the system can recover from these on the next run.</p>
+    <p style="margin-top:12px">All failures are logged. Only critical failures send a Gmail alert.</p>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">account_tree</span> Node Breakdown</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-spine"><div class="step-num">1</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Error Trigger</div><span class="step-tag">errorTrigger</span></div>
+          <div class="step-desc">The entry point. n8n automatically fires this node whenever any workflow in the system throws an unhandled error. Receives: the name of the workflow that failed, the node where the failure occurred, the error message, and the run ID.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">2</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Build Error Record</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Takes the raw error data and formats it into a structured record. Assigns a unique error ID. Timestamps the failure. Determines severity: <code>critical</code> if the failed workflow is the Orchestrator, Newsletter, or Error Handler itself — <code>non-critical</code> for everything else. Structures all fields for <code>error_log</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">3</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Log to error_log</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Writes the formatted error record to the <code>error_log</code> tab in Google Sheets. This is the permanent audit trail of every failure. Fields: <code>id</code>, <code>timestamp</code>, <code>run_id</code>, <code>workflow_name</code>, <code>node_name</code>, <code>error_message</code>, <code>severity</code>, <code>resolved</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">4</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Is Critical?</div><span class="step-tag">IF</span></div>
+          <div class="step-desc">Checks the <code>severity</code> field from the error record. <span class="branch-true">TRUE</span> (critical) → Send Gmail Alert. <span class="branch-false">FALSE</span> (non-critical) → Stop here. Non-critical failures are logged but do not wake you up at 6:30 AM.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">5</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Send Gmail Alert</div><span class="step-tag">Gmail</span></div>
+          <div class="step-desc">Sends an email alert for critical failures. Subject: <em>PI System Alert: [Workflow Name] failed</em>. Body includes: workflow name, failed node name, error message, run ID, timestamp. Uses the Gmail OAuth credential configured in n8n.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-info" style="margin-top:32px">
+      <div class="callout-icon"><span class="material-icons-round">info</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Error Handler Scope</div>
+        <div class="callout-text">To add a new workflow to the error routing system: in the n8n workflow settings for the new workflow, set the Error Trigger to point to <code>PI: Error Handler</code>. No changes to the Error Handler workflow itself are needed.</div>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a href="memory-audit.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">Memory &amp; Audit</div></div>
+      </a>
+      <a href="../data/google-sheets-schema.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Google Sheets Schema</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js" data-page="error-handler"></script>
+</body>
+</html>

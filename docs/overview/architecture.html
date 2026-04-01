@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="#">Overview</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Architecture</span>
+    </div>
+    <div class="page-header">
+      <h1>Architecture</h1>
+      <p class="page-subtitle">A conductor-plus-agents model. One Master Orchestrator triggers everything on a schedule. Every other workflow is an independent sub-agent that can be tested and run in isolation.</p>
+    </div>
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">hub</span> Orchestrator Pattern</div>
+    <p>The system uses a <strong>Master Orchestrator</strong> workflow as the single control point. It runs on a daily cron schedule (6:30 AM ET, Mon–Fri), computes which day of the week it is, and calls each sub-workflow in sequence using n8n's Execute Workflow node. The Orchestrator pauses and waits for each sub-workflow to finish before moving to the next step.</p>
+    <p style="margin-top:12px">The Orchestrator never does analytical work itself — it only coordinates. It tracks each run in a Google Sheets <code>execution_log</code> tab: run start, run end, status. If any sub-workflow crashes, the Error Handler catches it and the Orchestrator is notified.</p>
+
+    <div class="step-code" style="margin-top:20px">Google Sheets (config tab)
+        ↓
+Master Orchestrator (6:30 AM, Mon–Fri)
+        ↓
+Market Watch ──────────────────── runs every day
+        ↓
+Internal Product Specialist ────── Mondays only
+        ↓
+Competitor Intelligence ────────── Tue & Thu only
+        ↓
+Newsletter ─────────────────────── Fridays only
+        ↓
+Memory & Audit ─────────────────── Fridays only (after Newsletter)
+        ↓
+execution_log (Google Sheets) ← run bookended with start/end timestamps
+
+Error Handler ←── listens for crashes from ALL workflows above</div>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">extension</span> Sub-Workflow Architecture</div>
+    <p>Every agent is its own n8n workflow, called by the Orchestrator via the Execute Workflow node. This design has three key advantages:</p>
+    <div class="steps" style="margin-top:20px">
+      <div class="step">
+        <div class="step-spine"><div class="step-num">1</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Independent Development</div></div>
+          <div class="step-desc">Each sub-workflow can be developed, tested, and debugged independently. You can trigger Market Watch manually without running the full pipeline. You can test the Newsletter without waiting for Competitor Intelligence to run first.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">2</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Easy Extension</div></div>
+          <div class="step-desc">Adding a new agent means creating a new workflow and registering it with the Orchestrator. No changes to existing workflows. The Orchestrator's IF node pattern makes it trivial to add a new day-of-week condition.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">3</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Failure Isolation</div></div>
+          <div class="step-desc">If Competitor Intelligence crashes, Market Watch findings are still preserved. If the Newsletter fails, the analysis data is intact for the next run. Each sub-workflow has <code>continueOnFail: true</code> in the Execute Workflow node, plus a guard Code node that emits a synthetic item if the sub-workflow returns nothing.</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">error_outline</span> Error Tracking</div>
+    <p>Every workflow in the system has its n8n Error Trigger configured to route to the <strong>PI: Error Handler</strong> workflow. When any workflow crashes, n8n automatically sends the error data to the Error Handler.</p>
+    <p style="margin-top:12px">The Error Handler classifies each failure as critical or non-critical. Critical failures (Orchestrator, Newsletter, Error Handler itself) send an immediate Gmail alert. All failures are logged to the <code>error_log</code> tab in Google Sheets — a permanent audit trail of every problem.</p>
+
+    <div class="callout callout-info" style="margin-top:20px">
+      <div class="callout-icon"><span class="material-icons-round">info</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Chain Resilience Pattern</div>
+        <div class="callout-text">Every <code>executeWorkflow</code> node has <code>continueOnFail: true</code> plus a guard Code node after it that emits a synthetic <code>{ status: "success" }</code> item if the sub-workflow returned nothing. This prevents the Orchestrator chain from breaking silently when a sub-workflow produces zero output items.</div>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a href="what-is-this.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">What is this?</div></div>
+      </a>
+      <a href="tech-stack.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Tech Stack</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js" data-page="architecture"></script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Orchestrator — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="#">Workflows</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Master Orchestrator</span>
+    </div>
+    <div class="page-header">
+      <div class="page-header-meta">
+        <span class="badge badge-workflow"><span class="material-icons-round">hub</span> Workflow</span>
+        <span class="badge badge-tue-thu"><span class="material-icons-round">schedule</span> Mon–Fri 6:30 AM</span>
+      </div>
+      <h1>Master Orchestrator</h1>
+      <p class="page-subtitle">The conductor. Wakes up at 6:30 AM every weekday, decides which workflows to run based on the day, and chains all sub-workflows in sequence. The only workflow that runs on its own schedule — everything else is called by it.</p>
+    </div>
+
+    <table class="meta-table">
+      <tr><td>Workflow ID</td><td><span class="mono">nzmwZmXRbb9vl5mk</span></td></tr>
+      <tr><td>Triggered by</td><td>Schedule — cron <code>30 6 * * 1-5</code> (6:30 AM, Mon–Fri)</td></tr>
+      <tr><td>AI model</td><td>None — pure orchestration logic</td></tr>
+      <tr><td>Writes to</td><td><code>execution_log</code> (Google Sheets)</td></tr>
+      <tr><td>Reads from</td><td>—</td></tr>
+    </table>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
+    <p>The Orchestrator is the only workflow that runs on a schedule. Everything else is called by it. At startup, it computes three boolean flags: <code>is_monday</code>, <code>is_tue_thu</code>, and <code>is_friday</code>. These flags drive all downstream IF decisions.</p>
+    <p style="margin-top:12px">Each sub-workflow is called with an <code>executeWorkflow</code> node — the Orchestrator pauses and waits for the sub-workflow to finish before continuing. This guarantees sequential execution: Market Watch always finishes before Competitor Intelligence starts, and Competitor Intelligence before the Newsletter.</p>
+    <p style="margin-top:12px">A critical architectural rule: all IF nodes must reference <code>$('Initialize Run').first().json</code> — not <code>$json</code>. The <code>$json</code> variable reflects the most recent node's output, not the run context initialized at startup. Using <code>$json</code> in IF nodes caused real bugs during testing.</p>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">account_tree</span> Node Breakdown</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-spine"><div class="step-num">1</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Daily Schedule 6:30 AM</div>
+            <span class="step-tag">scheduleTrigger</span>
+          </div>
+          <div class="step-desc">The alarm clock. Uses cron expression <code>30 6 * * 1-5</code> to fire at exactly 6:30 AM, Monday through Friday. Nothing runs unless this fires first. The trigger for the entire pipeline.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">2</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Initialize Run</div>
+            <span class="step-tag">Code</span>
+          </div>
+          <div class="step-desc">Creates a unique <code>run_id</code> for this execution (e.g., <code>RUN-2026-03-31T06-30-00</code>). Checks what day of the week it is. Sets boolean flags: <code>is_monday</code>, <code>is_tue_thu</code>, and <code>is_friday</code>. These flags control which downstream branches execute. All downstream IF nodes read from <code>$('Initialize Run').first().json</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">3</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Log Run Start</div>
+            <span class="step-tag">Google Sheets</span>
+          </div>
+          <div class="step-desc">Writes the run's start record to the <code>execution_log</code> tab immediately — before any sub-workflow fires. This ensures that even if the run crashes halfway through, there is a record that it started. Columns written: <code>run_id</code>, <code>date</code>, <code>workflow_name</code>, <code>started_at</code>, <code>status: "running"</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">4</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Run Market Watch</div>
+            <span class="step-tag">executeWorkflow</span>
+          </div>
+          <div class="step-desc">Launches Market Watch workflow (ID: <code>ppMzAEKShjv6L4EP</code>) and waits for completion. Passes the <code>run_id</code> so Market Watch tags all its records to this run. <code>continueOnFail: true</code> prevents a crash in Market Watch from stopping the entire chain.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">5</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Market Watch Guard</div>
+            <span class="step-tag">Code</span>
+          </div>
+          <div class="step-desc">Guard node that emits a synthetic <code>{ status: "success" }</code> item if Market Watch returned zero items. Without this, a Code node receiving 0 items never executes — the chain would break silently. This guard ensures downstream IF nodes always receive something to evaluate.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">6</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">If Monday?</div>
+            <span class="step-tag">IF</span>
+          </div>
+          <div class="step-desc">Checks <code>$('Initialize Run').first().json.is_monday</code>. <span class="branch-true">TRUE</span> → Run Internal Product Specialist. <span class="branch-false">FALSE</span> → Skip IPS, proceed to Tue/Thu check. Mondays rebuild Ping's capability map for the rest of the week.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">7</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Run Internal Product Specialist</div>
+            <span class="step-tag">executeWorkflow</span>
+          </div>
+          <div class="step-desc">Launches the Internal Product Specialist workflow (ID: <code>63fbsmdUxNtnaFXG</code>). Mondays only. Reads Ping's own documentation and rebuilds the <code>internal_capability_map</code>. <code>continueOnFail: true</code> — IPS failure does not block the rest of the run.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">8</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">If Tue or Thu?</div>
+            <span class="step-tag">IF</span>
+          </div>
+          <div class="step-desc">Checks <code>$('Initialize Run').first().json.is_tue_thu</code>. <span class="branch-true">TRUE</span> → Run Competitor Intelligence. <span class="branch-false">FALSE</span> → Skip CI, proceed to Friday check.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">9</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Run Competitor Intelligence</div>
+            <span class="step-tag">executeWorkflow</span>
+          </div>
+          <div class="step-desc">Launches the Competitor Intelligence workflow (ID: <code>mY5wIkPWlolzcUbn</code>). Tuesdays and Thursdays only. Reads evidence from the last 3 days, compares against the capability map, and writes structured findings.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">10</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">If Friday?</div>
+            <span class="step-tag">IF</span>
+          </div>
+          <div class="step-desc">Checks <code>$('Initialize Run').first().json.is_friday</code>. <span class="branch-true">TRUE</span> → Run Newsletter, then Memory &amp; Audit. <span class="branch-false">FALSE</span> → Skip to final logging. Friday is the only day all 5 sub-workflows run.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">11</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Log Run Complete</div>
+            <span class="step-tag">Google Sheets</span>
+          </div>
+          <div class="step-desc">Updates the <code>execution_log</code> row opened at step 3. Fills in the <code>ended_at</code> timestamp and sets <code>status: "success"</code>. The run is now bookended: when it started, when it ended, whether it succeeded. This is the final node in every successful run.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-warning" style="margin-top:32px">
+      <div class="callout-icon"><span class="material-icons-round">warning_amber</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Critical: $json vs $('Initialize Run').first().json</div>
+        <div class="callout-text">All IF nodes must reference <code>$('Initialize Run').first().json</code> — not <code>$json</code>. The <code>$json</code> variable reflects the most recent node's output, which changes throughout the run. Using <code>$json</code> in IF nodes caused a real bug during testing where downstream conditions evaluated the wrong data.</div>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a href="../overview/weekly-schedule.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">Weekly Schedule</div></div>
+      </a>
+      <a href="market-watch.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Market Watch</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js" data-page="master-orchestrator"></script>
+</body>
+</html>

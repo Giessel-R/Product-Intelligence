@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-eyebrow">Ping Identity · Internal Tool</div>
+      <h1 class="hero-title">Product Intelligence<br><span class="gradient">Operating System</span></h1>
+      <p class="hero-sub">An automated competitive intelligence system that watches Okta and Auth0, detects product changes, and delivers a weekly strategic briefing — every Friday morning.</p>
+      <div class="hero-tags">
+        <span class="tag">n8n · self-hosted</span>
+        <span class="tag">Claude Haiku + Sonnet</span>
+        <span class="tag">Google Sheets</span>
+        <span class="tag">Notion</span>
+        <span class="tag">~$15/month</span>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="status-bar">
+      <div class="status-bar-dot"></div>
+      <div class="status-bar-text"><strong>Production</strong> · All 7 workflows active · Stages 1–4 deployed · Last run: 2026-03-31</div>
+      <div class="status-bar-meta">Okta · Auth0</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="section-heading">At a Glance</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-value">7</div><div class="stat-label">Active workflows</div></div>
+      <div class="stat-card"><div class="stat-value">2</div><div class="stat-label">Competitors tracked</div></div>
+      <div class="stat-card"><div class="stat-value">5×</div><div class="stat-label">Runs per week</div></div>
+      <div class="stat-card"><div class="stat-value">~$15</div><div class="stat-label">Per month</div></div>
+    </div>
+
+    <!-- Workflows -->
+    <div class="section-heading">Workflows</div>
+    <div class="workflow-grid">
+      <a href="workflows/master-orchestrator.html" class="workflow-card">
+        <div class="workflow-card-header">
+          <div class="workflow-icon"><span class="material-icons-round">hub</span></div>
+          <div class="workflow-card-name">Master Orchestrator</div>
+        </div>
+        <div class="workflow-card-desc">Wakes up at 6:30 AM, decides what runs based on the day, and chains all sub-workflows in sequence.</div>
+        <div class="workflow-card-footer">
+          <span class="pill pill-schedule">Mon–Fri 6:30 AM</span>
+          <div class="workflow-card-id">nzmwZmXRbb9vl5mk</div>
+        </div>
+      </a>
+      <a href="workflows/market-watch.html" class="workflow-card">
+        <div class="workflow-card-header">
+          <div class="workflow-icon"><span class="material-icons-round">radar</span></div>
+          <div class="workflow-card-name">Market Watch</div>
+        </div>
+        <div class="workflow-card-desc">Visits every competitor URL, detects page changes via MD5 hashing, scores relevance, and asks Claude Haiku to classify findings.</div>
+        <div class="workflow-card-footer">
+          <span class="pill pill-daily">Every day</span>
+          <div class="workflow-card-id">ppMzAEKShjv6L4EP</div>
+        </div>
+      </a>
+      <a href="workflows/internal-product-specialist.html" class="workflow-card">
+        <div class="workflow-card-header">
+          <div class="workflow-icon"><span class="material-icons-round">map</span></div>
+          <div class="workflow-card-name">Internal Product Specialist</div>
+        </div>
+        <div class="workflow-card-desc">Reads Ping's own docs every Monday to build a capability map — the source of truth for gap analysis.</div>
+        <div class="workflow-card-footer">
+          <span class="pill pill-monday">Mondays</span>
+          <div class="workflow-card-id">63fbsmdUxNtnaFXG</div>
+        </div>
+      </a>
+      <a href="workflows/competitor-intelligence.html" class="workflow-card">
+        <div class="workflow-card-header">
+          <div class="workflow-icon"><span class="material-icons-round">analytics</span></div>
+          <div class="workflow-card-name">Competitor Intelligence</div>
+        </div>
+        <div class="workflow-card-desc">Compares raw evidence against Ping's capability map to identify gaps, parity, and strategic signals using Claude Sonnet.</div>
+        <div class="workflow-card-footer">
+          <span class="pill pill-schedule">Tue &amp; Thu</span>
+          <div class="workflow-card-id">mY5wIkPWlolzcUbn</div>
+        </div>
+      </a>
+      <a href="workflows/newsletter.html" class="workflow-card">
+        <div class="workflow-card-header">
+          <div class="workflow-icon"><span class="material-icons-round">newspaper</span></div>
+          <div class="workflow-card-name">Newsletter</div>
+        </div>
+        <div class="workflow-card-desc">Writes and sends the weekly competitive intelligence briefing — published to Notion and emailed every Friday morning.</div>
+        <div class="workflow-card-footer">
+          <span class="pill pill-friday">Fridays</span>
+          <div class="workflow-card-id">mi4bUBXbiA1y5L8h</div>
+        </div>
+      </a>
+      <a href="workflows/memory-audit.html" class="workflow-card">
+        <div class="workflow-card-header">
+          <div class="workflow-icon"><span class="material-icons-round">fact_check</span></div>
+          <div class="workflow-card-name">Memory &amp; Audit</div>
+        </div>
+        <div class="workflow-card-desc">Reviews the week's findings, flags uncertain items for human review, and writes a quality summary to the log.</div>
+        <div class="workflow-card-footer">
+          <span class="pill pill-friday">Fridays</span>
+          <div class="workflow-card-id">skUbNsPy00W8DiDa</div>
+        </div>
+      </a>
+      <a href="workflows/error-handler.html" class="workflow-card" style="grid-column: 1 / -1;">
+        <div class="workflow-card-header">
+          <div class="workflow-icon"><span class="material-icons-round">error_outline</span></div>
+          <div class="workflow-card-name">Error Handler</div>
+        </div>
+        <div class="workflow-card-desc">Catches every crash across all workflows. Logs it to Google Sheets. Emails you immediately for critical failures.</div>
+        <div class="workflow-card-footer">
+          <span class="pill pill-error">Always on</span>
+          <div class="workflow-card-id">yiv73Orxf8eRQ0sv</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Explore -->
+    <div class="section-heading">Explore</div>
+    <div class="quicklinks">
+      <a href="data/google-sheets-schema.html" class="quicklink">
+        <div class="quicklink-icon-wrap"><span class="material-icons-round">table_chart</span></div>
+        <div class="quicklink-text"><div class="quicklink-title">Data Layer</div><div class="quicklink-desc">Google Sheets schema — 7 tabs, every field explained</div></div>
+        <span class="material-icons-round" style="color:#475569;font-size:16px">arrow_forward</span>
+      </a>
+      <a href="intelligence/strategic-lanes.html" class="quicklink">
+        <div class="quicklink-icon-wrap"><span class="material-icons-round">psychology</span></div>
+        <div class="quicklink-text"><div class="quicklink-title">Intelligence Model</div><div class="quicklink-desc">Evidence scoring, 6 strategic lanes, hallucination prevention</div></div>
+        <span class="material-icons-round" style="color:#475569;font-size:16px">arrow_forward</span>
+      </a>
+      <a href="reference/ids-credentials.html" class="quicklink">
+        <div class="quicklink-icon-wrap"><span class="material-icons-round">key</span></div>
+        <div class="quicklink-text"><div class="quicklink-title">IDs &amp; Credentials</div><div class="quicklink-desc">All workflow IDs, Sheets ID, Notion DB IDs, n8n credentials</div></div>
+        <span class="material-icons-round" style="color:#475569;font-size:16px">arrow_forward</span>
+      </a>
+      <a href="reference/roadmap.html" class="quicklink">
+        <div class="quicklink-icon-wrap"><span class="material-icons-round">rocket_launch</span></div>
+        <div class="quicklink-text"><div class="quicklink-title">Roadmap</div><div class="quicklink-desc">Stage history, next steps, Phase 2 expansion plan</div></div>
+        <span class="material-icons-round" style="color:#475569;font-size:16px">arrow_forward</span>
+      </a>
+    </div>
+  </main>
+</div>
+
+<script src="assets/nav.js" data-page="home"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Schedule — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="#">Overview</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Weekly Schedule</span>
+    </div>
+    <div class="page-header">
+      <h1>Weekly Schedule</h1>
+      <p class="page-subtitle">The system runs automatically Mon–Fri at 6:30 AM ET. Market Watch runs every day; deeper analysis runs on a staggered schedule to match data availability.</p>
+    </div>
+    <hr class="divider">
+
+    <div class="callout callout-info">
+      <div class="callout-icon"><span class="material-icons-round">schedule</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Run Timing</div>
+        <div class="callout-text">All runs trigger at 6:30 AM ET, Monday through Friday via cron <code>30 6 * * 1-5</code>. The Master Orchestrator handles all scheduling — sub-workflows do not have their own schedules.</div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:32px"><span class="material-icons-round">calendar_today</span> Day-by-Day Schedule</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Day</th><th>Workflows</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-monday">Monday</span></td>
+          <td>Market Watch + Internal Product Specialist</td>
+          <td>Week starts fresh. IPS rebuilds Ping's capability map so CI has current data for Tuesday and Thursday analysis.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-tue-thu">Tuesday</span></td>
+          <td>Market Watch + Competitor Intelligence</td>
+          <td>First CI run of the week. Uses Monday's updated capability map. Processes any evidence collected Mon–Tue.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-daily">Wednesday</span></td>
+          <td>Market Watch only</td>
+          <td>Mid-week collection. No analysis — just accumulating evidence for Thursday's CI run.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-tue-thu">Thursday</span></td>
+          <td>Market Watch + Competitor Intelligence</td>
+          <td>Second CI run. Processes Wed–Thu evidence. Gives two structured analysis sessions per week for the newsletter to pull from.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-friday">Friday</span></td>
+          <td>Market Watch + Competitor Intelligence + Newsletter + Memory &amp; Audit</td>
+          <td>Full pipeline day. Collect → Analyze → Write → Audit. Newsletter is emailed by ~7 AM. Memory &amp; Audit wraps up the week.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">account_tree</span> Data Flow Through the Week</div>
+    <p>Market Watch runs first every day, building a continuous stream of evidence in the <code>evidence_log</code>. On Monday, IPS refreshes Ping's capability map in <code>internal_capability_map</code> — this is the "know yourself" baseline that CI compares against.</p>
+    <p style="margin-top:12px">On Tuesday and Thursday, Competitor Intelligence reads the last 3 days of evidence from <code>evidence_log</code>, compares against the capability map, and writes structured findings to <code>structured_findings</code>. On Friday, the Newsletter workflow reads from <code>structured_findings</code> and produces the weekly briefing.</p>
+    <p style="margin-top:12px">Memory &amp; Audit runs last on Friday — it scans the week's findings for items that need human review (low confidence + high relevance), and writes a quality summary to <code>execution_log</code>.</p>
+
+    <div class="callout callout-warning" style="margin-top:20px">
+      <div class="callout-icon"><span class="material-icons-round">warning_amber</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Evidence Cutoff</div>
+        <div class="callout-text">Competitor Intelligence reads evidence from the last 3 days only. Gaps in the schedule (e.g., a missed Wednesday run) mean that evidence from those missed days may fall outside the CI window and not be analyzed.</div>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a href="tech-stack.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">Tech Stack</div></div>
+      </a>
+      <a href="../workflows/master-orchestrator.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Master Orchestrator</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js" data-page="weekly-schedule"></script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tech Stack — Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="#">Overview</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Tech Stack</span>
+    </div>
+    <div class="page-header">
+      <h1>Tech Stack</h1>
+      <p class="page-subtitle">The full system runs on ~$15/month. Every tool was chosen for zero marginal cost, except Claude — which is the only component that actually requires spending money.</p>
+    </div>
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">layers</span> Stack Overview</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Tool</th><th>What It Is</th><th>Why It's Here</th><th>Cost</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>n8n</td>
+          <td>Self-hosted workflow automation</td>
+          <td>Orchestration, scheduling, node chaining. Already running — no new infrastructure.</td>
+          <td style="color:#4ade80">$0</td>
+        </tr>
+        <tr>
+          <td>Claude API</td>
+          <td>Anthropic LLM API (Haiku + Sonnet)</td>
+          <td>All AI work: classification, extraction, gap analysis, newsletter writing. Haiku for speed; Sonnet for depth.</td>
+          <td style="color:#fbbf24">~$15–30/mo</td>
+        </tr>
+        <tr>
+          <td>Google Sheets</td>
+          <td>Cloud spreadsheet</td>
+          <td>Raw data layer. 7 tabs. Config, evidence, findings, capability map, run logs, error log. Easy to inspect and edit by hand.</td>
+          <td style="color:#4ade80">$0</td>
+        </tr>
+        <tr>
+          <td>Notion</td>
+          <td>Wiki / database workspace</td>
+          <td>Output layer. Competitor Cards updated weekly by CI. Weekly Newsletters archived here. Human-readable review surface.</td>
+          <td style="color:#4ade80">$0 (free tier)</td>
+        </tr>
+        <tr>
+          <td>Jina AI Reader</td>
+          <td>Web-to-text API</td>
+          <td>Used by IPS to fetch Ping documentation pages as clean Markdown. Endpoint: <code>r.jina.ai/{url}</code></td>
+          <td style="color:#4ade80">$0 (free tier)</td>
+        </tr>
+        <tr>
+          <td>Gmail (n8n node)</td>
+          <td>Email via Google OAuth</td>
+          <td>Delivers the weekly newsletter and critical error alerts. No SMTP setup required — uses n8n's Gmail credential.</td>
+          <td style="color:#4ade80">$0</td>
+        </tr>
+        <tr>
+          <td style="color:#f1f5f9;font-weight:600">Total</td>
+          <td></td>
+          <td></td>
+          <td style="color:#4ade80;font-weight:700">~$15–30/mo</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">psychology</span> AI Model Tiers</div>
+    <p>Two Claude models are used, matched to task complexity. The right model for the right job keeps costs low without compromising quality.</p>
+    <table class="data-table" style="margin-top:16px">
+      <thead>
+        <tr><th>Tier</th><th>Model</th><th>Used For</th><th>Approx Cost</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Background</td>
+          <td><span class="badge badge-haiku">Haiku</span></td>
+          <td>Market Watch — change classification, lane tagging, importance/confidence scoring. High volume, low depth. ~3,000 chars input per call.</td>
+          <td style="color:#94a3b8">~$0.001/call</td>
+        </tr>
+        <tr>
+          <td>Main Brain</td>
+          <td><span class="badge badge-sonnet">Sonnet</span></td>
+          <td>Internal Product Specialist (capability extraction), Competitor Intelligence (gap analysis), Newsletter (writing). Low volume, high depth. Handles nuance, maturity-aware reasoning, structured JSON output.</td>
+          <td style="color:#94a3b8">~$0.01–0.05/call</td>
+        </tr>
+        <tr>
+          <td>Executive</td>
+          <td><span class="badge badge-workflow" style="background:#111;color:#475569;border-color:#262626">Opus</span></td>
+          <td>Monthly Strategy Memo — Phase 3, not yet built. Once-per-month executive synthesis. Highest reasoning quality.</td>
+          <td style="color:#475569">Phase 3</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info" style="margin-top:20px">
+      <div class="callout-icon"><span class="material-icons-round">info</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Credential Pattern</div>
+        <div class="callout-text">All Anthropic calls use <code>predefinedCredentialType: httpHeaderAuth</code> with credential ID <code>P6dgBaH33wjoGxqb</code>. The <code>$env.ANTHROPIC_API_KEY</code> pattern is blocked in HTTP Request node headers — use the n8n credential system instead.</div>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a href="architecture.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">Architecture</div></div>
+      </a>
+      <a href="weekly-schedule.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Weekly Schedule</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js" data-page="tech-stack"></script>
+</body>
+</html>
