@@ -1,0 +1,543 @@
+{
+  "updatedAt": "2026-03-29T22:36:25.581Z",
+  "id": "nzmwZmXRbb9vl5mk",
+  "name": "PI: Master Orchestrator",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 6 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "orch-trigger",
+      "name": "Daily Schedule 6:30 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst runId = `RUN-${now.toISOString().replace(/[:.]/g,'-')}`;\nconst dayOfWeek = now.getDay();\nconst isMonday = dayOfWeek === 1;\nconst isTueThu = dayOfWeek === 2 || dayOfWeek === 4;\nconst isFriday = dayOfWeek === 5;\nreturn [{ json: { run_id: runId, started_at: now.toISOString(), day_of_week: dayOfWeek, is_monday: isMonday, is_tue_thu: isTueThu, is_friday: isFriday, week: now.toISOString().substring(0,7) } }];"
+      },
+      "id": "orch-init",
+      "name": "Initialize Run",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "execution_log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "orch-log-start",
+      "name": "Log Run Start",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        688,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ppMzAEKShjv6L4EP",
+          "mode": "id"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "orch-run-mw",
+      "name": "Run Market Watch",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        912,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-monday",
+              "leftValue": "={{ $('Initialize Run').first().json.is_monday }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "orch-if-monday",
+      "name": "If Monday?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1136,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "63fbsmdUxNtnaFXG",
+          "mode": "id"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "orch-run-ips",
+      "name": "Run Internal Product Specialist",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1360,
+        288
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nif (items.length > 0) return items;\nreturn [{ json: { status: 'success', workflow: 'PI: Internal Product Specialist', completed_at: new Date().toISOString(), note: 'no_capabilities_written' } }];"
+      },
+      "id": "orch-ips-guard",
+      "name": "IPS Output Guard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-tues-thu",
+              "leftValue": "={{ $('Initialize Run').first().json.is_tue_thu }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "orch-if-tues-thu",
+      "name": "If Tue or Thu?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1808,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "mY5wIkPWlolzcUbn",
+          "mode": "id"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "orch-run-ci",
+      "name": "Run Competitor Intelligence",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2032,
+        288
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nif (items.length > 0) return items;\nreturn [{ json: { status: 'success', workflow: 'PI: Competitor Intelligence', completed_at: new Date().toISOString(), note: 'no_findings_written' } }];"
+      },
+      "id": "orch-ci-guard",
+      "name": "CI Output Guard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2256,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-friday",
+              "leftValue": "={{ $('Initialize Run').first().json.is_friday }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "orch-if-friday",
+      "name": "If Friday?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2480,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "mi4bUBXbiA1y5L8h",
+          "mode": "id"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "orch-run-newsletter",
+      "name": "Run Newsletter",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2704,
+        288
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "skUbNsPy00W8DiDa",
+          "mode": "id"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "orch-run-memory",
+      "name": "Run Memory & Audit",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2928,
+        288
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const runId = $('Initialize Run').first().json.run_id;\nreturn [{ json: { run_id: runId, status: 'success', ended_at: new Date().toISOString() } }];"
+      },
+      "id": "orch-prep-log",
+      "name": "Prepare Log Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3040,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "execution_log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "run_id": "={{ $json.run_id }}",
+            "status": "={{ $json.status }}",
+            "ended_at": "={{ $json.ended_at }}"
+          },
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "orch-log-complete",
+      "name": "Log Run Complete",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3264,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily Schedule 6:30 AM": {
+      "main": [
+        [
+          {
+            "node": "Initialize Run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Run": {
+      "main": [
+        [
+          {
+            "node": "Log Run Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Run Start": {
+      "main": [
+        [
+          {
+            "node": "Run Market Watch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Market Watch": {
+      "main": [
+        [
+          {
+            "node": "If Monday?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Monday?": {
+      "main": [
+        [
+          {
+            "node": "Run Internal Product Specialist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Tue or Thu?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Internal Product Specialist": {
+      "main": [
+        [
+          {
+            "node": "IPS Output Guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IPS Output Guard": {
+      "main": [
+        [
+          {
+            "node": "If Tue or Thu?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Tue or Thu?": {
+      "main": [
+        [
+          {
+            "node": "Run Competitor Intelligence",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Friday?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Competitor Intelligence": {
+      "main": [
+        [
+          {
+            "node": "CI Output Guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CI Output Guard": {
+      "main": [
+        [
+          {
+            "node": "If Friday?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Friday?": {
+      "main": [
+        [
+          {
+            "node": "Run Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Log Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Newsletter": {
+      "main": [
+        [
+          {
+            "node": "Run Memory & Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Memory & Audit": {
+      "main": [
+        [
+          {
+            "node": "Prepare Log Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Log Data": {
+      "main": [
+        [
+          {
+            "node": "Log Run Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "yiv73Orxf8eRQ0sv",
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}

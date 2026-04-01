@@ -1,0 +1,1641 @@
+{
+  "updatedAt": "2026-03-31T21:54:01.397Z",
+  "createdAt": "2026-03-22T22:24:04.602Z",
+  "id": "ppMzAEKShjv6L4EP",
+  "name": "PI: Market Watch",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "wf-trigger",
+      "name": "Called by Orchestrator",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const runId = $input.first().json.run_id || `MW-${Date.now()}`;\nreturn [{ json: { run_id: runId, run_date: new Date().toISOString(), week: new Date().toISOString().substring(0,7) } }];"
+      },
+      "id": "set-run-id",
+      "name": "Set Run ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "mode": "id",
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "change_snapshots"
+        },
+        "options": {}
+      },
+      "id": "read-snapshots",
+      "name": "Read All Snapshots",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        400
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nreturn [{ json: { snapshots: items.map(i => i.json), run_id: $('Set Run ID').first().json.run_id } }];"
+      },
+      "id": "agg-snapshots",
+      "name": "Aggregate Snapshots",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "mode": "id",
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "config"
+        },
+        "options": {}
+      },
+      "id": "read-config",
+      "name": "Read Competitor Config",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1120,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const configItems = $input.all();\nconst agg = $('Aggregate Snapshots').first().json;\nconst snapshots = agg.snapshots || [];\nconst run_id = agg.run_id;\nconst snapshotLookup = {};\nfor (const snap of snapshots) {\n  if (snap.source_url) snapshotLookup[snap.source_url] = snap.last_hash || '';\n}\nconst ALLOWED_SOURCE_TYPES = ['website', 'docs', 'blog', 'github', 'changelog', 'release-notes', 'developer'];\nconst SOURCE_TYPE_MAP = { 'developer': 'docs' };\nconst urlQueue = [];\nfor (const item of configItems) {\n  const c = item.json;\n  const url = (c.url || c.URL || '').trim();\n  const rawSourceType = (c.source_type || '').toLowerCase();\n  if (!url) continue;\n  if (!ALLOWED_SOURCE_TYPES.includes(rawSourceType)) continue;\n  const sourceType = SOURCE_TYPE_MAP[rawSourceType] || rawSourceType;\n  urlQueue.push({ competitor_id: c.competitor_id, name: c.name, tier: c.tier || 'unknown', source_type: sourceType, url: url, previous_hash: snapshotLookup[url] || '' });\n}\nreturn [{ json: { url_queue: urlQueue, run_id, total_urls: urlQueue.length } }];"
+      },
+      "id": "placeholder-next",
+      "name": "Build URL Queue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "url_queue",
+        "options": {}
+      },
+      "id": "split-urls",
+      "name": "Split to Individual URLs",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://r.jina.ai/' + $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "jina-fetch",
+      "name": "Fetch via Jina",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1792,
+        304
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "merge-url",
+      "name": "Merge URL Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2000,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function hashString(str) {\n  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;\n  for (let i = 0; i < str.length; i++) {\n    const ch = str.charCodeAt(i);\n    h1 = Math.imul(h1 ^ ch, 2654435761);\n    h2 = Math.imul(h2 ^ ch, 1597334677);\n  }\n  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);\n  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);\n  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);\n}\nconst d = $input.item.json;\nconst content = d.data || '';\nconst previousHash = d.previous_hash || '';\nconst newHash = hashString(content.substring(0, 100000) || 'empty');\nconst changed = newHash !== previousHash && content.length > 200;\nreturn { json: { competitor_id: d.competitor_id, name: d.name, tier: d.tier, source_type: d.source_type, url: d.url, previous_hash: previousHash, jina_url: 'https://r.jina.ai/' + d.url, new_hash: newHash, changed, content_length: content.length, content_preview: content.substring(0, 8000), checked_at: new Date().toISOString() } };"
+      },
+      "id": "hash-page",
+      "name": "Hash Page",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2224,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.changed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "has-changed",
+      "name": "Has Page Changed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2448,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "mode": "id",
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "change_snapshots"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source_url": "={{ $json.url }}",
+            "last_hash": "={{ $json.new_hash }}",
+            "last_checked": "={{ $json.checked_at }}",
+            "competitor_id": "={{ $json.competitor_id }}",
+            "source_type": "={{ $json.source_type }}"
+          },
+          "matchingColumns": [
+            "source_url"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "update-snap-yes",
+      "name": "Update Snapshot (Changed)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2672,
+        112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Build Anthropic prompt \u2014 runs once per item\nconst item = $input.item.json;\n\n// Strip tracking pixel lines and clean content\nconst rawPreview = item.content_preview || '';\nconst cleanLines = rawPreview.split('\\n').filter(line => {\n  const s = line.trim();\n  if (!s) return false;\n  if (/^\\[Image \\d+\\]\\(https?:\\/\\//.test(s)) return false;\n  if (/^https?:\\/\\/[^\\s]+[?&](adroll|pv=|arrfrr|fpc=|_hsenc|utm_)/.test(s)) return false;\n  return true;\n});\nconst cleanContent = cleanLines.join('\\n').trim();\nconst cleanLength = cleanContent.length;\n\nif (cleanLength < 300) {\n  return { json: { ...item, skip: true, skip_reason: `content_too_short:${cleanLength}` } };\n}\n\nconst systemPrompt = `You are a product intelligence analyst specializing in IAM (Identity and Access Management). Extract concrete, evidence-based signals from competitor content.\\n\\nLANE DEFINITIONS:\\n- IDENTITY_EXPERIENCE: login widgets, hosted pages, branding, end-user journeys, authentication UX. Keywords: login widget, hosted login, branded, end-user, account portal, sign-in page, magic link, passkey UX\\n- DEVELOPER_PLATFORM: SDKs, developer docs, sample apps, quickstarts, API reference, developer portal, DX. Keywords: SDK, developer docs, quickstart, API reference, npm, sample app, CLI\\n- AI_AGENT_IDENTITY: agent authorization, MCP, A2A, non-human identity, LLM-powered identity. Keywords: MCP, agent, A2A, LLM, machine identity, non-human, AI assistant\\n- UI_ARCHITECTURE: design systems, composable UI, headless patterns, theming, accessibility. Keywords: design system, headless, composable, component library, theming, WCAG\\n- DESIGN_WORKFLOWS: Figma integrations, design-to-code, mockup tools, design tokens. Keywords: Figma, design token, prototype, mockup, no-code, low-code designer\\n- STRATEGIC_SIGNALS: pricing, launches, acquisitions, partnerships, hiring, funding. Keywords: pricing, launch, GA, acquired, partnership, hired, funding, enterprise\\n\\nEVIDENCE RULES:\\n- No marketing language inference (seamless, intelligent, AI-powered = not evidence)\\n- No code-existence inference (GitHub code is NOT evidence of a shipped feature)\\n- Confidence 4-5: changelog or GA announcement. Confidence 2-3: blog or docs. Confidence 1: marketing only - set not_enough_evidence true\\n- Set not_enough_evidence: true if content is generic, vague, or purely marketing language\\n\\nOutput ONLY valid JSON, no markdown, no code blocks.`;\n\nconst userPrompt = `Competitor: ${item.name} (${item.competitor_id})\\nSource: ${item.source_type} - ${item.url}\\nContent:\\n${cleanContent}\\n\\nOutput ONLY valid JSON:\\n{\"summary\":\"\",\"observed_fact\":\"\",\"analyst_interpretation\":\"\",\"product_area\":\"\",\"lane\":\"DEVELOPER_PLATFORM\",\"importance_score\":3,\"confidence_score\":3,\"evidence_strength\":\"direct\",\"not_enough_evidence\":false}`;\n\nreturn { json: { ...item, skip: false, systemPrompt, userPrompt, clean_length: cleanLength } };"
+      },
+      "id": "ai-haiku",
+      "name": "Build Haiku Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2672,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "typeValidation": "loose",
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "false"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-enough-content",
+      "name": "If Enough Content?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2896,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 700, system: $json.systemPrompt, messages: [{ role: 'user', content: $json.userPrompt }] }) }}",
+        "options": {}
+      },
+      "id": "call-haiku-api",
+      "name": "Call Haiku API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        304
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "P6dgBaH33wjoGxqb",
+          "name": "Header Auth account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Get original item data from prompt builder (paired item)\nconst origItem = $('Build Haiku Prompt').item.json;\n\n// Get API response for this item\nconst apiResponse = $input.item.json;\n\nlet ai = {};\ntry {\n  const text = apiResponse.content?.[0]?.text || '';\n  const match = text.match(/\\{[\\s\\S]*\\}/);\n  if (match) ai = JSON.parse(match[0]);\n} catch(e) { ai = { not_enough_evidence: true }; }\n\n// Drop records with not_enough_evidence or confidence <= 1\nif (ai.not_enough_evidence) return { json: { _dropped: true } };\nif ((ai.confidence_score || 0) <= 1) return { json: { _dropped: true } };\n\nconst now = new Date().toISOString();\nreturn { json: {\n  ev_id: `EV-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,\n  date_found: now,\n  week: now.substring(0,7),\n  competitor_id: origItem.competitor_id,\n  source_type: origItem.source_type,\n  source_url: origItem.url,\n  title: `${origItem.name} ${origItem.source_type} update`,\n  summary: ai.summary || '',\n  observed_fact: ai.observed_fact || '',\n  analyst_interpretation: ai.analyst_interpretation || '',\n  product_area: ai.product_area || '',\n  lane: (ai.lane || '').toUpperCase(),\n  importance_score: ai.importance_score || 2,\n  confidence_score: ai.confidence_score || 2,\n  freshness: 'this_week',\n  evidence_strength: ai.evidence_strength || 'inferred',\n  status: 'new',\n  new_hash: origItem.new_hash,\n  snapshot_url: origItem.url,\n  checked_at: origItem.checked_at\n} };"
+      },
+      "id": "parse-ai",
+      "name": "Parse AI and Build Record",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3344,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "typeValidation": "loose",
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json._dropped }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "false"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-dropped",
+      "name": "Has Evidence?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3568,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "mode": "id",
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "evidence_log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData"
+        },
+        "options": {}
+      },
+      "id": "write-ev",
+      "name": "Write to evidence_log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3792,
+        224
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "mode": "id",
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "change_snapshots"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source_url": "={{ $json.url }}",
+            "last_hash": "={{ $json.new_hash }}",
+            "last_checked": "={{ $json.checked_at }}",
+            "competitor_id": "={{ $json.competitor_id }}",
+            "source_type": "={{ $json.source_type }}"
+          },
+          "matchingColumns": [
+            "source_url"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "update-snap-no",
+      "name": "Update Snapshot (Unchanged)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2672,
+        544
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1",
+              "name": "status",
+              "value": "success",
+              "type": "string"
+            },
+            {
+              "id": "s2",
+              "name": "workflow",
+              "value": "PI: Market Watch",
+              "type": "string"
+            },
+            {
+              "id": "s3",
+              "name": "completed_at",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "done",
+      "name": "Return to Orchestrator",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4016,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const BASE_SCORES = {\n  changelog:             3,\n  release_notes:         3,\n  product_documentation: 3,\n  documentation:         3,\n  developer_portal:      2,\n  github:                1,\n  github_repo:           1,\n  blog:                  1,\n  homepage:              0\n};\n\nconst PHRASE_KEYWORDS = [\n  'login widget', 'platform ui', 'end-user ui', 'hosted pages',\n  'hosted account', 'sample app', 'developer portal', 'login experience',\n  'release notes'\n];\n\nconst WORD_KEYWORDS = [\n  'mcp', 'sdk', 'flutter', 'astro', 'localization', 'customization',\n  'orchestration', 'android', 'ios', 'javascript', 'docs',\n  'authentication', 'identity', 'oauth', 'oidc', 'saml', 'mfa',\n  'passkey', 'webauthn', 'developer', 'api', 'mobile', 'login', 'auth'\n];\n\nconst GITHUB_REPO_TERMS = [\n  'mcp', 'sdk', 'login-widget', 'login_widget',\n  'android', 'ios', 'flutter', 'astro',\n  'platform-ui', 'platform_ui', 'end-user-ui', 'end_user_ui'\n];\n\nconst THRESHOLD = 3;\nconst BODY_CAP = 5;\n\nfunction extractTitleAndBody(content) {\n  const lines = content.split('\\n');\n  let titleLineIdx = -1;\n  let title = '';\n\n  for (let i = 0; i < lines.length; i++) {\n    if (lines[i].startsWith('# ')) {\n      titleLineIdx = i;\n      title = lines[i].slice(2).trim();\n      break;\n    }\n  }\n\n  if (titleLineIdx === -1) {\n    for (let i = 0; i < lines.length; i++) {\n      if (lines[i].trim()) {\n        titleLineIdx = i;\n        title = lines[i].trim();\n        break;\n      }\n    }\n  }\n\n  const body = titleLineIdx >= 0\n    ? lines.slice(titleLineIdx + 1).join('\\n')\n    : content;\n\n  return { title, body };\n}\n\nfunction findKeywords(text) {\n  const lower = text.toLowerCase();\n  const found = new Set();\n\n  for (const phrase of PHRASE_KEYWORDS) {\n    if (lower.includes(phrase)) found.add(phrase);\n  }\n  for (const word of WORD_KEYWORDS) {\n    if (lower.includes(word)) found.add(word);\n  }\n  return found;\n}\n\nfunction extractRepoName(url) {\n  const match = url.match(/github\\.com\\/[^/]+\\/([^/?#]+)/i);\n  return match ? match[1].toLowerCase() : null;\n}\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  const data = item.json;\n  const sourceType = String(data.source_type || '').toLowerCase();\n  const content = String(data.content_preview || '');\n  const url = String(data.url || '');\n\n  const baseScore = Object.prototype.hasOwnProperty.call(BASE_SCORES, sourceType)\n    ? BASE_SCORES[sourceType]\n    : 1;\n\n  const { title, body } = extractTitleAndBody(content);\n\n  const titleKws = findKeywords(title);\n  const bodyKws  = findKeywords(body);\n\n  const titleMatches = titleKws.size;\n  const bodyMatches  = Math.min(bodyKws.size, BODY_CAP);\n\n  const allKws = new Set([...titleKws, ...bodyKws]);\n  let keywordsMatched = allKws.size;\n\n  // GitHub repo-name bonus (+2, same as title weight)\n  let repoBonus = 0;\n  if (sourceType === 'github' || sourceType === 'github_repo') {\n    const repoName = extractRepoName(url);\n    if (repoName) {\n      for (const term of GITHUB_REPO_TERMS) {\n        if (repoName.includes(term)) {\n          repoBonus = 2;\n          if (!allKws.has(term)) {\n            keywordsMatched++;\n            allKws.add(term);\n          }\n          break;\n        }\n      }\n    }\n  }\n\n  const score = baseScore + (titleMatches * 2) + bodyMatches + repoBonus;\n  const pass  = score >= THRESHOLD && keywordsMatched >= 1;\n\n  results.push({\n    json: {\n      ...data,\n      relevance_score: score,\n      relevance_pass:  pass,\n      keywords_matched: keywordsMatched\n    }\n  });\n}\n\nreturn results;"
+      },
+      "id": "score-relevance",
+      "name": "Score Relevance",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2672,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "gate-condition",
+              "leftValue": "={{ $json.relevance_pass }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "passes-gate",
+      "name": "Passes Relevance Gate?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2896,
+        704
+      ]
+    }
+  ],
+  "connections": {
+    "Called by Orchestrator": {
+      "main": [
+        [
+          {
+            "node": "Set Run ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Run ID": {
+      "main": [
+        [
+          {
+            "node": "Read All Snapshots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Snapshots": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Snapshots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Snapshots": {
+      "main": [
+        [
+          {
+            "node": "Read Competitor Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Competitor Config": {
+      "main": [
+        [
+          {
+            "node": "Build URL Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build URL Queue": {
+      "main": [
+        [
+          {
+            "node": "Split to Individual URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split to Individual URLs": {
+      "main": [
+        [
+          {
+            "node": "Fetch via Jina",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge URL Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Fetch via Jina": {
+      "main": [
+        [
+          {
+            "node": "Merge URL Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge URL Data": {
+      "main": [
+        [
+          {
+            "node": "Hash Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hash Page": {
+      "main": [
+        [
+          {
+            "node": "Has Page Changed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Page Changed?": {
+      "main": [
+        [
+          {
+            "node": "Update Snapshot (Changed)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Score Relevance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Snapshot (Unchanged)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Snapshot (Changed)": {
+      "main": [
+        [
+          {
+            "node": "Return to Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Haiku Prompt": {
+      "main": [
+        [
+          {
+            "node": "If Enough Content?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Enough Content?": {
+      "main": [
+        [
+          {
+            "node": "Call Haiku API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Call Haiku API": {
+      "main": [
+        [
+          {
+            "node": "Parse AI and Build Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI and Build Record": {
+      "main": [
+        [
+          {
+            "node": "Has Evidence?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Evidence?": {
+      "main": [
+        [
+          {
+            "node": "Write to evidence_log",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Write to evidence_log": {
+      "main": [
+        [
+          {
+            "node": "Return to Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Snapshot (Unchanged)": {
+      "main": [
+        [
+          {
+            "node": "Return to Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Relevance": {
+      "main": [
+        [
+          {
+            "node": "Passes Relevance Gate?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Passes Relevance Gate?": {
+      "main": [
+        [
+          {
+            "node": "Build Haiku Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "yiv73Orxf8eRQ0sv",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "9b984bba-6e73-4775-8d72-c6ea585ddf1e",
+  "activeVersionId": "98347c2d-5825-4118-a2d8-f40879baa4ff",
+  "versionCounter": 127,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-22T22:24:04.604Z",
+      "createdAt": "2026-03-22T22:24:04.604Z",
+      "role": "workflow:owner",
+      "workflowId": "ppMzAEKShjv6L4EP",
+      "projectId": "Oa57UYSvQEVoNZvh",
+      "project": {
+        "updatedAt": "2026-03-21T23:31:19.647Z",
+        "createdAt": "2026-03-21T23:26:38.308Z",
+        "id": "Oa57UYSvQEVoNZvh",
+        "name": "giessel razavi <giesselrazavi@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-03-31T21:46:04.248Z",
+    "createdAt": "2026-03-31T21:46:04.248Z",
+    "versionId": "98347c2d-5825-4118-a2d8-f40879baa4ff",
+    "workflowId": "ppMzAEKShjv6L4EP",
+    "nodes": [
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "id": "wf-trigger",
+        "name": "Called by Orchestrator",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          240,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const runId = $input.first().json.run_id || `MW-${Date.now()}`;\nreturn [{ json: { run_id: runId, run_date: new Date().toISOString(), week: new Date().toISOString().substring(0,7) } }];"
+        },
+        "id": "set-run-id",
+        "name": "Set Run ID",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          464,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "mode": "id",
+            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          },
+          "sheetName": {
+            "mode": "name",
+            "value": "change_snapshots"
+          },
+          "options": {}
+        },
+        "id": "read-snapshots",
+        "name": "Read All Snapshots",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          688,
+          400
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "I253clwiMf9o1Oln",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\nreturn [{ json: { snapshots: items.map(i => i.json), run_id: $('Set Run ID').first().json.run_id } }];"
+        },
+        "id": "agg-snapshots",
+        "name": "Aggregate Snapshots",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          912,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "mode": "id",
+            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          },
+          "sheetName": {
+            "mode": "name",
+            "value": "config"
+          },
+          "options": {}
+        },
+        "id": "read-config",
+        "name": "Read Competitor Config",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1120,
+          400
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "I253clwiMf9o1Oln",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const configItems = $input.all();\nconst agg = $('Aggregate Snapshots').first().json;\nconst snapshots = agg.snapshots || [];\nconst run_id = agg.run_id;\nconst snapshotLookup = {};\nfor (const snap of snapshots) {\n  if (snap.source_url) snapshotLookup[snap.source_url] = snap.last_hash || '';\n}\nconst ALLOWED_SOURCE_TYPES = ['website', 'docs', 'blog', 'github', 'changelog', 'release-notes', 'developer'];\nconst SOURCE_TYPE_MAP = { 'developer': 'docs' };\nconst urlQueue = [];\nfor (const item of configItems) {\n  const c = item.json;\n  const url = (c.url || c.URL || '').trim();\n  const rawSourceType = (c.source_type || '').toLowerCase();\n  if (!url) continue;\n  if (!ALLOWED_SOURCE_TYPES.includes(rawSourceType)) continue;\n  const sourceType = SOURCE_TYPE_MAP[rawSourceType] || rawSourceType;\n  urlQueue.push({ competitor_id: c.competitor_id, name: c.name, tier: c.tier || 'unknown', source_type: sourceType, url: url, previous_hash: snapshotLookup[url] || '' });\n}\nreturn [{ json: { url_queue: urlQueue, run_id, total_urls: urlQueue.length } }];"
+        },
+        "id": "placeholder-next",
+        "name": "Build URL Queue",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1344,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "url_queue",
+          "options": {}
+        },
+        "id": "split-urls",
+        "name": "Split to Individual URLs",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1568,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{ 'https://r.jina.ai/' + $json.url }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "id": "jina-fetch",
+        "name": "Fetch via Jina",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1792,
+          304
+        ],
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineByPosition",
+          "options": {}
+        },
+        "id": "merge-url",
+        "name": "Merge URL Data",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          2000,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "function hashString(str) {\n  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;\n  for (let i = 0; i < str.length; i++) {\n    const ch = str.charCodeAt(i);\n    h1 = Math.imul(h1 ^ ch, 2654435761);\n    h2 = Math.imul(h2 ^ ch, 1597334677);\n  }\n  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);\n  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);\n  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);\n}\nconst d = $input.item.json;\nconst content = d.data || '';\nconst previousHash = d.previous_hash || '';\nconst newHash = hashString(content.substring(0, 100000) || 'empty');\nconst changed = newHash !== previousHash && content.length > 200;\nreturn { json: { competitor_id: d.competitor_id, name: d.name, tier: d.tier, source_type: d.source_type, url: d.url, previous_hash: previousHash, jina_url: 'https://r.jina.ai/' + d.url, new_hash: newHash, changed, content_length: content.length, content_preview: content.substring(0, 8000), checked_at: new Date().toISOString() } };"
+        },
+        "id": "hash-page",
+        "name": "Hash Page",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2224,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "typeValidation": "loose"
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.changed }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "has-changed",
+        "name": "Has Page Changed?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          2448,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "mode": "id",
+            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          },
+          "sheetName": {
+            "mode": "name",
+            "value": "change_snapshots"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "source_url": "={{ $json.url }}",
+              "last_hash": "={{ $json.new_hash }}",
+              "last_checked": "={{ $json.checked_at }}",
+              "competitor_id": "={{ $json.competitor_id }}",
+              "source_type": "={{ $json.source_type }}"
+            },
+            "matchingColumns": [
+              "source_url"
+            ],
+            "schema": []
+          },
+          "options": {}
+        },
+        "id": "update-snap-yes",
+        "name": "Update Snapshot (Changed)",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          2672,
+          112
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "I253clwiMf9o1Oln",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "// Build Anthropic prompt \u2014 runs once per item\nconst item = $input.item.json;\n\n// Strip tracking pixel lines and clean content\nconst rawPreview = item.content_preview || '';\nconst cleanLines = rawPreview.split('\\n').filter(line => {\n  const s = line.trim();\n  if (!s) return false;\n  if (/^\\[Image \\d+\\]\\(https?:\\/\\//.test(s)) return false;\n  if (/^https?:\\/\\/[^\\s]+[?&](adroll|pv=|arrfrr|fpc=|_hsenc|utm_)/.test(s)) return false;\n  return true;\n});\nconst cleanContent = cleanLines.join('\\n').trim();\nconst cleanLength = cleanContent.length;\n\nif (cleanLength < 300) {\n  return { json: { ...item, skip: true, skip_reason: `content_too_short:${cleanLength}` } };\n}\n\nconst systemPrompt = `You are a product intelligence analyst specializing in IAM (Identity and Access Management). Extract concrete, evidence-based signals from competitor content.\\n\\nLANE DEFINITIONS:\\n- IDENTITY_EXPERIENCE: login widgets, hosted pages, branding, end-user journeys, authentication UX. Keywords: login widget, hosted login, branded, end-user, account portal, sign-in page, magic link, passkey UX\\n- DEVELOPER_PLATFORM: SDKs, developer docs, sample apps, quickstarts, API reference, developer portal, DX. Keywords: SDK, developer docs, quickstart, API reference, npm, sample app, CLI\\n- AI_AGENT_IDENTITY: agent authorization, MCP, A2A, non-human identity, LLM-powered identity. Keywords: MCP, agent, A2A, LLM, machine identity, non-human, AI assistant\\n- UI_ARCHITECTURE: design systems, composable UI, headless patterns, theming, accessibility. Keywords: design system, headless, composable, component library, theming, WCAG\\n- DESIGN_WORKFLOWS: Figma integrations, design-to-code, mockup tools, design tokens. Keywords: Figma, design token, prototype, mockup, no-code, low-code designer\\n- STRATEGIC_SIGNALS: pricing, launches, acquisitions, partnerships, hiring, funding. Keywords: pricing, launch, GA, acquired, partnership, hired, funding, enterprise\\n\\nEVIDENCE RULES:\\n- No marketing language inference (seamless, intelligent, AI-powered = not evidence)\\n- No code-existence inference (GitHub code is NOT evidence of a shipped feature)\\n- Confidence 4-5: changelog or GA announcement. Confidence 2-3: blog or docs. Confidence 1: marketing only - set not_enough_evidence true\\n- Set not_enough_evidence: true if content is generic, vague, or purely marketing language\\n\\nOutput ONLY valid JSON, no markdown, no code blocks.`;\n\nconst userPrompt = `Competitor: ${item.name} (${item.competitor_id})\\nSource: ${item.source_type} - ${item.url}\\nContent:\\n${cleanContent}\\n\\nOutput ONLY valid JSON:\\n{\"summary\":\"\",\"observed_fact\":\"\",\"analyst_interpretation\":\"\",\"product_area\":\"\",\"lane\":\"DEVELOPER_PLATFORM\",\"importance_score\":3,\"confidence_score\":3,\"evidence_strength\":\"direct\",\"not_enough_evidence\":false}`;\n\nreturn { json: { ...item, skip: false, systemPrompt, userPrompt, clean_length: cleanLength } };"
+        },
+        "id": "ai-haiku",
+        "name": "Build Haiku Prompt",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2672,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "typeValidation": "loose",
+              "leftValue": ""
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.skip }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "false"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "if-enough-content",
+        "name": "If Enough Content?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          2896,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.anthropic.com/v1/messages",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "anthropic-version",
+                "value": "2023-06-01"
+              },
+              {
+                "name": "content-type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 700, system: $json.systemPrompt, messages: [{ role: 'user', content: $json.userPrompt }] }) }}",
+          "options": {}
+        },
+        "id": "call-haiku-api",
+        "name": "Call Haiku API",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3120,
+          304
+        ],
+        "continueOnFail": true,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "P6dgBaH33wjoGxqb",
+            "name": "Header Auth account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "// Get original item data from prompt builder (paired item)\nconst origItem = $('Build Haiku Prompt').item.json;\n\n// Get API response for this item\nconst apiResponse = $input.item.json;\n\nlet ai = {};\ntry {\n  const text = apiResponse.content?.[0]?.text || '';\n  const match = text.match(/\\{[\\s\\S]*\\}/);\n  if (match) ai = JSON.parse(match[0]);\n} catch(e) { ai = { not_enough_evidence: true }; }\n\n// Drop records with not_enough_evidence or confidence <= 1\nif (ai.not_enough_evidence) return { json: { _dropped: true } };\nif ((ai.confidence_score || 0) <= 1) return { json: { _dropped: true } };\n\nconst now = new Date().toISOString();\nreturn { json: {\n  ev_id: `EV-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,\n  date_found: now,\n  week: now.substring(0,7),\n  competitor_id: origItem.competitor_id,\n  source_type: origItem.source_type,\n  source_url: origItem.url,\n  title: `${origItem.name} ${origItem.source_type} update`,\n  summary: ai.summary || '',\n  observed_fact: ai.observed_fact || '',\n  analyst_interpretation: ai.analyst_interpretation || '',\n  product_area: ai.product_area || '',\n  lane: (ai.lane || '').toUpperCase(),\n  importance_score: ai.importance_score || 2,\n  confidence_score: ai.confidence_score || 2,\n  freshness: 'this_week',\n  evidence_strength: ai.evidence_strength || 'inferred',\n  status: 'new',\n  new_hash: origItem.new_hash,\n  snapshot_url: origItem.url,\n  checked_at: origItem.checked_at\n} };"
+        },
+        "id": "parse-ai",
+        "name": "Parse AI and Build Record",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3344,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "typeValidation": "loose",
+              "leftValue": ""
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json._dropped }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "false"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "filter-dropped",
+        "name": "Has Evidence?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          3568,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "mode": "id",
+            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          },
+          "sheetName": {
+            "mode": "name",
+            "value": "evidence_log"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData"
+          },
+          "options": {}
+        },
+        "id": "write-ev",
+        "name": "Write to evidence_log",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          3792,
+          224
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "I253clwiMf9o1Oln",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "mode": "id",
+            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          },
+          "sheetName": {
+            "mode": "name",
+            "value": "change_snapshots"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "source_url": "={{ $json.url }}",
+              "last_hash": "={{ $json.new_hash }}",
+              "last_checked": "={{ $json.checked_at }}",
+              "competitor_id": "={{ $json.competitor_id }}",
+              "source_type": "={{ $json.source_type }}"
+            },
+            "matchingColumns": [
+              "source_url"
+            ],
+            "schema": []
+          },
+          "options": {}
+        },
+        "id": "update-snap-no",
+        "name": "Update Snapshot (Unchanged)",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          2672,
+          544
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "I253clwiMf9o1Oln",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "s1",
+                "name": "status",
+                "value": "success",
+                "type": "string"
+              },
+              {
+                "id": "s2",
+                "name": "workflow",
+                "value": "PI: Market Watch",
+                "type": "string"
+              },
+              {
+                "id": "s3",
+                "name": "completed_at",
+                "value": "={{ new Date().toISOString() }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "done",
+        "name": "Return to Orchestrator",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          4016,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const BASE_SCORES = {\n  changelog:             3,\n  release_notes:         3,\n  product_documentation: 3,\n  documentation:         3,\n  developer_portal:      2,\n  github:                1,\n  github_repo:           1,\n  blog:                  1,\n  homepage:              0\n};\n\nconst PHRASE_KEYWORDS = [\n  'login widget', 'platform ui', 'end-user ui', 'hosted pages',\n  'hosted account', 'sample app', 'developer portal', 'login experience',\n  'release notes'\n];\n\nconst WORD_KEYWORDS = [\n  'mcp', 'sdk', 'flutter', 'astro', 'localization', 'customization',\n  'orchestration', 'android', 'ios', 'javascript', 'docs',\n  'authentication', 'identity', 'oauth', 'oidc', 'saml', 'mfa',\n  'passkey', 'webauthn', 'developer', 'api', 'mobile', 'login', 'auth'\n];\n\nconst GITHUB_REPO_TERMS = [\n  'mcp', 'sdk', 'login-widget', 'login_widget',\n  'android', 'ios', 'flutter', 'astro',\n  'platform-ui', 'platform_ui', 'end-user-ui', 'end_user_ui'\n];\n\nconst THRESHOLD = 3;\nconst BODY_CAP = 5;\n\nfunction extractTitleAndBody(content) {\n  const lines = content.split('\\n');\n  let titleLineIdx = -1;\n  let title = '';\n\n  for (let i = 0; i < lines.length; i++) {\n    if (lines[i].startsWith('# ')) {\n      titleLineIdx = i;\n      title = lines[i].slice(2).trim();\n      break;\n    }\n  }\n\n  if (titleLineIdx === -1) {\n    for (let i = 0; i < lines.length; i++) {\n      if (lines[i].trim()) {\n        titleLineIdx = i;\n        title = lines[i].trim();\n        break;\n      }\n    }\n  }\n\n  const body = titleLineIdx >= 0\n    ? lines.slice(titleLineIdx + 1).join('\\n')\n    : content;\n\n  return { title, body };\n}\n\nfunction findKeywords(text) {\n  const lower = text.toLowerCase();\n  const found = new Set();\n\n  for (const phrase of PHRASE_KEYWORDS) {\n    if (lower.includes(phrase)) found.add(phrase);\n  }\n  for (const word of WORD_KEYWORDS) {\n    if (lower.includes(word)) found.add(word);\n  }\n  return found;\n}\n\nfunction extractRepoName(url) {\n  const match = url.match(/github\\.com\\/[^/]+\\/([^/?#]+)/i);\n  return match ? match[1].toLowerCase() : null;\n}\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  const data = item.json;\n  const sourceType = String(data.source_type || '').toLowerCase();\n  const content = String(data.content_preview || '');\n  const url = String(data.url || '');\n\n  const baseScore = Object.prototype.hasOwnProperty.call(BASE_SCORES, sourceType)\n    ? BASE_SCORES[sourceType]\n    : 1;\n\n  const { title, body } = extractTitleAndBody(content);\n\n  const titleKws = findKeywords(title);\n  const bodyKws  = findKeywords(body);\n\n  const titleMatches = titleKws.size;\n  const bodyMatches  = Math.min(bodyKws.size, BODY_CAP);\n\n  const allKws = new Set([...titleKws, ...bodyKws]);\n  let keywordsMatched = allKws.size;\n\n  // GitHub repo-name bonus (+2, same as title weight)\n  let repoBonus = 0;\n  if (sourceType === 'github' || sourceType === 'github_repo') {\n    const repoName = extractRepoName(url);\n    if (repoName) {\n      for (const term of GITHUB_REPO_TERMS) {\n        if (repoName.includes(term)) {\n          repoBonus = 2;\n          if (!allKws.has(term)) {\n            keywordsMatched++;\n            allKws.add(term);\n          }\n          break;\n        }\n      }\n    }\n  }\n\n  const score = baseScore + (titleMatches * 2) + bodyMatches + repoBonus;\n  const pass  = score >= THRESHOLD && keywordsMatched >= 1;\n\n  results.push({\n    json: {\n      ...data,\n      relevance_score: score,\n      relevance_pass:  pass,\n      keywords_matched: keywordsMatched\n    }\n  });\n}\n\nreturn results;"
+        },
+        "id": "score-relevance",
+        "name": "Score Relevance",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2672,
+          700
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "gate-condition",
+                "leftValue": "={{ $json.relevance_pass }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true"
+                }
+              }
+            ],
+            "combinator": "and"
+          }
+        },
+        "id": "passes-gate",
+        "name": "Passes Relevance Gate?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          2896,
+          700
+        ]
+      }
+    ],
+    "connections": {
+      "Called by Orchestrator": {
+        "main": [
+          [
+            {
+              "node": "Set Run ID",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Run ID": {
+        "main": [
+          [
+            {
+              "node": "Read All Snapshots",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read All Snapshots": {
+        "main": [
+          [
+            {
+              "node": "Aggregate Snapshots",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate Snapshots": {
+        "main": [
+          [
+            {
+              "node": "Read Competitor Config",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read Competitor Config": {
+        "main": [
+          [
+            {
+              "node": "Build URL Queue",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build URL Queue": {
+        "main": [
+          [
+            {
+              "node": "Split to Individual URLs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split to Individual URLs": {
+        "main": [
+          [
+            {
+              "node": "Fetch via Jina",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge URL Data",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Fetch via Jina": {
+        "main": [
+          [
+            {
+              "node": "Merge URL Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge URL Data": {
+        "main": [
+          [
+            {
+              "node": "Hash Page",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Hash Page": {
+        "main": [
+          [
+            {
+              "node": "Has Page Changed?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Has Page Changed?": {
+        "main": [
+          [
+            {
+              "node": "Update Snapshot (Changed)",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Score Relevance",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Update Snapshot (Unchanged)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Snapshot (Changed)": {
+        "main": [
+          [
+            {
+              "node": "Return to Orchestrator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Haiku Prompt": {
+        "main": [
+          [
+            {
+              "node": "If Enough Content?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Enough Content?": {
+        "main": [
+          [
+            {
+              "node": "Call Haiku API",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Call Haiku API": {
+        "main": [
+          [
+            {
+              "node": "Parse AI and Build Record",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse AI and Build Record": {
+        "main": [
+          [
+            {
+              "node": "Has Evidence?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Has Evidence?": {
+        "main": [
+          [
+            {
+              "node": "Write to evidence_log",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Write to evidence_log": {
+        "main": [
+          [
+            {
+              "node": "Return to Orchestrator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Snapshot (Unchanged)": {
+        "main": [
+          [
+            {
+              "node": "Return to Orchestrator",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Score Relevance": {
+        "main": [
+          [
+            {
+              "node": "Passes Relevance Gate?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Passes Relevance Gate?": {
+        "main": [
+          [
+            {
+              "node": "Build Haiku Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      }
+    },
+    "authors": "giessel razavi",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-03-31T21:46:04.288Z",
+        "id": 163,
+        "workflowId": "ppMzAEKShjv6L4EP",
+        "versionId": "98347c2d-5825-4118-a2d8-f40879baa4ff",
+        "event": "activated",
+        "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
+      },
+      {
+        "createdAt": "2026-03-31T21:46:04.280Z",
+        "id": 162,
+        "workflowId": "ppMzAEKShjv6L4EP",
+        "versionId": "98347c2d-5825-4118-a2d8-f40879baa4ff",
+        "event": "deactivated",
+        "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
+      }
+    ]
+  }
+}

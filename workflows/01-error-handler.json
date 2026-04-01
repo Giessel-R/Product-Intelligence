@@ -1,0 +1,183 @@
+{
+  "updatedAt": "2026-03-28T21:09:18.643Z",
+  "createdAt": "2026-03-22T22:15:33.152Z",
+  "id": "yiv73Orxf8eRQ0sv",
+  "name": "PI: Error Handler",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "error-trigger",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const errorData = $input.first().json;\n\nconst workflowName = errorData.workflow?.name || 'unknown';\nconst nodeName = errorData.execution?.lastNodeExecuted || 'unknown';\nconst errorMessage = errorData.error?.message || 'unknown error';\nconst errorStack = errorData.error?.stack || '';\nconst executionId = errorData.execution?.id || '';\nconst runId = errorData.execution?.customData?.runId || '';\n\n// Determine severity\nconst criticalWorkflows = ['PI: Master Orchestrator', 'PI: Newsletter', 'PI: Error Handler'];\nconst isCritical = criticalWorkflows.includes(workflowName);\n\nconst errorRecord = {\n  id: `ERR-${Date.now()}`,\n  timestamp: new Date().toISOString(),\n  run_id: runId || executionId,\n  workflow_name: workflowName,\n  node_name: nodeName,\n  error_message: errorMessage.substring(0, 500),\n  input_data: JSON.stringify(errorData.execution?.lastNodeExecuted || {}).substring(0, 300),\n  retry_count: 0,\n  resolved: 'FALSE',\n  severity: isCritical ? 'critical' : 'non-critical'\n};\n\nreturn [{ json: errorRecord }];"
+      },
+      "id": "build-error-record",
+      "name": "Build Error Record",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "mode": "id",
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "error_log"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "timestamp": "={{ $json.timestamp }}",
+            "run_id": "={{ $json.run_id }}",
+            "workflow_name": "={{ $json.workflow_name }}",
+            "node_name": "={{ $json.node_name }}",
+            "error_message": "={{ $json.error_message }}",
+            "input_data": "={{ $json.input_data }}",
+            "retry_count": "={{ $json.retry_count }}",
+            "resolved": "={{ $json.resolved }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "log-to-sheets",
+      "name": "Log to error_log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        688,
+        304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "sev-check",
+              "leftValue": "={{ $json.severity }}",
+              "rightValue": "critical",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-severity",
+      "name": "Is Critical?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        912,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "giesselrazavi@gmail.com",
+        "subject": "={{ '\ud83d\udea8 PI System Alert: ' + $json.workflow_name + ' failed' }}",
+        "message": "={{ '<h2>Product Intelligence System Error</h2><p><strong>Workflow:</strong> ' + $json.workflow_name + '</p><p><strong>Node:</strong> ' + $json.node_name + '</p><p><strong>Error:</strong> ' + $json.error_message + '</p><p><strong>Time:</strong> ' + $json.timestamp + '</p><p><strong>Run ID:</strong> ' + $json.run_id + '</p><p>Check error_log in Google Sheets for details.</p>' }}",
+        "options": {}
+      },
+      "id": "send-alert",
+      "name": "Send Gmail Alert",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        208
+      ],
+      "webhookId": "f9667e30-dc40-4881-b7e2-42a7f133a07a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "o3jIrLLFpJohrwnz",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Build Error Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Error Record": {
+      "main": [
+        [
+          {
+            "node": "Log to error_log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to error_log": {
+      "main": [
+        [
+          {
+            "node": "Is Critical?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Critical?": {
+      "main": [
+        [
+          {
+            "node": "Send Gmail Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}

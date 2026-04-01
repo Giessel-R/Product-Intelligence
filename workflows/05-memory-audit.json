@@ -1,0 +1,183 @@
+{
+  "updatedAt": "2026-03-28T21:13:36.949Z",
+  "id": "skUbNsPy00W8DiDa",
+  "name": "PI: Memory and Audit",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "ma-trigger",
+      "name": "Called by Orchestrator",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "mode": "id",
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "structured_findings"
+        },
+        "options": {}
+      },
+      "id": "ma-read",
+      "name": "Read This Week Findings",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst week = new Date().toISOString().substring(0,7);\nconst thisWeek = items.filter(i => i.json.week === week && i.json.status !== 'archived');\nconst risky = [];\nfor (const item of thisWeek) {\n  const d = item.json;\n  const conf = parseInt(d.confidence_score) || 0;\n  const rel = parseInt(d.relevance_score) || 0;\n  const isRisky = (conf <= 2 && rel >= 4) || d.review_flag === 'TRUE';\n  if (isRisky) risky.push({ id: d.finding_id, reason: d.review_flag_reason || 'low confidence + high relevance', confidence_score: conf, relevance_score: rel });\n}\nreturn [{ json: { week, total_findings: thisWeek.length, flagged_count: risky.length, flagged_items: risky, findings_to_archive: thisWeek.map(i=>i.json.finding_id) } }];"
+      },
+      "id": "ma-audit",
+      "name": "Audit and Flag Risky Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "mode": "id",
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "execution_log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ma-write-log",
+      "name": "Write Weekly Summary",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        912,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m1",
+              "name": "status",
+              "value": "success",
+              "type": "string"
+            },
+            {
+              "id": "m2",
+              "name": "workflow",
+              "value": "PI: Memory and Audit",
+              "type": "string"
+            },
+            {
+              "id": "m3",
+              "name": "completed_at",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ma-done",
+      "name": "Return to Orchestrator",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Called by Orchestrator": {
+      "main": [
+        [
+          {
+            "node": "Read This Week Findings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read This Week Findings": {
+      "main": [
+        [
+          {
+            "node": "Audit and Flag Risky Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audit and Flag Risky Items": {
+      "main": [
+        [
+          {
+            "node": "Write Weekly Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Weekly Summary": {
+      "main": [
+        [
+          {
+            "node": "Return to Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "yiv73Orxf8eRQ0sv",
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}

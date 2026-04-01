@@ -1,0 +1,453 @@
+{
+  "updatedAt": "2026-03-30T03:24:41.895Z",
+  "id": "mi4bUBXbiA1y5L8h",
+  "name": "PI: Newsletter",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "nl-trigger",
+      "name": "Called by Orchestrator",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "mode": "id",
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "structured_findings"
+        },
+        "options": {}
+      },
+      "id": "nl-read-findings",
+      "name": "Read This Week Findings",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "mode": "id",
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+        },
+        "sheetName": {
+          "mode": "name",
+          "value": "error_log"
+        },
+        "options": {}
+      },
+      "id": "nl-read-errors",
+      "name": "Read System Health Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        608
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I253clwiMf9o1Oln",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst week = new Date().toISOString().substring(0,7);\nconst thisWeek = items.filter(i => i.json.week === week && i.json.status !== 'archived');\nreturn [{ json: { findings: thisWeek.map(i=>i.json), count: thisWeek.length, week } }];"
+      },
+      "id": "nl-agg-findings",
+      "name": "Aggregate Findings",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst cutoff = new Date(Date.now() - 7*24*60*60*1000).toISOString();\nconst recent = items.filter(i => i.json.timestamp >= cutoff);\nreturn [{ json: { errors: recent.map(i=>i.json), error_count: recent.length } }];"
+      },
+      "id": "nl-agg-errors",
+      "name": "Aggregate System Health",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        608
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "nl-merge",
+      "name": "Merge All Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        912,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const all = $input.all();\nconst findingsItem = all.find(i => i.json.findings !== undefined) || { json: { findings: [], count: 0, week: new Date().toISOString().substring(0,7) } };\nconst errorsItem = all.find(i => i.json.errors !== undefined) || { json: { errors: [], error_count: 0 } };\nreturn [{ json: { findings: findingsItem.json.findings, findings_count: findingsItem.json.count, week: findingsItem.json.week, errors: errorsItem.json.errors, error_count: errorsItem.json.error_count } }];"
+      },
+      "id": "nl-combine",
+      "name": "Combine Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $input.first().json;\nconst prompt = `You are a product intelligence analyst writing a weekly digest for a Director of Product at a CIAM company (Ping Identity).\\n\\nWeek: ${d.week}\\nFindings this week (${d.findings_count} total):\\n${JSON.stringify(d.findings.slice(0,20))}\\n\\nSystem health: ${d.error_count} errors this week.\\n\\nWrite a newsletter with these sections using markdown formatting:\\n\\n## BIGGEST MOVES THIS WEEK\\n2-3 bullets (use - prefix): Company \\u2014 what changed \\u2014 why it matters\\n\\n## RISKS\\nOnly confidence 4-5; skip section entirely if none.\\n\\n## OPPORTUNITIES\\nOnly confidence 4-5; skip section entirely if none.\\n\\n## ONE STRATEGIC THEME TO WATCH\\nOne paragraph.\\n\\n## RECOMMENDED ACTIONS\\n1-2 max, use - prefix for each.\\n\\n## SYSTEM HEALTH\\nOne line.\\n\\nRules: Plain English. No jargon. No padding. Max 600 words. If quiet week, say so. Label low-confidence items as [LOW CONFIDENCE]. Always use ## for section headers and - for bullet points.`;\nreturn [{ json: { ...d, prompt } }];"
+      },
+      "id": "nl-prep",
+      "name": "Prepare Newsletter Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 2048, messages: [{ role: 'user', content: $json.prompt }] }) }}",
+        "options": {}
+      },
+      "id": "nl-claude",
+      "name": "Call Claude API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1520,
+        512
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "P6dgBaH33wjoGxqb",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const apiResp = $input.first().json;\nconst data = $('Prepare Newsletter Prompt').first().json;\nconst newsletter = apiResp.content?.[0]?.text || 'Error: no content in API response';\nconst { prompt, ...rest } = data;\nreturn [{ json: { ...rest, newsletter_content: newsletter, generated_at: new Date().toISOString() } }];"
+      },
+      "id": "nl-build",
+      "name": "Build Newsletter Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1720,
+        512
+      ]
+    },
+    {
+      "id": "nl-format-html",
+      "name": "Format HTML Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        512
+      ],
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst content = data.newsletter_content || '';\n\nfunction parseMarkdown(text) {\n  const lines = text.split('\\n');\n  let html = '';\n  let inList = false;\n\n  for (const line of lines) {\n    if (inList && !line.startsWith('- ')) {\n      html += '</ul>';\n      inList = false;\n    }\n\n    if (line.startsWith('## ')) {\n      const title = line.substring(3).trim();\n      html += `<h2 style=\"color:#1a2744;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-left:4px solid #e85d04;padding-left:12px;margin:28px 0 10px 0;\">${title}</h2>`;\n    } else if (line.trim() === '---') {\n      html += '<hr style=\"border:none;border-top:1px solid #e5e7eb;margin:24px 0;\">';\n    } else if (line.startsWith('- ')) {\n      if (!inList) {\n        html += '<ul style=\"margin:8px 0 8px 0;padding-left:18px;\">';\n        inList = true;\n      }\n      const itemText = line.substring(2).replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');\n      html += `<li style=\"margin:6px 0;color:#374151;font-size:14px;line-height:1.65;\">${itemText}</li>`;\n    } else if (line.trim() === '') {\n      // skip blank lines\n    } else {\n      const paraText = line.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');\n      html += `<p style=\"color:#374151;font-size:14px;line-height:1.7;margin:8px 0;\">${paraText}</p>`;\n    }\n  }\n\n  if (inList) html += '</ul>';\n  return html;\n}\n\nconst bodyHtml = parseMarkdown(content);\n\nconst formattedDate = new Date(data.generated_at).toLocaleDateString('en-US', {\n  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'\n});\n\nconst [weekYear, weekMonth] = data.week.split('-');\nconst formattedWeek = new Date(parseInt(weekYear), parseInt(weekMonth) - 1).toLocaleString('en-US', { month: 'long' }) + ' ' + weekYear;\n\nconst newsletter_html = `<!DOCTYPE html>\\n<html>\\n<head>\\n  <meta charset=\"UTF-8\">\\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">\\n</head>\\n<body style=\"margin:0;padding:0;background-color:#f0f2f5;font-family:Arial,Helvetica,sans-serif;\">\\n  <div style=\"max-width:600px;margin:32px auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.10);\">\\n\\n    <div style=\"background:#1a2744;padding:28px 32px;\">\\n      <div style=\"color:#e85d04;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;\">PING IDENTITY</div>\\n      <div style=\"color:#ffffff;font-size:20px;font-weight:700;margin:0;\">Product Intelligence</div>\\n      <div style=\"color:#94a3b8;font-size:13px;margin-top:4px;\">Weekly Intel &mdash; ${formattedWeek}</div>\\n    </div>\\n\\n    <div style=\"padding:28px 32px 20px 32px;\">\\n      ${bodyHtml}\\n    </div>\\n\\n    <div style=\"background:#f8fafc;padding:16px 32px;border-top:1px solid #e5e7eb;\">\\n      <p style=\"color:#9ca3af;font-size:11px;margin:0;text-align:center;\">\\n        Generated by Product Intelligence OS &middot; ${formattedDate}\\n      </p>\\n    </div>\\n\\n  </div>\\n</body>\\n</html>`;\n\nreturn [{ json: { ...data, newsletter_html, week_label: formattedWeek } }];"
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/pages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ parent: { database_id: '33166d8d085080868aa6c15f11408488' }, properties: { Name: { title: [{ text: { content: 'Weekly Intel \\u2014 ' + $json.week } }] }, Week: { rich_text: [{ text: { content: $json.week } }] }, 'Findings Count': { number: $json.findings_count }, 'Generated At': { rich_text: [{ text: { content: $json.generated_at } }] } }, children: [$json.newsletter_content.substring(0,2000), $json.newsletter_content.substring(2000,4000), $json.newsletter_content.substring(4000,6000)].filter(s => s.length > 0).map(chunk => ({ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: chunk } }] } })) }) }}",
+        "options": {}
+      },
+      "id": "nl-notion",
+      "name": "Publish to Notion",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2120,
+        400
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "GuZ4XSOROaBU9UEH",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "sendTo": "giesselrazavi@gmail.com",
+        "subject": "={{ '\ud83d\udcca PI Weekly Intel \u2014 ' + $json.week_label }}",
+        "emailType": "html",
+        "message": "={{ $json.newsletter_html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "nl-gmail",
+      "name": "Send Gmail Newsletter",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2120,
+        624
+      ],
+      "webhookId": "5362cf6c-968f-46f2-881d-1b3d37a6d52b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "o3jIrLLFpJohrwnz",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "n1",
+              "name": "status",
+              "value": "success",
+              "type": "string"
+            },
+            {
+              "id": "n2",
+              "name": "workflow",
+              "value": "PI: Newsletter",
+              "type": "string"
+            },
+            {
+              "id": "n3",
+              "name": "completed_at",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "nl-done",
+      "name": "Return to Orchestrator",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2320,
+        512
+      ]
+    }
+  ],
+  "connections": {
+    "Called by Orchestrator": {
+      "main": [
+        [
+          {
+            "node": "Read This Week Findings",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read System Health Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read This Week Findings": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Findings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read System Health Data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate System Health",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Findings": {
+      "main": [
+        [
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate System Health": {
+      "main": [
+        [
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge All Data": {
+      "main": [
+        [
+          {
+            "node": "Combine Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Data": {
+      "main": [
+        [
+          {
+            "node": "Prepare Newsletter Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Newsletter Prompt": {
+      "main": [
+        [
+          {
+            "node": "Call Claude API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Claude API": {
+      "main": [
+        [
+          {
+            "node": "Build Newsletter Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Newsletter Output": {
+      "main": [
+        [
+          {
+            "node": "Format HTML Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format HTML Email": {
+      "main": [
+        [
+          {
+            "node": "Publish to Notion",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Gmail Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish to Notion": {
+      "main": [
+        [
+          {
+            "node": "Return to Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Gmail Newsletter": {
+      "main": [
+        [
+          {
+            "node": "Return to Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "yiv73Orxf8eRQ0sv",
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}
