@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-31T14:20:39.660Z",
+  "updatedAt": "2026-04-03T17:18:10.050Z",
   "createdAt": "2026-03-22T22:27:30.661Z",
   "id": "mY5wIkPWlolzcUbn",
   "name": "PI: Competitor Intelligence",
@@ -367,7 +367,7 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ parent: { database_id: '33166d8d085080d0b753ebe3e02098cb' }, properties: { Name: { title: [{ text: { content: ($json.competitor_id || '') + ' \u2014 Week ' + ($json.week || '') } }] }, Competitor: { rich_text: [{ text: { content: String($json.competitor_id || '') } }] }, Week: { rich_text: [{ text: { content: String($json.week || '') } }] }, Confidence: { number: Number($json.confidence_score) || 0 }, Direction: { rich_text: [{ text: { content: String($json.likely_direction || '').substring(0, 2000) } }] }, 'Recommended Action': { rich_text: [{ text: { content: String($json.recommended_action || '') } }] }, 'Review Flag': { checkbox: $json.review_flag === 'TRUE' } } }) }}",
+        "body": "={{ JSON.stringify({ parent: { database_id: '33166d8d085080d0b753ebe3e02098cb' }, properties: { Name: { title: [{ text: { content: ($json.competitor_id || '') + ' \u2014 Week ' + ($json.week || '') } }] }, Competitor: { rich_text: [{ text: { content: String($json.competitor_id || '') } }] }, Week: { rich_text: [{ text: { content: String($json.week || '') } }] }, Confidence: { number: Number($json.confidence_score) || 0 }, Direction: { rich_text: [{ text: { content: String($json.likely_direction || '').substring(0, 2000) } }] }, 'Recommended Action': { rich_text: [{ text: { content: String($json.recommended_action || '') } }] }, 'Review Flag': { checkbox: $json.review_flag === 'TRUE' }, 'Gap vs Ping': { rich_text: [{ text: { content: String($json.gap_vs_ping || '').substring(0, 2000) } }] }, 'Parity vs Ping': { rich_text: [{ text: { content: String($json.parity_vs_ping || '').substring(0, 2000) } }] }, 'Ping Advantage': { rich_text: [{ text: { content: String($json.ping_advantage || '').substring(0, 2000) } }] }, 'Review Flag Reason': { rich_text: [{ text: { content: String($json.review_flag_reason || '').substring(0, 2000) } }] } } }) }}",
         "options": {}
       },
       "credentials": {
@@ -539,9 +539,9 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "6c8afeaf-5c6c-4fc3-8443-399bf0e6d2ba",
-  "activeVersionId": "6c8afeaf-5c6c-4fc3-8443-399bf0e6d2ba",
-  "versionCounter": 73,
+  "versionId": "08e49753-9a0d-4c47-a297-ab84674be400",
+  "activeVersionId": "08e49753-9a0d-4c47-a297-ab84674be400",
+  "versionCounter": 76,
   "triggerCount": 0,
   "shared": [
     {
@@ -564,9 +564,9 @@
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-03-31T14:20:39.682Z",
-    "createdAt": "2026-03-31T14:20:39.682Z",
-    "versionId": "6c8afeaf-5c6c-4fc3-8443-399bf0e6d2ba",
+    "updatedAt": "2026-04-03T17:18:10.052Z",
+    "createdAt": "2026-04-03T17:18:10.052Z",
+    "versionId": "08e49753-9a0d-4c47-a297-ab84674be400",
     "workflowId": "mY5wIkPWlolzcUbn",
     "nodes": [
       {
@@ -929,7 +929,7 @@
           "sendBody": true,
           "contentType": "raw",
           "rawContentType": "application/json",
-          "body": "={{ JSON.stringify({ parent: { database_id: '33166d8d085080d0b753ebe3e02098cb' }, properties: { Name: { title: [{ text: { content: ($json.competitor_id || '') + ' \u2014 Week ' + ($json.week || '') } }] }, Competitor: { rich_text: [{ text: { content: String($json.competitor_id || '') } }] }, Week: { rich_text: [{ text: { content: String($json.week || '') } }] }, Confidence: { number: Number($json.confidence_score) || 0 }, Direction: { rich_text: [{ text: { content: String($json.likely_direction || '').substring(0, 2000) } }] }, 'Recommended Action': { rich_text: [{ text: { content: String($json.recommended_action || '') } }] }, 'Review Flag': { checkbox: $json.review_flag === 'TRUE' } } }) }}",
+          "body": "={{ JSON.stringify({ parent: { database_id: '33166d8d085080d0b753ebe3e02098cb' }, properties: { Name: { title: [{ text: { content: ($json.competitor_id || '') + ' \u2014 Week ' + ($json.week || '') } }] }, Competitor: { rich_text: [{ text: { content: String($json.competitor_id || '') } }] }, Week: { rich_text: [{ text: { content: String($json.week || '') } }] }, Confidence: { number: Number($json.confidence_score) || 0 }, Direction: { rich_text: [{ text: { content: String($json.likely_direction || '').substring(0, 2000) } }] }, 'Recommended Action': { rich_text: [{ text: { content: String($json.recommended_action || '') } }] }, 'Review Flag': { checkbox: $json.review_flag === 'TRUE' }, 'Gap vs Ping': { rich_text: [{ text: { content: String($json.gap_vs_ping || '').substring(0, 2000) } }] }, 'Parity vs Ping': { rich_text: [{ text: { content: String($json.parity_vs_ping || '').substring(0, 2000) } }] }, 'Ping Advantage': { rich_text: [{ text: { content: String($json.ping_advantage || '').substring(0, 2000) } }] }, 'Review Flag Reason': { rich_text: [{ text: { content: String($json.review_flag_reason || '').substring(0, 2000) } }] } } }) }}",
           "options": {}
         },
         "credentials": {
@@ -1097,18 +1097,18 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-31T14:20:39.858Z",
-        "id": 161,
+        "createdAt": "2026-04-03T17:18:10.104Z",
+        "id": 165,
         "workflowId": "mY5wIkPWlolzcUbn",
-        "versionId": "6c8afeaf-5c6c-4fc3-8443-399bf0e6d2ba",
+        "versionId": "08e49753-9a0d-4c47-a297-ab84674be400",
         "event": "activated",
         "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
       },
       {
-        "createdAt": "2026-03-31T14:20:39.840Z",
-        "id": 160,
+        "createdAt": "2026-04-03T17:18:10.093Z",
+        "id": 164,
         "workflowId": "mY5wIkPWlolzcUbn",
-        "versionId": "6c8afeaf-5c6c-4fc3-8443-399bf0e6d2ba",
+        "versionId": "08e49753-9a0d-4c47-a297-ab84674be400",
         "event": "deactivated",
         "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
       }
