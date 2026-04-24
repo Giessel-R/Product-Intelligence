@@ -1,8 +1,32 @@
 {
-  "updatedAt": "2026-03-29T22:36:25.581Z",
+  "updatedAt": "2026-04-24T14:16:52.729Z",
+  "createdAt": "2026-03-22T22:31:00.803Z",
   "id": "nzmwZmXRbb9vl5mk",
   "name": "PI: Master Orchestrator",
+  "description": null,
   "active": true,
+  "isArchived": false,
+  "versionId": "9da92e80-2baa-4a35-8b89-2eeb96164a8a",
+  "activeVersionId": "9da92e80-2baa-4a35-8b89-2eeb96164a8a",
+  "versionCounter": 70,
+  "triggerCount": 1,
+  "tags": [],
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "yiv73Orxf8eRQ0sv",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Daily Schedule 6:30 AM": {"recurrenceRules": []},
+    "node:Daily Schedule 7:00 AM": {"recurrenceRules": []},
+    "node:Daily Schedule 9:00 AM": {"recurrenceRules": []}
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
   "nodes": [
     {
       "parameters": {
@@ -10,19 +34,16 @@
           "interval": [
             {
               "field": "cronExpression",
-              "expression": "30 6 * * 1-5"
+              "expression": "0 9 * * 1-5"
             }
           ]
         }
       },
       "id": "orch-trigger",
-      "name": "Daily Schedule 6:30 AM",
+      "name": "Daily Schedule 9:00 AM",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
-      "position": [
-        240,
-        400
-      ]
+      "position": [240, 400]
     },
     {
       "parameters": {
@@ -32,10 +53,7 @@
       "name": "Initialize Run",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        464,
-        400
-      ]
+      "position": [464, 400]
     },
     {
       "parameters": {
@@ -54,7 +72,24 @@
           "mappingMode": "autoMapInputData",
           "value": {},
           "matchingColumns": [],
-          "schema": [],
+          "schema": [
+            {"id": "run_id", "displayName": "run_id", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "date", "displayName": "date", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "workflow_name", "displayName": "workflow_name", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "status", "displayName": "status", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "started_at", "displayName": "started_at", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "ended_at", "displayName": "ended_at", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "notes", "displayName": "notes", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "week", "displayName": "week", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "day_of_week", "displayName": "day_of_week", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "is_tue_thu", "displayName": "is_tue_thu", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "is_friday", "displayName": "is_friday", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "is_monday", "displayName": "is_monday", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "total_findings", "displayName": "total_findings", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "flagged_count", "displayName": "flagged_count", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "flagged_items", "displayName": "flagged_items", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "findings_to_archive", "displayName": "findings_to_archive", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false}
+          ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         },
@@ -64,10 +99,7 @@
       "name": "Log Run Start",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [
-        688,
-        400
-      ],
+      "position": [688, 400],
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "I253clwiMf9o1Oln",
@@ -82,6 +114,14 @@
           "value": "ppMzAEKShjv6L4EP",
           "mode": "id"
         },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
         "options": {
           "waitForSubWorkflow": true
         }
@@ -90,10 +130,7 @@
       "name": "Run Market Watch",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
-      "position": [
-        912,
-        400
-      ]
+      "position": [912, 400]
     },
     {
       "parameters": {
@@ -123,10 +160,7 @@
       "name": "If Monday?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [
-        1136,
-        400
-      ]
+      "position": [1136, 400]
     },
     {
       "parameters": {
@@ -134,6 +168,14 @@
           "__rl": true,
           "value": "63fbsmdUxNtnaFXG",
           "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
         },
         "options": {
           "waitForSubWorkflow": true
@@ -143,10 +185,7 @@
       "name": "Run Internal Product Specialist",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
-      "position": [
-        1360,
-        288
-      ],
+      "position": [1360, 288],
       "continueOnFail": true
     },
     {
@@ -157,10 +196,7 @@
       "name": "IPS Output Guard",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1584,
-        288
-      ]
+      "position": [1584, 288]
     },
     {
       "parameters": {
@@ -190,10 +226,7 @@
       "name": "If Tue or Thu?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [
-        1808,
-        400
-      ]
+      "position": [1808, 400]
     },
     {
       "parameters": {
@@ -201,6 +234,14 @@
           "__rl": true,
           "value": "mY5wIkPWlolzcUbn",
           "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
         },
         "options": {
           "waitForSubWorkflow": true
@@ -210,10 +251,7 @@
       "name": "Run Competitor Intelligence",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
-      "position": [
-        2032,
-        288
-      ],
+      "position": [2032, 288],
       "continueOnFail": true
     },
     {
@@ -224,19 +262,16 @@
       "name": "CI Output Guard",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        2256,
-        288
-      ]
+      "position": [2256, 288]
     },
     {
       "parameters": {
         "conditions": {
           "options": {
-            "version": 2,
-            "leftValue": "",
             "caseSensitive": true,
-            "typeValidation": "loose"
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
           },
           "conditions": [
             {
@@ -257,10 +292,7 @@
       "name": "If Friday?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [
-        2480,
-        400
-      ]
+      "position": [2480, 400]
     },
     {
       "parameters": {
@@ -277,10 +309,7 @@
       "name": "Run Newsletter",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
-      "position": [
-        2704,
-        288
-      ],
+      "position": [2704, 288],
       "continueOnFail": true
     },
     {
@@ -298,10 +327,7 @@
       "name": "Run Memory & Audit",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
-      "position": [
-        2928,
-        288
-      ],
+      "position": [2928, 288],
       "continueOnFail": true
     },
     {
@@ -312,10 +338,7 @@
       "name": "Prepare Log Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        3040,
-        400
-      ]
+      "position": [3088, 448]
     },
     {
       "parameters": {
@@ -346,10 +369,7 @@
       "name": "Log Run Complete",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [
-        3264,
-        400
-      ],
+      "position": [3264, 400],
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "I253clwiMf9o1Oln",
@@ -359,185 +379,56 @@
     }
   ],
   "connections": {
-    "Daily Schedule 6:30 AM": {
-      "main": [
-        [
-          {
-            "node": "Initialize Run",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Daily Schedule 9:00 AM": {
+      "main": [[{"node": "Initialize Run", "type": "main", "index": 0}]]
     },
     "Initialize Run": {
-      "main": [
-        [
-          {
-            "node": "Log Run Start",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Log Run Start", "type": "main", "index": 0}]]
     },
     "Log Run Start": {
-      "main": [
-        [
-          {
-            "node": "Run Market Watch",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Run Market Watch", "type": "main", "index": 0}]]
     },
     "Run Market Watch": {
-      "main": [
-        [
-          {
-            "node": "If Monday?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "If Monday?", "type": "main", "index": 0}]]
     },
     "If Monday?": {
       "main": [
-        [
-          {
-            "node": "Run Internal Product Specialist",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "If Tue or Thu?",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{"node": "Run Internal Product Specialist", "type": "main", "index": 0}],
+        [{"node": "If Tue or Thu?", "type": "main", "index": 0}]
       ]
     },
     "Run Internal Product Specialist": {
-      "main": [
-        [
-          {
-            "node": "IPS Output Guard",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "IPS Output Guard", "type": "main", "index": 0}]]
     },
     "IPS Output Guard": {
-      "main": [
-        [
-          {
-            "node": "If Tue or Thu?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "If Tue or Thu?", "type": "main", "index": 0}]]
     },
     "If Tue or Thu?": {
       "main": [
-        [
-          {
-            "node": "Run Competitor Intelligence",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "If Friday?",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{"node": "Run Competitor Intelligence", "type": "main", "index": 0}],
+        [{"node": "If Friday?", "type": "main", "index": 0}]
       ]
     },
     "Run Competitor Intelligence": {
-      "main": [
-        [
-          {
-            "node": "CI Output Guard",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "CI Output Guard", "type": "main", "index": 0}]]
     },
     "CI Output Guard": {
-      "main": [
-        [
-          {
-            "node": "If Friday?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "If Friday?", "type": "main", "index": 0}]]
     },
     "If Friday?": {
       "main": [
-        [
-          {
-            "node": "Run Newsletter",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Prepare Log Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{"node": "Run Newsletter", "type": "main", "index": 0}],
+        [{"node": "Prepare Log Data", "type": "main", "index": 0}]
       ]
     },
     "Run Newsletter": {
-      "main": [
-        [
-          {
-            "node": "Run Memory & Audit",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Run Memory & Audit", "type": "main", "index": 0}]]
     },
     "Run Memory & Audit": {
-      "main": [
-        [
-          {
-            "node": "Prepare Log Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Prepare Log Data", "type": "main", "index": 0}]]
     },
     "Prepare Log Data": {
-      "main": [
-        [
-          {
-            "node": "Log Run Complete",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Log Run Complete", "type": "main", "index": 0}]]
     }
-  },
-  "settings": {
-    "executionOrder": "v1",
-    "errorWorkflow": "yiv73Orxf8eRQ0sv",
-    "callerPolicy": "workflowsFromSameOwner"
   }
 }

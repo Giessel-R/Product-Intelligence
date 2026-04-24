@@ -1,11 +1,27 @@
 {
-  "updatedAt": "2026-03-28T21:09:18.643Z",
+  "updatedAt": "2026-04-17T21:21:41.390Z",
   "createdAt": "2026-03-22T22:15:33.152Z",
   "id": "yiv73Orxf8eRQ0sv",
   "name": "PI: Error Handler",
   "description": null,
   "active": true,
   "isArchived": false,
+  "versionId": "443a4a22-5ed0-4cfe-852e-0fb8b8faca8e",
+  "activeVersionId": "443a4a22-5ed0-4cfe-852e-0fb8b8faca8e",
+  "versionCounter": 28,
+  "triggerCount": 0,
+  "tags": [],
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
   "nodes": [
     {
       "parameters": {},
@@ -13,10 +29,7 @@
       "name": "Error Trigger",
       "type": "n8n-nodes-base.errorTrigger",
       "typeVersion": 1,
-      "position": [
-        240,
-        304
-      ]
+      "position": [240, 304]
     },
     {
       "parameters": {
@@ -26,10 +39,7 @@
       "name": "Build Error Record",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        464,
-        304
-      ]
+      "position": [464, 304]
     },
     {
       "parameters": {
@@ -62,10 +72,7 @@
       "name": "Log to error_log",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [
-        688,
-        304
-      ],
+      "position": [688, 304],
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "I253clwiMf9o1Oln",
@@ -79,7 +86,8 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "strict",
+            "version": 1
           },
           "conditions": [
             {
@@ -100,84 +108,66 @@
       "name": "Is Critical?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [
-        912,
-        304
-      ]
+      "position": [912, 304]
     },
     {
       "parameters": {
-        "sendTo": "giesselrazavi@gmail.com",
-        "subject": "={{ '\ud83d\udea8 PI System Alert: ' + $json.workflow_name + ' failed' }}",
-        "message": "={{ '<h2>Product Intelligence System Error</h2><p><strong>Workflow:</strong> ' + $json.workflow_name + '</p><p><strong>Node:</strong> ' + $json.node_name + '</p><p><strong>Error:</strong> ' + $json.error_message + '</p><p><strong>Time:</strong> ' + $json.timestamp + '</p><p><strong>Run ID:</strong> ' + $json.run_id + '</p><p>Check error_log in Google Sheets for details.</p>' }}",
+        "content": "Workflow 1- Error hander\nCatches errors from any other workflow and records them. If the failure is serious, it emails me immediately."
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [128, -144],
+      "typeVersion": 1,
+      "id": "609530d5-3177-4468-9a3e-01779af20c63",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ntfy.sh/pi-alerts-xk7r2m9q",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Title",
+              "value": "={{ '🚨 PI Alert: ' + $json.workflow_name + ' failed' }}"
+            },
+            {
+              "name": "Priority",
+              "value": "high"
+            },
+            {
+              "name": "Tags",
+              "value": "warning,robot"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/plain",
+        "body": "={{ 'Workflow: ' + $json.workflow_name + '\\nNode: ' + $json.node_name + '\\nError: ' + $json.error_message + '\\nTime: ' + $json.timestamp + '\\nRun ID: ' + $json.run_id }}",
         "options": {}
       },
-      "id": "send-alert",
-      "name": "Send Gmail Alert",
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        1120,
-        208
-      ],
-      "webhookId": "f9667e30-dc40-4881-b7e2-42a7f133a07a",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "o3jIrLLFpJohrwnz",
-          "name": "Gmail account"
-        }
-      }
+      "id": "send-ntfy-alert",
+      "name": "Send ntfy Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 208]
     }
   ],
   "connections": {
     "Error Trigger": {
-      "main": [
-        [
-          {
-            "node": "Build Error Record",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Build Error Record", "type": "main", "index": 0}]]
     },
     "Build Error Record": {
-      "main": [
-        [
-          {
-            "node": "Log to error_log",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Log to error_log", "type": "main", "index": 0}]]
     },
     "Log to error_log": {
-      "main": [
-        [
-          {
-            "node": "Is Critical?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Is Critical?", "type": "main", "index": 0}]]
     },
     "Is Critical?": {
       "main": [
-        [
-          {
-            "node": "Send Gmail Alert",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        []
+        [{"node": "Send ntfy Alert", "type": "main", "index": 0}]
       ]
     }
-  },
-  "settings": {
-    "executionOrder": "v1",
-    "callerPolicy": "workflowsFromSameOwner"
   }
 }

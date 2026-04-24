@@ -1,8 +1,26 @@
 {
-  "updatedAt": "2026-03-30T03:24:41.895Z",
+  "updatedAt": "2026-04-12T18:58:41.502Z",
+  "createdAt": "2026-03-22T22:28:47.862Z",
   "id": "mi4bUBXbiA1y5L8h",
   "name": "PI: Newsletter",
+  "description": null,
   "active": true,
+  "isArchived": false,
+  "versionId": "f3e3836c-3848-49e1-8c7a-678b0c0cf813",
+  "activeVersionId": "f3e3836c-3848-49e1-8c7a-678b0c0cf813",
+  "versionCounter": 74,
+  "triggerCount": 0,
+  "tags": [],
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "yiv73Orxf8eRQ0sv",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
   "nodes": [
     {
       "parameters": {
@@ -12,10 +30,7 @@
       "name": "Called by Orchestrator",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
-      "position": [
-        240,
-        400
-      ]
+      "position": [240, 400]
     },
     {
       "parameters": {
@@ -33,10 +48,7 @@
       "name": "Read This Week Findings",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [
-        464,
-        400
-      ],
+      "position": [464, 400],
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "I253clwiMf9o1Oln",
@@ -60,10 +72,7 @@
       "name": "Read System Health Data",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [
-        464,
-        608
-      ],
+      "position": [464, 608],
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "I253clwiMf9o1Oln",
@@ -73,16 +82,13 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst week = new Date().toISOString().substring(0,7);\nconst thisWeek = items.filter(i => i.json.week === week && i.json.status !== 'archived');\nreturn [{ json: { findings: thisWeek.map(i=>i.json), count: thisWeek.length, week } }];"
+        "jsCode": "const items = $input.all();\nconst week = new Date().toISOString().substring(0,7);\nconst cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();\nconst thisWeek = items.filter(i => i.json.created_at >= cutoff && i.json.status !== 'archived');\nreturn [{ json: { findings: thisWeek.map(i=>i.json), count: thisWeek.length, week } }];"
       },
       "id": "nl-agg-findings",
       "name": "Aggregate Findings",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        688,
-        400
-      ]
+      "position": [688, 400]
     },
     {
       "parameters": {
@@ -92,10 +98,7 @@
       "name": "Aggregate System Health",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        688,
-        608
-      ]
+      "position": [688, 608]
     },
     {
       "parameters": {},
@@ -103,10 +106,7 @@
       "name": "Merge All Data",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        912,
-        512
-      ]
+      "position": [912, 512]
     },
     {
       "parameters": {
@@ -116,23 +116,17 @@
       "name": "Combine Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1120,
-        512
-      ]
+      "position": [1120, 512]
     },
     {
       "parameters": {
-        "jsCode": "const d = $input.first().json;\nconst prompt = `You are a product intelligence analyst writing a weekly digest for a Director of Product at a CIAM company (Ping Identity).\\n\\nWeek: ${d.week}\\nFindings this week (${d.findings_count} total):\\n${JSON.stringify(d.findings.slice(0,20))}\\n\\nSystem health: ${d.error_count} errors this week.\\n\\nWrite a newsletter with these sections using markdown formatting:\\n\\n## BIGGEST MOVES THIS WEEK\\n2-3 bullets (use - prefix): Company \\u2014 what changed \\u2014 why it matters\\n\\n## RISKS\\nOnly confidence 4-5; skip section entirely if none.\\n\\n## OPPORTUNITIES\\nOnly confidence 4-5; skip section entirely if none.\\n\\n## ONE STRATEGIC THEME TO WATCH\\nOne paragraph.\\n\\n## RECOMMENDED ACTIONS\\n1-2 max, use - prefix for each.\\n\\n## SYSTEM HEALTH\\nOne line.\\n\\nRules: Plain English. No jargon. No padding. Max 600 words. If quiet week, say so. Label low-confidence items as [LOW CONFIDENCE]. Always use ## for section headers and - for bullet points.`;\nreturn [{ json: { ...d, prompt } }];"
+        "jsCode": "const d = $input.first().json;\n\nconst findingsJson = JSON.stringify(d.findings.slice(0, 20), null, 2);\n\nconst prompt = [\n  'You are a product intelligence analyst writing a weekly digest for a Director of Product at Ping Identity.',\n  'Your reader is a senior PM — they know CIAM, read this fast, and are frustrated when recycled standing observations are framed as new weekly news.',\n  '',\n  'Week: ' + d.week,\n  'Findings this week (' + d.findings_count + ' total):',\n  findingsJson,\n  '',\n  'System health: ' + d.error_count + ' errors this week.',\n  '',\n  '---',\n  '',\n  'STEP 1 — EVALUATE NOVELTY BEFORE WRITING ANYTHING',\n  '',\n  'For each finding, inspect the \"what_changed\" field and the evidence. A finding is NOVEL only if at least one of these is true this week:',\n  '- New source URL not previously seen',\n  '- Page content changed with a meaningful delta (new feature, new version, new release note entry)',\n  '- New changelog or release note entry published this week',\n  '- New capability evidence not previously documented',\n  '- Interpretation or confidence materially changed',\n  '',\n  'If none are true → it is a STANDING OBSERVATION. Do not place it in NEW THIS WEEK.',\n  '',\n  'REPEAT SUPPRESSION: If the same conclusion appeared in a prior newsletter (e.g. \"Okta has MCP release notes\", \"Okta Sign-In Widget covers multiple frameworks\") and nothing material changed this week, do NOT restate it as a new move. Put it in Ongoing Watch instead.',\n  '',\n  '---',\n  '',\n  'STEP 2 — WRITE THE NEWSLETTER USING THIS EXACT STRUCTURE:',\n  '',\n  '## NEW THIS WEEK',\n  'Only genuinely novel findings. For each item you must explicitly answer:',\n  '- [Company] — [specific product or capability] — What changed this week: [one sentence]. Why newly important this week: [one sentence]. Competitive implication for Ping: [gap / parity / advantage].',\n  '  Sources: [label](url)',\n  '',\n  'If you cannot answer \"what changed this week\" in one clear sentence for an item, it does NOT belong here.',\n  'If nothing is genuinely new, write exactly: Nothing material changed this week — see Ongoing Watch below.',\n  '',\n  '## ONGOING WATCH',\n  'Standing observations that remain strategically important but had no new movement this week. 1–2 bullets max.',\n  'These are signals to monitor, not this week\\'s news. No Sources lines here.',\n  '',\n  '## RECOMMENDED ACTIONS',\n  '1–2 max. Only include if tied to a finding in NEW THIS WEEK. Omit this section entirely if nothing is new.',\n  '',\n  '## SYSTEM HEALTH',\n  'One line.',\n  '',\n  '---',\n  '',\n  'RULES',\n  '- A short honest newsletter beats a padded stale one. Quiet week = say so directly.',\n  '- Never put an item in NEW THIS WEEK without explicitly stating what changed and why it matters now.',\n  '- Name the specific product or capability — no vague phrases.',\n  '- Do not use internal vocabulary: no production_mature, confidence_score, evidence_summary, review_flag.',\n  '- Label low-confidence items [LOW CONFIDENCE].',\n  '- Max 500 words.',\n  '- Always use ## for section headers and - for bullet points.'\n].join('\\n');\n\nreturn [{ json: { ...d, prompt } }];"
       },
       "id": "nl-prep",
       "name": "Prepare Newsletter Prompt",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1320,
-        512
-      ]
+      "position": [1320, 512]
     },
     {
       "parameters": {
@@ -163,10 +157,7 @@
       "name": "Call Claude API",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [
-        1520,
-        512
-      ],
+      "position": [1520, 512],
       "credentials": {
         "httpHeaderAuth": {
           "id": "P6dgBaH33wjoGxqb",
@@ -182,22 +173,16 @@
       "name": "Build Newsletter Output",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1720,
-        512
-      ]
+      "position": [1720, 512]
     },
     {
       "id": "nl-format-html",
       "name": "Format HTML Email",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1920,
-        512
-      ],
+      "position": [1920, 512],
       "parameters": {
-        "jsCode": "const data = $input.first().json;\nconst content = data.newsletter_content || '';\n\nfunction parseMarkdown(text) {\n  const lines = text.split('\\n');\n  let html = '';\n  let inList = false;\n\n  for (const line of lines) {\n    if (inList && !line.startsWith('- ')) {\n      html += '</ul>';\n      inList = false;\n    }\n\n    if (line.startsWith('## ')) {\n      const title = line.substring(3).trim();\n      html += `<h2 style=\"color:#1a2744;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-left:4px solid #e85d04;padding-left:12px;margin:28px 0 10px 0;\">${title}</h2>`;\n    } else if (line.trim() === '---') {\n      html += '<hr style=\"border:none;border-top:1px solid #e5e7eb;margin:24px 0;\">';\n    } else if (line.startsWith('- ')) {\n      if (!inList) {\n        html += '<ul style=\"margin:8px 0 8px 0;padding-left:18px;\">';\n        inList = true;\n      }\n      const itemText = line.substring(2).replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');\n      html += `<li style=\"margin:6px 0;color:#374151;font-size:14px;line-height:1.65;\">${itemText}</li>`;\n    } else if (line.trim() === '') {\n      // skip blank lines\n    } else {\n      const paraText = line.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');\n      html += `<p style=\"color:#374151;font-size:14px;line-height:1.7;margin:8px 0;\">${paraText}</p>`;\n    }\n  }\n\n  if (inList) html += '</ul>';\n  return html;\n}\n\nconst bodyHtml = parseMarkdown(content);\n\nconst formattedDate = new Date(data.generated_at).toLocaleDateString('en-US', {\n  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'\n});\n\nconst [weekYear, weekMonth] = data.week.split('-');\nconst formattedWeek = new Date(parseInt(weekYear), parseInt(weekMonth) - 1).toLocaleString('en-US', { month: 'long' }) + ' ' + weekYear;\n\nconst newsletter_html = `<!DOCTYPE html>\\n<html>\\n<head>\\n  <meta charset=\"UTF-8\">\\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">\\n</head>\\n<body style=\"margin:0;padding:0;background-color:#f0f2f5;font-family:Arial,Helvetica,sans-serif;\">\\n  <div style=\"max-width:600px;margin:32px auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.10);\">\\n\\n    <div style=\"background:#1a2744;padding:28px 32px;\">\\n      <div style=\"color:#e85d04;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;\">PING IDENTITY</div>\\n      <div style=\"color:#ffffff;font-size:20px;font-weight:700;margin:0;\">Product Intelligence</div>\\n      <div style=\"color:#94a3b8;font-size:13px;margin-top:4px;\">Weekly Intel &mdash; ${formattedWeek}</div>\\n    </div>\\n\\n    <div style=\"padding:28px 32px 20px 32px;\">\\n      ${bodyHtml}\\n    </div>\\n\\n    <div style=\"background:#f8fafc;padding:16px 32px;border-top:1px solid #e5e7eb;\">\\n      <p style=\"color:#9ca3af;font-size:11px;margin:0;text-align:center;\">\\n        Generated by Product Intelligence OS &middot; ${formattedDate}\\n      </p>\\n    </div>\\n\\n  </div>\\n</body>\\n</html>`;\n\nreturn [{ json: { ...data, newsletter_html, week_label: formattedWeek } }];"
+        "jsCode": "const data = $input.first().json;\nconst content = data.newsletter_content || '';\n\nfunction parseMarkdown(text) {\n  const lines = text.split('\\n');\n  let html = '';\n  let inList = false;\n\n  for (const line of lines) {\n    if (inList && !line.startsWith('- ') && !line.match(/^\\s+Sources:/)) {\n      html += '</ul>';\n      inList = false;\n    }\n\n    if (line.startsWith('## ')) {\n      const title = line.substring(3).trim();\n      html += `<h2 style=\"color:#1a2744;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-left:4px solid #e85d04;padding-left:12px;margin:28px 0 10px 0;\">${title}</h2>`;\n    } else if (line.trim() === '---') {\n      html += '<hr style=\"border:none;border-top:1px solid #e5e7eb;margin:24px 0;\">';\n    } else if (line.match(/^\\s*Sources:/)) {\n      const sourcesContent = line.replace(/^\\s*Sources:\\s*/, '');\n      const withLinks = sourcesContent.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href=\"$2\" style=\"color:#e85d04;text-decoration:none;\">$1</a>');\n      html += `<p style=\"color:#9ca3af;font-size:12px;margin:2px 0 10px 18px;\">Sources: ${withLinks}</p>`;\n    } else if (line.startsWith('- ')) {\n      if (!inList) {\n        html += '<ul style=\"margin:8px 0 8px 0;padding-left:18px;\">';\n        inList = true;\n      }\n      const itemText = line.substring(2)\n        .replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>')\n        .replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href=\"$2\" style=\"color:#e85d04;text-decoration:none;\">$1</a>');\n      html += `<li style=\"margin:6px 0;color:#374151;font-size:14px;line-height:1.65;\">${itemText}</li>`;\n    } else if (line.trim() === '') {\n      if (inList) { html += '</ul>'; inList = false; }\n    } else {\n      const paraText = line\n        .replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>')\n        .replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href=\"$2\" style=\"color:#e85d04;text-decoration:none;\">$1</a>');\n      html += `<p style=\"color:#374151;font-size:14px;line-height:1.7;margin:8px 0;\">${paraText}</p>`;\n    }\n  }\n\n  if (inList) html += '</ul>';\n  return html;\n}\n\nconst bodyHtml = parseMarkdown(content);\n\nconst formattedDate = new Date(data.generated_at).toLocaleDateString('en-US', {\n  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'\n});\n\nconst now = new Date();\nconst dayOfWeek = now.getDay();\nconst monday = new Date(now);\nmonday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));\nconst friday = new Date(monday);\nfriday.setDate(monday.getDate() + 4);\nconst monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];\nconst startMonth = monthNames[monday.getMonth()];\nconst endMonth = monthNames[friday.getMonth()];\nconst formattedWeek = monday.getMonth() === friday.getMonth()\n  ? `${startMonth} ${monday.getDate()}\\u2013${friday.getDate()}, ${friday.getFullYear()}`\n  : `${startMonth} ${monday.getDate()} \\u2013 ${endMonth} ${friday.getDate()}, ${friday.getFullYear()}`;\n\nconst newsletter_html = `<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">\n</head>\n<body style=\"margin:0;padding:0;background-color:#f0f2f5;font-family:Arial,Helvetica,sans-serif;\">\n  <div style=\"max-width:600px;margin:32px auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.10);\">\n\n    <div style=\"background:#1a2744;padding:28px 32px;\">\n      <div style=\"color:#e85d04;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;\">PING IDENTITY</div>\n      <div style=\"color:#ffffff;font-size:20px;font-weight:700;margin:0;\">Product Intelligence</div>\n      <div style=\"color:#94a3b8;font-size:13px;margin-top:4px;\">Weekly Intel &mdash; ${formattedWeek}</div>\n    </div>\n\n    <div style=\"padding:28px 32px 20px 32px;\">\n      ${bodyHtml}\n    </div>\n\n    <div style=\"background:#f8fafc;padding:16px 32px;border-top:1px solid #e5e7eb;\">\n      <p style=\"color:#9ca3af;font-size:11px;margin:0;text-align:center;\">\n        Generated by Product Intelligence OS &middot; ${formattedDate}\n      </p>\n    </div>\n\n  </div>\n</body>\n</html>`;\n\nreturn [{ json: { ...data, newsletter_html, week_label: formattedWeek } }];"
       }
     },
     {
@@ -209,17 +194,14 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ parent: { database_id: '33166d8d085080868aa6c15f11408488' }, properties: { Name: { title: [{ text: { content: 'Weekly Intel \\u2014 ' + $json.week } }] }, Week: { rich_text: [{ text: { content: $json.week } }] }, 'Findings Count': { number: $json.findings_count }, 'Generated At': { rich_text: [{ text: { content: $json.generated_at } }] } }, children: [$json.newsletter_content.substring(0,2000), $json.newsletter_content.substring(2000,4000), $json.newsletter_content.substring(4000,6000)].filter(s => s.length > 0).map(chunk => ({ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: chunk } }] } })) }) }}",
+        "body": "={{ JSON.stringify({ parent: { database_id: '33166d8d085080868aa6c15f11408488' }, properties: { Name: { title: [{ text: { content: 'Weekly Intel \\u2014 ' + $json.week_label } }] }, Week: { rich_text: [{ text: { content: $json.week } }] }, 'Findings Count': { number: $json.findings_count }, 'Generated At': { rich_text: [{ text: { content: $json.generated_at } }] } }, children: [$json.newsletter_content.substring(0,2000), $json.newsletter_content.substring(2000,4000), $json.newsletter_content.substring(4000,6000)].filter(s => s.length > 0).map(chunk => ({ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: chunk } }] } })) }) }}",
         "options": {}
       },
       "id": "nl-notion",
       "name": "Publish to Notion",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [
-        2120,
-        400
-      ],
+      "position": [2120, 400],
       "credentials": {
         "notionApi": {
           "id": "GuZ4XSOROaBU9UEH",
@@ -231,7 +213,7 @@
       "parameters": {
         "operation": "send",
         "sendTo": "giesselrazavi@gmail.com",
-        "subject": "={{ '\ud83d\udcca PI Weekly Intel \u2014 ' + $json.week_label }}",
+        "subject": "={{ '📊 PI Weekly Intel — ' + $json.week_label }}",
         "emailType": "html",
         "message": "={{ $json.newsletter_html }}",
         "options": {
@@ -242,10 +224,7 @@
       "name": "Send Gmail Newsletter",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
-      "position": [
-        2120,
-        624
-      ],
+      "position": [2120, 624],
       "webhookId": "5362cf6c-968f-46f2-881d-1b3d37a6d52b",
       "credentials": {
         "gmailOAuth2": {
@@ -284,170 +263,58 @@
       "name": "Return to Orchestrator",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        2320,
-        512
-      ]
+      "position": [2320, 512]
     }
   ],
   "connections": {
     "Called by Orchestrator": {
       "main": [
         [
-          {
-            "node": "Read This Week Findings",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Read System Health Data",
-            "type": "main",
-            "index": 0
-          }
+          {"node": "Read This Week Findings", "type": "main", "index": 0},
+          {"node": "Read System Health Data", "type": "main", "index": 0}
         ]
       ]
     },
     "Read This Week Findings": {
-      "main": [
-        [
-          {
-            "node": "Aggregate Findings",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Aggregate Findings", "type": "main", "index": 0}]]
     },
     "Read System Health Data": {
-      "main": [
-        [
-          {
-            "node": "Aggregate System Health",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Aggregate System Health", "type": "main", "index": 0}]]
     },
     "Aggregate Findings": {
-      "main": [
-        [
-          {
-            "node": "Merge All Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Merge All Data", "type": "main", "index": 0}]]
     },
     "Aggregate System Health": {
-      "main": [
-        [
-          {
-            "node": "Merge All Data",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
+      "main": [[{"node": "Merge All Data", "type": "main", "index": 1}]]
     },
     "Merge All Data": {
-      "main": [
-        [
-          {
-            "node": "Combine Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Combine Data", "type": "main", "index": 0}]]
     },
     "Combine Data": {
-      "main": [
-        [
-          {
-            "node": "Prepare Newsletter Prompt",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Prepare Newsletter Prompt", "type": "main", "index": 0}]]
     },
     "Prepare Newsletter Prompt": {
-      "main": [
-        [
-          {
-            "node": "Call Claude API",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Call Claude API", "type": "main", "index": 0}]]
     },
     "Call Claude API": {
-      "main": [
-        [
-          {
-            "node": "Build Newsletter Output",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Build Newsletter Output", "type": "main", "index": 0}]]
     },
     "Build Newsletter Output": {
-      "main": [
-        [
-          {
-            "node": "Format HTML Email",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Format HTML Email", "type": "main", "index": 0}]]
     },
     "Format HTML Email": {
       "main": [
         [
-          {
-            "node": "Publish to Notion",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Send Gmail Newsletter",
-            "type": "main",
-            "index": 0
-          }
+          {"node": "Publish to Notion", "type": "main", "index": 0},
+          {"node": "Send Gmail Newsletter", "type": "main", "index": 0}
         ]
       ]
     },
     "Publish to Notion": {
-      "main": [
-        [
-          {
-            "node": "Return to Orchestrator",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Return to Orchestrator", "type": "main", "index": 0}]]
     },
     "Send Gmail Newsletter": {
-      "main": [
-        [
-          {
-            "node": "Return to Orchestrator",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Return to Orchestrator", "type": "main", "index": 0}]]
     }
-  },
-  "settings": {
-    "executionOrder": "v1",
-    "errorWorkflow": "yiv73Orxf8eRQ0sv",
-    "callerPolicy": "workflowsFromSameOwner"
   }
 }
