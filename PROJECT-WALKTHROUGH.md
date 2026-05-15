@@ -38,7 +38,7 @@ _Last updated: 2026-05-12_
 ### The Problem
 
 As a Director of Product at Ping Identity (a company that makes identity and authentication software), you need to know what your competitors are doing. Specifically:
-- What features are Okta and Auth0 shipping?
+- What features are competitors shipping?
 - Are they building things that Ping doesn't have?
 - Are there product gaps you should be worried about?
 - Is there anything strategically important happening this week?
@@ -57,7 +57,7 @@ You don't have to visit any websites. You don't have to read any changelogs. The
 
 ### The Scope Right Now
 
-Phase 1 covers **Okta** and **Auth0** only, the two most important competitors. The design can expand to 10 companies later just by adding rows to a spreadsheet.
+Phase 1 covers **Competitor A** and **Competitor B** only, the two most important competitors. The design can expand to 10 companies later just by adding rows to a spreadsheet.
 
 ---
 
@@ -161,15 +161,15 @@ All data lives in one Google Sheets workbook. Think of each tab as a database ta
 **Workbook ID:** `YOUR_GOOGLE_SHEETS_ID`
 
 ### Tab 1: `config` (The Watch List)
-The list of every competitor URL to monitor. One row per URL. Currently **114 rows** covering Okta and Auth0 across release notes, docs, developer portals, changelogs, blogs, and key GitHub repos.
+The list of every competitor URL to monitor. One row per URL. Currently **114 rows** covering competitors across release notes, docs, developer portals, changelogs, blogs, and key GitHub repos.
 
 ```
 competitor_id | name  | tier    | source_type   | URL
-okta          | Okta  | primary | docs          | https://developer.okta.com/docs/release-notes/2026/
-okta          | Okta  | primary | release-notes | https://developer.okta.com/docs/release-notes/2026-okta-mcp-server/
-okta          | Okta  | primary | github        | https://github.com/okta/okta-signin-widget
-auth0         | Auth0 | primary | developer     | https://developer.auth0.com/
-auth0         | Auth0 | primary | changelog     | https://auth0.com/changelog
+competitor_a          | Competitor A  | primary | docs          | https://developer.competitor_a.com/docs/release-notes/2026/
+competitor_a          | Competitor A  | primary | release-notes | https://developer.competitor_a.com/docs/release-notes/2026-competitor_a-mcp-server/
+competitor_a          | Competitor A  | primary | github        | https://github.com/competitor_a/competitor_a-signin-widget
+competitor_b         | Competitor B | primary | developer     | https://developer.competitor_b.com/
+competitor_b         | Competitor B | primary | changelog     | https://competitor_b.com/changelog
 ```
 
 Valid source types: `website`, `docs`, `blog`, `github`, `changelog`, `release-notes`, `developer`. Any other value is silently ignored by Market Watch.
@@ -181,7 +181,7 @@ Stores the last-known "fingerprint" (hash) of each competitor page. When Market 
 
 ```
 competitor_id | source_type | source_url         | last_hash | last_checked | last_changed
-okta          | docs        | https://help.ok... | a3f9b2... | 2026-03-31   | 2026-03-30
+competitor_a          | docs        | https://help.ok... | a3f9b2... | 2026-03-31   | 2026-03-30
 ```
 
 ### Tab 3: `evidence_log` (Raw Findings)
@@ -337,7 +337,7 @@ Before sending anything to Claude, the system scores how relevant the changed pa
 
 **How it works in plain English:**
 
-This is the "know yourself" part of the system. Before the system can say "Okta has X that Ping doesn't have," it needs to actually know what Ping has.
+This is the "know yourself" part of the system. Before the system can say "Competitor A has X that Ping doesn't have," it needs to actually know what Ping has.
 
 This workflow reads from the `source_registry` tab in Google Sheets, which currently holds 120 active sources: Ping's developer portal, SDK documentation, release notes, GitHub repositories, and developer docs. Not all 120 run every Monday. Sources are staggered by priority so the run stays fast and the API stays within limits (P1 runs weekly, P2 every other week, P3 monthly). For each source, it sends the content to Claude Sonnet and asks: "What capabilities does this document? Be specific. Only include things that are clearly supported, not things that just exist as code."
 
@@ -392,7 +392,7 @@ The only time an empty sheet on a Monday signals a problem is if the workflow fi
 
 Market Watch is the reporter who notices what changed. Competitor Intelligence is the analyst who figures out what it means.
 
-It reads the raw `evidence_log` entries from the last 3 days. It processes each evidence item individually. For each item, it reads Ping's capability map and asks Claude: "Given what Okta just changed, and given what Ping has, what does this mean? Is this a gap? Is this parity? Should we watch this, validate it, or draft a brief about it?"
+It reads the raw `evidence_log` entries from the last 3 days. It processes each evidence item individually. For each item, it reads Ping's capability map and asks Claude: "Given what Competitor A just changed, and given what Ping has, what does this mean? Is this a gap? Is this parity? Should we watch this, validate it, or draft a brief about it?"
 
 **One finding per evidence item.** Each piece of evidence becomes its own row in `structured_findings` and its own card in Notion, tagged with the competitor, the strategic lane, and the week. This makes it easy to see exactly which individual finding drove which conclusion.
 
@@ -659,7 +659,7 @@ Sonnet is the smarter, more expensive model. It is used for tasks requiring nuan
 ```json
 {
   "gap_vs_ping": "possible gap. Ping's AI_AGENT_IDENTITY production_mature claims are backed only by press_release source",
-  "parity_vs_ping": "possible parity, requires validation. Both vendors show production-tier offerings but Ping's evidence is press_release-only while Okta's is release_notes",
+  "parity_vs_ping": "possible parity, requires validation. Both vendors show production-tier offerings but Ping's evidence is press_release-only while Competitor A's is release_notes",
   "recommended_action": "Validate",
   "confidence_score": 3,
   "review_flag": true
@@ -688,12 +688,12 @@ Every finding, whether from Market Watch or Competitor Intelligence, must be ass
 
 | Lane | What It Covers | Example Signal |
 |---|---|---|
-| `IDENTITY_EXPERIENCE` | Login UX, hosted pages, branding, account flows | "Okta redesigned their login widget with new customization options" |
-| `DEVELOPER_PLATFORM` | SDKs, developer tools, documentation, DX | "Auth0 released a new JavaScript SDK with MFA built in" |
-| `AI_AGENT_IDENTITY` | AI agent authorization, MCP protocol, machine-to-machine identity | "Okta announced MCP Server support for AI agent authentication" |
-| `UI_ARCHITECTURE` | Design systems, composable UI, headless patterns | "Auth0 released a component library for their hosted pages" |
-| `DESIGN_WORKFLOWS` | Figma tools, design-to-code, mockup generators | "Okta published a Figma design system for their identity components" |
-| `STRATEGIC_SIGNALS` | Pricing, launches, acquisitions, hiring | "Auth0 quietly changed their pricing page. Free tier limits reduced." |
+| `IDENTITY_EXPERIENCE` | Login UX, hosted pages, branding, account flows | "Competitor A redesigned their login widget with new customization options" |
+| `DEVELOPER_PLATFORM` | SDKs, developer tools, documentation, DX | "Competitor B released a new JavaScript SDK with MFA built in" |
+| `AI_AGENT_IDENTITY` | AI agent authorization, MCP protocol, machine-to-machine identity | "Competitor A announced MCP Server support for AI agent authentication" |
+| `UI_ARCHITECTURE` | Design systems, composable UI, headless patterns | "Competitor B released a component library for their hosted pages" |
+| `DESIGN_WORKFLOWS` | Figma tools, design-to-code, mockup generators | "Competitor A published a Figma design system for their identity components" |
+| `STRATEGIC_SIGNALS` | Pricing, launches, acquisitions, hiring | "Competitor B quietly changed their pricing page. Free tier limits reduced." |
 
 ---
 
@@ -891,11 +891,11 @@ When the system expands to 10 competitors: still under $40/month.
 
 ### Deferred competitor URLs to add
 Five URLs were intentionally left out of the initial 114-row config load. Add them when ready:
-- `github.com/okta/okta-auth-js` (root and CHANGELOG)
-- `github.com/auth0/auth0-react` (root and CHANGELOG)
-- `github.com/okta/okta-signin-widget` (CHANGELOG only)
-- `github.com/okta/okta-mobile-swift` (CHANGELOG only)
-- `auth0.com/docs/quickstart/webapp/nextjs`
+- `github.com/competitor_a/competitor_a-auth-js` (root and CHANGELOG)
+- `github.com/competitor_b/competitor_b-react` (root and CHANGELOG)
+- `github.com/competitor_a/competitor_a-signin-widget` (CHANGELOG only)
+- `github.com/competitor_a/competitor_a-mobile-swift` (CHANGELOG only)
+- `competitor_b.com/docs/quickstart/webapp/nextjs`
 
 ### Phase 2: Expand to more competitors
 Adding a new competitor is just adding rows to the `config` tab. No code changes needed. Candidates: Transmit Security, CyberArk, Frontegg, Descope, Microsoft Entra.
