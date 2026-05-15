@@ -1,27 +1,9 @@
 {
-  "updatedAt": "2026-04-17T21:21:41.390Z",
+  "updatedAt": "2026-05-15T23:07:20.440Z",
   "createdAt": "2026-03-22T22:15:33.152Z",
   "id": "yiv73Orxf8eRQ0sv",
   "name": "PI: Error Handler",
-  "description": null,
   "active": true,
-  "isArchived": false,
-  "versionId": "443a4a22-5ed0-4cfe-852e-0fb8b8faca8e",
-  "activeVersionId": "443a4a22-5ed0-4cfe-852e-0fb8b8faca8e",
-  "versionCounter": 28,
-  "triggerCount": 0,
-  "tags": [],
-  "settings": {
-    "executionOrder": "v1",
-    "callerPolicy": "workflowsFromSameOwner",
-    "availableInMCP": false,
-    "binaryMode": "separate"
-  },
-  "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {},
   "nodes": [
     {
       "parameters": {},
@@ -33,7 +15,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const errorData = $input.first().json;\n\nconst workflowName = errorData.workflow?.name || 'unknown';\nconst nodeName = errorData.execution?.lastNodeExecuted || 'unknown';\nconst errorMessage = errorData.error?.message || 'unknown error';\nconst errorStack = errorData.error?.stack || '';\nconst executionId = errorData.execution?.id || '';\nconst runId = errorData.execution?.customData?.runId || '';\n\n// Determine severity\nconst criticalWorkflows = ['PI: Master Orchestrator', 'PI: Newsletter', 'PI: Error Handler'];\nconst isCritical = criticalWorkflows.includes(workflowName);\n\nconst errorRecord = {\n  id: `ERR-${Date.now()}`,\n  timestamp: new Date().toISOString(),\n  run_id: runId || executionId,\n  workflow_name: workflowName,\n  node_name: nodeName,\n  error_message: errorMessage.substring(0, 500),\n  input_data: JSON.stringify(errorData.execution?.lastNodeExecuted || {}).substring(0, 300),\n  retry_count: 0,\n  resolved: 'FALSE',\n  severity: isCritical ? 'critical' : 'non-critical'\n};\n\nreturn [{ json: errorRecord }];"
+        "jsCode": "const errorData = $input.first().json;\n\nconst workflowName = errorData.workflow?.name || 'unknown';\nconst nodeName = errorData.execution?.lastNodeExecuted || 'unknown';\nconst errorMessage = errorData.error?.message || 'unknown error';\nconst errorStack = errorData.error?.stack || '';\nconst executionId = errorData.execution?.id || '';\nconst runId = errorData.execution?.customData?.runId || '';\n\nconst criticalWorkflows = ['PI: Master Orchestrator', 'PI: Newsletter', 'PI: Error Handler'];\nconst isCritical = criticalWorkflows.includes(workflowName);\n\nconst errorRecord = {\n  id: `ERR-${Date.now()}`,\n  timestamp: new Date().toISOString(),\n  run_id: runId || executionId,\n  workflow_name: workflowName,\n  node_name: nodeName,\n  error_message: errorMessage.substring(0, 500),\n  input_data: JSON.stringify(errorData.execution?.lastNodeExecuted || {}).substring(0, 300),\n  retry_count: 0,\n  resolved: 'FALSE',\n  severity: isCritical ? 'critical' : 'non-critical'\n};\n\nreturn [{ json: errorRecord }];"
       },
       "id": "build-error-record",
       "name": "Build Error Record",
@@ -46,7 +28,7 @@
         "operation": "append",
         "documentId": {
           "mode": "id",
-          "value": "YOUR_GOOGLE_SHEETS_ID"
+          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
         },
         "sheetName": {
           "mode": "name",
@@ -73,9 +55,10 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [688, 304],
+      "continueOnFail": true,
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+          "id": "I253clwiMf9o1Oln",
           "name": "Google Sheets account"
         }
       }
@@ -92,7 +75,7 @@
           "conditions": [
             {
               "id": "sev-check",
-              "leftValue": "={{ $json.severity }}",
+              "leftValue": "={{ $('Build Error Record').first().json.severity }}",
               "rightValue": "critical",
               "operator": {
                 "type": "string",
@@ -123,13 +106,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://ntfy.sh/YOUR_NTFY_TOPIC",
+        "url": "https://ntfy.sh/pi-alerts-xk7r2m9q",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Title",
-              "value": "={{ '🚨 PI Alert: ' + $json.workflow_name + ' failed' }}"
+              "value": "={{ '🚨 PI Alert: ' + $('Build Error Record').first().json.workflow_name + ' failed' }}"
             },
             {
               "name": "Priority",
@@ -144,7 +127,7 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "text/plain",
-        "body": "={{ 'Workflow: ' + $json.workflow_name + '\\nNode: ' + $json.node_name + '\\nError: ' + $json.error_message + '\\nTime: ' + $json.timestamp + '\\nRun ID: ' + $json.run_id }}",
+        "body": "={{ 'Workflow: ' + $('Build Error Record').first().json.workflow_name + '\\nNode: ' + $('Build Error Record').first().json.node_name + '\\nError: ' + $('Build Error Record').first().json.error_message + '\\nTime: ' + $('Build Error Record').first().json.timestamp + '\\nRun ID: ' + $('Build Error Record').first().json.run_id }}",
         "options": {}
       },
       "id": "send-ntfy-alert",
@@ -166,8 +149,15 @@
     },
     "Is Critical?": {
       "main": [
-        [{"node": "Send ntfy Alert", "type": "main", "index": 0}]
+        [{"node": "Send ntfy Alert", "type": "main", "index": 0}],
+        []
       ]
     }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
   }
 }
