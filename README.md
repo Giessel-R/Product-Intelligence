@@ -1,6 +1,6 @@
 # Product Intelligence OS
 
-An automated competitive intelligence system built on **n8n**, **Claude AI**, **Google Sheets**, and **Notion**. It monitors competitor websites daily, extracts structured intelligence, compares it against your own capability map, and delivers a weekly briefing — all without manual research.
+An automated competitive intelligence system built on **n8n**, **Claude AI**, **Google Sheets**, and **Notion**. It monitors competitor websites daily, extracts structured intelligence, compares it against your own capability map, and delivers a weekly briefing: all without manual research.
 
 Originally built for tracking identity/auth competitors, but the architecture adapts to any competitive monitoring use case.
 
@@ -8,12 +8,12 @@ Originally built for tracking identity/auth competitors, but the architecture ad
 
 ## What It Does
 
-- **Watches competitor URLs daily** — detects page changes via MD5 hashing, scores relevance with Claude Haiku, extracts structured findings
-- **Builds your internal capability map** — reads your own product sources weekly and maintains a structured view of what you ship and at what maturity level
-- **Runs gap analysis** — compares competitor moves against your capability map, flags gaps, parities, and advantages
-- **Sends a weekly newsletter** — HTML email + Notion page with the week's top findings
-- **Audits itself** — flags low-confidence findings and writes a weekly memory summary
-- **Discovers new sources** — monthly run uses rules + Claude Haiku to classify and add new monitoring sources
+- **Watches competitor URLs daily**: detects page changes via MD5 hashing, scores relevance with Claude Haiku, extracts structured findings
+- **Builds your internal capability map**: reads your own product sources weekly and maintains a structured view of what you ship and at what maturity level
+- **Runs gap analysis**: compares competitor moves against your capability map, flags gaps, parities, and advantages
+- **Sends a weekly newsletter**: HTML email + Notion page with the week's top findings
+- **Audits itself**: flags low-confidence findings and writes a weekly memory summary
+- **Discovers new sources**: monthly run uses rules + Claude Haiku to classify and add new monitoring sources
 
 ---
 
@@ -24,15 +24,15 @@ Source Registry (Google Sheets)
         │
         ▼
 PI: Source Discovery ──────────────────────┐
-(monthly — finds new sources)              │
+(monthly: finds new sources)              │
                                            ▼
 PI: Internal Product Specialist       PI: Market Watch
-(Mondays — reads your sources)        (daily — watches competitors)
+(Mondays: reads your sources)        (daily: watches competitors)
         │                                  │
         └──────────────┬───────────────────┘
                        ▼
           PI: Competitor Intelligence
-          (Tue/Thu/Fri — gap analysis)
+          (Tue/Thu/Fri: gap analysis)
                        │
                        ▼
              PI: Newsletter (Fridays)
@@ -66,8 +66,8 @@ PI: Internal Product Specialist       PI: Market Watch
 | `error_log` | Workflow errors |
 
 **Notion** (2 databases):
-- Competitor Cards — one page per competitor per week, with gap/parity/advantage analysis
-- Weekly Newsletters — HTML newsletters archived as Notion pages
+- Competitor Cards: one page per competitor per week, with gap/parity/advantage analysis
+- Weekly Newsletters: HTML newsletters archived as Notion pages
 
 ---
 
@@ -85,8 +85,8 @@ All findings are classified into one of 6 strategic lanes:
 | `STRATEGIC_SIGNALS` | Pricing, launches, acquisitions, partnerships |
 
 Each finding has:
-- `importance_score` (1–5) — how significant is this change?
-- `confidence_score` (1–5) — how strong is the evidence?
+- `importance_score` (1–5): how significant is this change?
+- `confidence_score` (1–5): how strong is the evidence?
 - `recommended_action`: `Watch` | `Validate` | `Draft Brief`
 
 ---
@@ -95,11 +95,11 @@ Each finding has:
 
 | Component | Role |
 |---|---|
-| **n8n** (self-hosted) | Workflow engine — all orchestration, scheduling, node execution |
-| **Claude Haiku** (`claude-haiku-4-5-20251001`) | Fast classification — relevance scoring, source discovery |
-| **Claude Sonnet** (`claude-sonnet-4-6`) | Deep analysis — CI gap analysis, newsletter writing |
-| **Google Sheets** | Data layer — all structured data storage |
-| **Notion** | Output layer — competitor cards, newsletters |
+| **n8n** (self-hosted) | Workflow engine: all orchestration, scheduling, node execution |
+| **Claude Haiku** (`claude-haiku-4-5-20251001`) | Fast classification: relevance scoring, source discovery |
+| **Claude Sonnet** (`claude-sonnet-4-6`) | Deep analysis: CI gap analysis, newsletter writing |
+| **Google Sheets** | Data layer: all structured data storage |
+| **Notion** | Output layer: competitor cards, newsletters |
 | **Gmail** | Newsletter delivery + error alerts |
 | **ntfy.sh** | Real-time push alerts (optional) |
 | **Jina AI** | Web scraping (`r.jina.ai` reader API) |
@@ -111,10 +111,10 @@ Each finding has:
 ## Prerequisites
 
 - **n8n** self-hosted (tested on n8n v1.x). Cloud n8n works but you'll need to adjust the schedule and keep-awake setup.
-- **Anthropic API key** — get one at [console.anthropic.com](https://console.anthropic.com)
-- **Google account** — for Google Sheets + Gmail OAuth
-- **Notion account** — free tier is fine
-- **ntfy.sh** (optional) — for push alerts on errors
+- **Anthropic API key**: get one at [console.anthropic.com](https://console.anthropic.com)
+- **Google account**: for Google Sheets + Gmail OAuth
+- **Notion account**: free tier is fine
+- **ntfy.sh** (optional): for push alerts on errors
 
 ---
 
@@ -135,8 +135,8 @@ See `schemas/google-sheets-setup.md` for the full schema reference.
 
 Create two Notion databases with the schemas described in `schemas/notion-setup.md`:
 
-- **Competitor Cards** — one page per competitor per week
-- **Weekly Newsletters** — newsletter archive
+- **Competitor Cards**: one page per competitor per week
+- **Weekly Newsletters**: newsletter archive
 
 Note both database IDs (from the page URL after the last `/`).
 
@@ -146,10 +146,10 @@ In n8n → **Credentials** → **New**, create:
 
 | Credential | Type | Notes |
 |---|---|---|
-| Google Sheets — PI System | Google Sheets OAuth2 | Standard OAuth flow |
-| Gmail — PI System | Gmail OAuth2 | Same Google account |
-| Notion — PI System | Notion API | Integration token from notion.so/settings |
-| Anthropic — PI System | HTTP Header Auth | Header name: `x-api-key`, value: your API key |
+| Google Sheets: PI System | Google Sheets OAuth2 | Standard OAuth flow |
+| Gmail: PI System | Gmail OAuth2 | Same Google account |
+| Notion: PI System | Notion API | Integration token from notion.so/settings |
+| Anthropic: PI System | HTTP Header Auth | Header name: `x-api-key`, value: your API key |
 
 After creating the Notion credential: open each Notion database → **...** → **Add connections** → add your integration.
 
@@ -173,35 +173,35 @@ After creating the Notion credential: open each Notion database → **...** → 
 
 For each workflow, open it in n8n and update:
 
-**Google Sheets nodes** — set your Google Sheets credential and replace the Spreadsheet ID with your workbook ID.
+**Google Sheets nodes**: set your Google Sheets credential and replace the Spreadsheet ID with your workbook ID.
 
-**Gmail nodes** — set your Gmail credential and update the `sendTo` field with your email address.
+**Gmail nodes**: set your Gmail credential and update the `sendTo` field with your email address.
 
-**Notion HTTP Request nodes** — set your Notion credential and update database IDs with the ones from step 2.
+**Notion HTTP Request nodes**: set your Notion credential and update database IDs with the ones from step 2.
 
-**Anthropic HTTP Request nodes** — set your Anthropic HTTP Header Auth credential.
+**Anthropic HTTP Request nodes**: set your Anthropic HTTP Header Auth credential.
 
-**Error Handler — ntfy.sh URL** (optional): Update `https://ntfy.sh/YOUR_NTFY_TOPIC` with your own ntfy.sh topic if you want push alerts. Pick a random unique topic name.
+**Error Handler: ntfy.sh URL** (optional): Update `https://ntfy.sh/YOUR_NTFY_TOPIC` with your own ntfy.sh topic if you want push alerts. Pick a random unique topic name.
 
-**All workflows — error workflow**: In each workflow's Settings tab, set "Error Workflow" to "PI: Error Handler".
+**All workflows: error workflow**: In each workflow's Settings tab, set "Error Workflow" to "PI: Error Handler".
 
 > The `schemas/credentials-setup.md` file has a detailed checklist and node-by-node reference for each workflow.
 
 ### 6. Populate the config tab
 
 In your Google Sheets workbook, open the `config` tab and add competitor URLs to watch. Each row needs at minimum:
-- `url` — the page to monitor
-- `competitor` — competitor name (e.g., `CompetitorA`, `CompetitorB`)
-- `active` — `TRUE` to enable monitoring
+- `url`: the page to monitor
+- `competitor`: competitor name (e.g., `CompetitorA`, `CompetitorB`)
+- `active`: `TRUE` to enable monitoring
 
 ### 7. Populate source_registry
 
 The `source_registry` tab controls what the Internal Product Specialist reads. Add your product's sources (docs, GitHub repos, release notes, etc.) with:
-- `source_id` — unique identifier (e.g., `my-product-docs`)
-- `url` — the URL to read
-- `status` — `active`
-- `source_role` — `documentation` | `github_repo` | `release_notes` | `developer_portal` | `press_release` | `blog`
-- `priority` — `P1` (weekly), `P2` (every other week), `P3` (monthly)
+- `source_id`: unique identifier (e.g., `my-product-docs`)
+- `url`: the URL to read
+- `status`: `active`
+- `source_role`: `documentation` | `github_repo` | `release_notes` | `developer_portal` | `press_release` | `blog`
+- `priority`: `P1` (weekly), `P2` (every other week), `P3` (monthly)
 
 ### 8. Test each workflow
 
@@ -229,11 +229,11 @@ If you're running n8n on a Mac, the system may sleep before the 9 AM schedule fi
 
 This system was built for identity/auth competitive intelligence, but the lanes, sources, and prompts are all configurable:
 
-- **Change the lanes** — edit the `STRATEGIC_LANES` list in the Competitor Intelligence and Market Watch workflow prompts
-- **Change the competitors** — add/remove rows in the `config` tab
-- **Change your product sources** — add/remove rows in `source_registry`
-- **Change the schedule** — update the Schedule Trigger node in Master Orchestrator
-- **Add new output channels** — add nodes after the Newsletter workflow (Slack, Teams, etc.)
+- **Change the lanes**: edit the `STRATEGIC_LANES` list in the Competitor Intelligence and Market Watch workflow prompts
+- **Change the competitors**: add/remove rows in the `config` tab
+- **Change your product sources**: add/remove rows in `source_registry`
+- **Change the schedule**: update the Schedule Trigger node in Master Orchestrator
+- **Add new output channels**: add nodes after the Newsletter workflow (Slack, Teams, etc.)
 
 ---
 
@@ -241,10 +241,10 @@ This system was built for identity/auth competitive intelligence, but the lanes,
 
 The system has 4 layers to prevent the AI from fabricating capabilities:
 
-1. **Prompt rules** — explicit instructions: marketing language is not evidence, GitHub code ≠ shipped feature, abstain if evidence is weak
-2. **Relevance gate** — Market Watch scores each finding before passing it to Claude Sonnet; low-relevance changes are dropped
-3. **Parser safety caps** — importance/confidence scores are capped per source type (e.g., `sample_app` → max confidence 3)
-4. **Review flags** — Competitor Intelligence flags low-confidence gap claims for human review
+1. **Prompt rules**: explicit instructions: marketing language is not evidence, GitHub code ≠ shipped feature, abstain if evidence is weak
+2. **Relevance gate**: Market Watch scores each finding before passing it to Claude Sonnet; low-relevance changes are dropped
+3. **Parser safety caps**: importance/confidence scores are capped per source type (e.g., `sample_app` → max confidence 3)
+4. **Review flags**: Competitor Intelligence flags low-confidence gap claims for human review
 
 ---
 
