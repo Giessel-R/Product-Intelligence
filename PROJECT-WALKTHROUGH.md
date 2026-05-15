@@ -39,8 +39,8 @@ _Last updated: 2026-05-12_
 
 As a Director of Product I need to know what the competitors are doing. Specifically:
 - What features are competitors shipping?
-- Are they building things that Ping doesn't have?
-- Are there product gaps you should be worried about?
+- Are they building things that my company doesn't have?
+- Are there product gaps to be worried about?
 - Is there anything strategically important happening this week?
 
 Doing this manually means spending hours every week reading changelogs, blog posts, release notes, and documentation pages across dozens of competitor websites. Most of it is noise. Very little of it is signal.
@@ -50,7 +50,7 @@ Doing this manually means spending hours every week reading changelogs, blog pos
 This system is an **automated competitive intelligence engine**. It:
 1. **Watches** competitor websites every weekday, detecting when pages change
 2. **Reads** those changes and extracts what is actually important
-3. **Compares** what competitors are doing against Ping's own product capabilities
+3. **Compares** what competitors are doing against my company's own product capabilities
 4. **Produces** a weekly newsletter you can read in 5 minutes
 
 You don't have to visit any websites. You don't have to read any changelogs. The system does all of that for you and delivers a curated intelligence briefing every Friday morning.
@@ -90,17 +90,17 @@ Every weekday 9:00 AM PST:
            ▼
 ┌──────────────────────┐
 │  INTERNAL PRODUCT    │  ← runs Mondays
-│  SPECIALIST          │     Reads Ping's own docs
-│  Reads Ping's own    │     Builds a map of what
-│  products and docs   │     Ping actually has
+│  SPECIALIST          │     Reads my company's own docs
+│  Reads my company's own    │     Builds a map of what
+│  products and docs   │     my company actually has
 └──────────────────────┘
            │ (on Tue/Thu)
            ▼
 ┌──────────────────────┐
 │  COMPETITOR          │  ← runs Tue and Thu
 │  INTELLIGENCE        │     Takes raw evidence
-│  Compares competitor │     Compares to Ping's map
-│  moves vs Ping       │     Asks Claude: "is this a gap?"
+│  Compares competitor │     Compares to my company's map
+│  moves vs my company       │     Asks Claude: "is this a gap?"
 └──────────────────────┘
            │ (on Fridays)
            ▼
@@ -193,12 +193,12 @@ Key fields:
 - `observed_fact`: only what is explicitly stated in the source
 - `analyst_interpretation`: what it might mean (labeled as interpretation, not fact)
 - `lane`: which strategic category (e.g., `AI_AGENT_IDENTITY`)
-- `importance_score`: 1-5 (how important to Ping's world)
+- `importance_score`: 1-5 (how important to my company's world)
 - `confidence_score`: 1-5 (how certain we are this is real)
 - `status`: `new`, `processed`, or `archived`
 
-### Tab 4: `internal_capability_map` (Ping's Own Products)
-What Ping Identity actually has. Built by the Internal Product Specialist every Monday. Competitor Intelligence reads this to know whether a competitor move is a real gap or something Ping already does.
+### Tab 4: `internal_capability_map` (my company's Own Products)
+What my company actually has. Built by the Internal Product Specialist every Monday. Competitor Intelligence reads this to know whether a competitor move is a real gap or something my company already does.
 
 **Why this sheet is empty most of the time**
 
@@ -220,9 +220,9 @@ Key fields:
 The cleaned-up output from Competitor Intelligence. One row per evidence item per week. This is what the Newsletter reads.
 
 Key fields:
-- `gap_vs_ping`: does the competitor have something Ping doesn't?
+- `gap_vs_ping`: does the competitor have something my company doesn't?
 - `parity_vs_ping`: are they roughly equal?
-- `ping_advantage`: does Ping have something the competitor lacks?
+- `ping_advantage`: does my company have something the competitor lacks?
 - `recommended_action`: `Watch`, `Validate`, or `Draft Brief`
 - `review_flag`: TRUE if a human should look at this
 
@@ -232,8 +232,8 @@ Every time the Orchestrator runs, it writes a start and end record here. This is
 ### Tab 7: `error_log` (Failures)
 Every error from every workflow gets logged here with full details: which workflow, which step, what the error was, what data was being processed.
 
-### Tab 8: `source_registry` (Ping's Source List)
-The live list of all Ping sources that Internal Product Specialist reads from. This replaced the old hardcoded source list.
+### Tab 8: `source_registry` (my company's Source List)
+The live list of all my company sources that Internal Product Specialist reads from. This replaced the old hardcoded source list.
 
 Key fields: `source_id`, `product_name`, `capability_area`, `capability_tag`, `source_type`, `source_role`, `priority`, `status`, `url`, `classification_source`.
 
@@ -331,15 +331,15 @@ Before sending anything to Claude, the system scores how relevant the changed pa
 **File:** `07-internal-product-specialist.json`
 **ID:** `63fbsmdUxNtnaFXG`
 
-**Purpose:** Reads Ping Identity's own product documentation every Monday and builds a capability map, a structured record of everything Ping actually has, organized by strategic lane.
+**Purpose:** Reads my company's own product documentation every Monday and builds a capability map, a structured record of everything my company actually has, organized by strategic lane.
 
 **When it runs:** Mondays, triggered by the Master Orchestrator.
 
 **How it works in plain English:**
 
-This is the "know yourself" part of the system. Before the system can say "Competitor A has X that Ping doesn't have," it needs to actually know what Ping has.
+This is the "know yourself" part of the system. Before the system can say "Competitor A has X that my company doesn't have," it needs to actually know what my company has.
 
-This workflow reads from the `source_registry` tab in Google Sheets, which currently holds 120 active sources: Ping's developer portal, SDK documentation, release notes, GitHub repositories, and developer docs. Not all 120 run every Monday. Sources are staggered by priority so the run stays fast and the API stays within limits (P1 runs weekly, P2 every other week, P3 monthly). For each source, it sends the content to Claude Sonnet and asks: "What capabilities does this document? Be specific. Only include things that are clearly supported, not things that just exist as code."
+This workflow reads from the `source_registry` tab in Google Sheets, which currently holds 120 active sources: my company's developer portal, SDK documentation, release notes, GitHub repositories, and developer docs. Not all 120 run every Monday. Sources are staggered by priority so the run stays fast and the API stays within limits (P1 runs weekly, P2 every other week, P3 monthly). For each source, it sends the content to Claude Sonnet and asks: "What capabilities does this document? Be specific. Only include things that are clearly supported, not things that just exist as code."
 
 The result is a row-per-capability record in the `internal_capability_map` tab. Every capability has a maturity rating:
 
@@ -349,7 +349,7 @@ The result is a row-per-capability record in the `internal_capability_map` tab. 
 - `unclear`: evidence is ambiguous
 - `sample_only`: only exists as a code sample, not a real product feature
 
-This map is what Competitor Intelligence uses to answer: "Is this a real gap, or does Ping already do this?"
+This map is what Competitor Intelligence uses to answer: "Is this a real gap, or does my company already do this?"
 
 **Why the sheet looks empty**
 
@@ -384,7 +384,7 @@ The only time an empty sheet on a Monday signals a problem is if the workflow fi
 **File:** `03-competitor-intelligence.json`
 **ID:** `mY5wIkPWlolzcUbn`
 
-**Purpose:** Picks up the raw evidence from Market Watch, reads Ping's capability map, and uses Claude Sonnet to produce structured competitive analysis including gap, parity, and advantage assessments.
+**Purpose:** Picks up the raw evidence from Market Watch, reads my company's capability map, and uses Claude Sonnet to produce structured competitive analysis including gap, parity, and advantage assessments.
 
 **When it runs:** Tuesdays, Thursdays, and Fridays, triggered by the Master Orchestrator (after Market Watch).
 
@@ -392,11 +392,11 @@ The only time an empty sheet on a Monday signals a problem is if the workflow fi
 
 Market Watch is the reporter who notices what changed. Competitor Intelligence is the analyst who figures out what it means.
 
-It reads the raw `evidence_log` entries from the last 3 days. It processes each evidence item individually. For each item, it reads Ping's capability map and asks Claude: "Given what Competitor A just changed, and given what Ping has, what does this mean? Is this a gap? Is this parity? Should we watch this, validate it, or draft a brief about it?"
+It reads the raw `evidence_log` entries from the last 3 days. It processes each evidence item individually. For each item, it reads my company's capability map and asks Claude: "Given what Competitor A just changed, and given what my company has, what does this mean? Is this a gap? Is this parity? Should we watch this, validate it, or draft a brief about it?"
 
 **One finding per evidence item.** Each piece of evidence becomes its own row in `structured_findings` and its own card in Notion, tagged with the competitor, the strategic lane, and the week. This makes it easy to see exactly which individual finding drove which conclusion.
 
-Claude receives a **tiered capability map** rather than a flat list. It knows not just "Ping has MCP support" but "Ping has MCP support at `documented` level from developer portal sources, with `production_mature` evidence from release notes for the PingGateway MCP integration." This level of specificity lets Claude make much more precise assessments.
+Claude receives a **tiered capability map** rather than a flat list. It knows not just "my company has MCP support" but "my company has MCP support at `documented` level from developer portal sources, with `production_mature` evidence from release notes for the the MCP integration." This level of specificity lets Claude make much more precise assessments.
 
 #### Node-by-Node Breakdown
 
@@ -407,8 +407,8 @@ Claude receives a **tiered capability map** rather than a flat list. It knows no
 | **Read New Evidence** | Reads all rows from the `evidence_log` tab in Google Sheets. |
 | **Filter New Only** | Filters the evidence to: `status = "new"` AND `date_found >= 3 days ago`. Groups what remains by competitor. If there is zero new evidence, the workflow notes this and exits gracefully without errors. |
 | **Read Capability Map** | Reads all rows from the `internal_capability_map` tab. |
-| **Aggregate Ping Capabilities** | Restructures the flat capability map rows into a tiered object indexed by lane. Output format for each lane: `{ production_mature: [...], documented: [...], partial: [...], unclear: [...], sample_only: [], no_evidence: bool, source_types_present: [] }`. All 5 tiers are always present. `unclear` is kept as its own bucket (not merged into `partial`) so the analysis prompt can apply distinct vocabulary rules. If all 5 tiers are empty for a lane, `no_evidence: true`. |
-| **Build Analysis Prompts** | Constructs the full Sonnet prompt for each evidence item. The prompt includes: the evidence item, Ping's tiered capability map for the relevant lanes, and detailed instructions including: TIER DEFINITIONS (explains all 5 tiers to Claude), REASONING ORDER (6 explicit steps Claude must follow), CLAIM VOCABULARY (anchored phrases for every tier vs. tier comparison), CONFIDENCE BEHAVIOR (unclear Ping evidence reduces confidence; press_release alone gives no confidence boost; release_notes supports higher confidence), and DEFAULT ACTION GUIDANCE. |
+| **Aggregate my company Capabilities** | Restructures the flat capability map rows into a tiered object indexed by lane. Output format for each lane: `{ production_mature: [...], documented: [...], partial: [...], unclear: [...], sample_only: [], no_evidence: bool, source_types_present: [] }`. All 5 tiers are always present. `unclear` is kept as its own bucket (not merged into `partial`) so the analysis prompt can apply distinct vocabulary rules. If all 5 tiers are empty for a lane, `no_evidence: true`. |
+| **Build Analysis Prompts** | Constructs the full Sonnet prompt for each evidence item. The prompt includes: the evidence item, my company's tiered capability map for the relevant lanes, and detailed instructions including: TIER DEFINITIONS (explains all 5 tiers to Claude), REASONING ORDER (6 explicit steps Claude must follow), CLAIM VOCABULARY (anchored phrases for every tier vs. tier comparison), CONFIDENCE BEHAVIOR (unclear my company evidence reduces confidence; press_release alone gives no confidence boost; release_notes supports higher confidence), and DEFAULT ACTION GUIDANCE. |
 | **Analyze with Sonnet** | Sends the prompt to Claude Sonnet. Claude returns a JSON finding with: `what_changed`, `likely_direction`, `product_area_tags`, `observed_facts`, `analyst_interpretation`, `gap_vs_ping`, `parity_vs_ping`, `ping_advantage`, `relevance_score`, `confidence_score`, `recommended_action`, `review_flag`, `review_flag_reason`. |
 | **Parse and Build Finding** | Parses Claude's JSON and builds a clean finding record with a unique ID. Validates required fields. Sets `review_flag` to TRUE if confidence is high but evidence includes uncertainty signals. |
 | **Write to structured_findings** | Appends the structured finding to the `structured_findings` tab in Google Sheets. |
@@ -543,17 +543,17 @@ Each sub-workflow is called with `executeWorkflow`, meaning the Orchestrator pau
 **File:** `08-source-discovery.json`
 **ID:** `LhycJpV60D0ddoDS`
 
-**Purpose:** Once a month, crawls Ping's known documentation hub pages, extracts all the links on those pages, classifies each link by what kind of page it is, and writes any new discoveries into the `source_registry` as candidates. This is how the system finds new Ping documentation pages without anyone having to manually look for them.
+**Purpose:** Once a month, crawls my company's known documentation hub pages, extracts all the links on those pages, classifies each link by what kind of page it is, and writes any new discoveries into the `source_registry` as candidates. This is how the system finds new my company documentation pages without anyone having to manually look for them.
 
 **When it runs:** Automatically on the first Monday of each month at 9:00 AM PST. Can also be run manually at any time via the n8n UI.
 
-**Important:** This workflow only looks at Ping's own sources, not competitor sites. It feeds the Internal Product Specialist, not Market Watch.
+**Important:** This workflow only looks at my company's own sources, not competitor sites. It feeds the Internal Product Specialist, not Market Watch.
 
 **How it works in plain English:**
 
-Think of it like a research assistant who starts with a list of known Ping documentation index pages, such as the SDK docs homepage or the developer portal landing page. These "seed" pages contain links to lots of child pages. The assistant visits each seed, collects all the links on it, and tries to figure out what each link leads to: is it a feature page? A quickstart guide? A release notes page? Just a navigation link that's not worth tracking?
+Think of it like a research assistant who starts with a list of known my company documentation index pages, such as the SDK docs homepage or the developer portal landing page. These "seed" pages contain links to lots of child pages. The assistant visits each seed, collects all the links on it, and tries to figure out what each link leads to: is it a feature page? A quickstart guide? A release notes page? Just a navigation link that's not worth tracking?
 
-Before classification, it filters out noise: cross-product directory paths, root-level pages (too broad), login/search/tag pages, and links that fall outside the seed's section. For example, a seed for the iOS SDK docs shouldn't discover links to the PingGateway reference. It then classifies the remaining links using simple rules (for example, anything with `/changelog` in the URL is probably release notes). For links it can't classify confidently, it asks Claude Haiku. Up to 200 ambiguous links per run get sent to Claude. Anything beyond that cap stays as `unknown` until the next monthly run.
+Before classification, it filters out noise: cross-product directory paths, root-level pages (too broad), login/search/tag pages, and links that fall outside the seed's section. For example, a seed for the iOS SDK docs shouldn't discover links to the the product reference. It then classifies the remaining links using simple rules (for example, anything with `/changelog` in the URL is probably release notes). For links it can't classify confidently, it asks Claude Haiku. Up to 200 ambiguous links per run get sent to Claude. Anything beyond that cap stays as `unknown` until the next monthly run.
 
 New links that aren't already in `source_registry` get written as `status: candidate`. They don't become active sources automatically. A human reviews them and promotes the useful ones to `active`.
 
@@ -629,7 +629,7 @@ The system uses Claude (Anthropic's AI) in three different modes:
 ### Claude Haiku: The Fast Scanner
 Used by: Market Watch, Source Discovery
 
-Haiku is the cheapest and fastest Claude model. It is used for high-volume, lower-stakes jobs. In Market Watch, it reads changed competitor pages and classifies them. In Source Discovery, it classifies ambiguous Ping documentation URLs that the rules-based pass couldn't confidently label. Cost is roughly $0.001 per call.
+Haiku is the cheapest and fastest Claude model. It is used for high-volume, lower-stakes jobs. In Market Watch, it reads changed competitor pages and classifies them. In Source Discovery, it classifies ambiguous my company documentation URLs that the rules-based pass couldn't confidently label. Cost is roughly $0.001 per call.
 
 **What it is asked to do:**
 - Read a changed competitor page
@@ -646,20 +646,20 @@ Haiku is the cheapest and fastest Claude model. It is used for high-volume, lowe
 ### Claude Sonnet: The Deep Analyst
 Used by: Internal Product Specialist, Competitor Intelligence, Newsletter
 
-Sonnet is the smarter, more expensive model. It is used for tasks requiring nuanced judgment: extracting capabilities from documentation, comparing competitor moves against Ping's capability map, and writing the newsletter.
+Sonnet is the smarter, more expensive model. It is used for tasks requiring nuanced judgment: extracting capabilities from documentation, comparing competitor moves against my company's capability map, and writing the newsletter.
 
 **In Competitor Intelligence, it receives:**
 - A single evidence item (what one competitor page changed)
-- Ping's tiered capability map for the relevant lanes (what Ping has, at what maturity level, from what source types)
-- Detailed vocabulary rules: if Ping is `documented` and the competitor is `production_mature`, the correct phrase is "possible gap, requires validation" not "confirmed gap"
+- my company's tiered capability map for the relevant lanes (what my company has, at what maturity level, from what source types)
+- Detailed vocabulary rules: if my company is `documented` and the competitor is `production_mature`, the correct phrase is "possible gap, requires validation" not "confirmed gap"
 - Explicit reasoning order: 6 steps Claude must follow
 - Source calibration: a `press_release` alone does not justify high confidence; `release_notes` can
 
 **What it returns:**
 ```json
 {
-  "gap_vs_ping": "possible gap. Ping's AI_AGENT_IDENTITY production_mature claims are backed only by press_release source",
-  "parity_vs_ping": "possible parity, requires validation. Both vendors show production-tier offerings but Ping's evidence is press_release-only while Competitor A's is release_notes",
+  "gap_vs_ping": "possible gap. my company's AI_AGENT_IDENTITY production_mature claims are backed only by press_release source",
+  "parity_vs_ping": "possible parity, requires validation. Both vendors show production-tier offerings but my company's evidence is press_release-only while Competitor A's is release_notes",
   "recommended_action": "Validate",
   "confidence_score": 3,
   "review_flag": true
@@ -672,8 +672,8 @@ Sonnet is the smarter, more expensive model. It is used for tasks requiring nuan
 
 | Day | What Runs | Why |
 |---|---|---|
-| **Monday** | Market Watch + Internal Product Specialist | Start the week by refreshing Ping's capability map. Know yourself before the week's competitor analysis. |
-| **Tuesday** | Market Watch + Competitor Intelligence | First CI run of the week, using Monday's fresh Ping data. |
+| **Monday** | Market Watch + Internal Product Specialist | Start the week by refreshing my company's capability map. Know yourself before the week's competitor analysis. |
+| **Tuesday** | Market Watch + Competitor Intelligence | First CI run of the week, using Monday's fresh my company data. |
 | **Wednesday** | Market Watch only | Keep watching, no analysis. Evidence accumulates. |
 | **Thursday** | Market Watch + Competitor Intelligence | Second CI run, using accumulated evidence from Mon-Thu. |
 | **Friday** | Market Watch + Competitor Intelligence + Newsletter + Memory and Audit | Full run. Everything wraps up, newsletter goes out, week is audited. |
@@ -684,7 +684,7 @@ All runs start at **9:00 AM PST**. The Credential Health Check runs 1 hour earli
 
 ## 8. The 6 Strategic Lanes
 
-Every finding, whether from Market Watch or Competitor Intelligence, must be assigned to one of 6 lanes. This categorizes intelligence into strategic buckets that are relevant to Ping Identity's product world.
+Every finding, whether from Market Watch or Competitor Intelligence, must be assigned to one of 6 lanes. This categorizes intelligence into strategic buckets that are relevant to my company's product world.
 
 | Lane | What It Covers | Example Signal |
 |---|---|---|
@@ -702,15 +702,15 @@ Every finding, whether from Market Watch or Competitor Intelligence, must be ass
 Every finding gets two separate scores:
 
 ### Importance Score (1-5)
-How meaningful is this to Ping's product strategy?
+How meaningful is this to my company's product strategy?
 
 | Score | Meaning |
 |---|---|
-| 5 | Core to Ping's business; directly competitive in a primary market |
-| 4 | Significant feature in Ping's strategic area |
+| 5 | Core to my company's business; directly competitive in a primary market |
+| 4 | Significant feature in my company's strategic area |
 | 3 | Relevant but secondary |
 | 2 | Tangential or indirect relevance |
-| 1 | Not applicable to Ping's world |
+| 1 | Not applicable to my company's world |
 
 ### Confidence Score (1-5)
 How certain are we that this is real and correctly understood?
@@ -723,7 +723,7 @@ How certain are we that this is real and correctly understood?
 | 2 | Inferred from content structure change | A new navigation section appeared |
 | 1 | Marketing language only | "AI-powered seamless authentication" - drop it |
 
-**Important rule:** Gap claims and competitive action recommendations require confidence >= 4. You can't say "Ping has a gap" based on something with confidence 2.
+**Important rule:** Gap claims and competitive action recommendations require confidence >= 4. You can't say "my company has a gap" based on something with confidence 2.
 
 ---
 
@@ -737,7 +737,7 @@ AI systems can confidently state things that aren't true. This system has multip
 3. **Abstain by default.** If evidence is weak or vague, return `not_enough_evidence: true`. Drop the record. Better to miss a finding than to hallucinate one.
 4. **Separate facts from interpretation.** Every finding has two explicit fields: `observed_fact` (only what the source says) and `analyst_interpretation` (what it might mean). Never mix them.
 5. **Two-source rule for major gap claims.** One source isn't enough. Need strong source plus internal confirmation.
-6. **No gap claims without internal comparison.** Competitor Intelligence must read the capability map. It cannot claim a gap unless it has checked whether Ping does the thing.
+6. **No gap claims without internal comparison.** Competitor Intelligence must read the capability map. It cannot claim a gap unless it has checked whether my company does the thing.
 
 ### Layer 2: The Parser Safety Caps (applied in code, not AI)
 After Claude returns its output, a deterministic code node applies hard rules:
@@ -796,11 +796,11 @@ The system is currently at Stage 6.
 
 ### Stage 1: Schema Strengthening (2026-03-29)
 
-**The problem:** The `internal_capability_map` had only 14 fields, many of them vague. There was no way to distinguish between "Ping has this in production" and "Ping has some code for this." That made gap analysis unreliable.
+**The problem:** The `internal_capability_map` had only 14 fields, many of them vague. There was no way to distinguish between "my company has this in production" and "my company has some code for this." That made gap analysis unreliable.
 
 **What was built:** The schema was upgraded from 14 to 19 fields. New fields added: `capability_area`, `source_weight`, `support_maturity`, `maturity_reason`, `capability_tag`, `freshness_status`. The maturity vocabulary was locked to exactly 5 values: `production_mature`, `documented`, `partial`, `unclear`, `sample_only`.
 
-**The result:** The data layer became precise enough to support real gap analysis. Competitor Intelligence could now look at Ping's capabilities by tier, not just as a flat list.
+**The result:** The data layer became precise enough to support real gap analysis. Competitor Intelligence could now look at my company's capabilities by tier, not just as a flat list.
 
 ---
 
@@ -816,9 +816,9 @@ The system is currently at Stage 6.
 
 ### Stage 3: Maturity-Tiered Competitor Intelligence (2026-03-31)
 
-**The problem:** Competitor Intelligence was treating Ping's capability map as a flat list. It could not distinguish between "Ping has this in production" and "Ping has unclear evidence of this." All capabilities looked equally confirmed, which made gap assessments imprecise.
+**The problem:** Competitor Intelligence was treating my company's capability map as a flat list. It could not distinguish between "my company has this in production" and "my company has unclear evidence of this." All capabilities looked equally confirmed, which made gap assessments imprecise.
 
-**What was built:** The capability map passed to Claude was restructured into 5 explicit tiers per lane: `production_mature`, `documented`, `partial`, `unclear`, `sample_only`. The analysis prompt was rewritten with TIER DEFINITIONS, a 6-step REASONING ORDER, and a CLAIM VOCABULARY that anchors specific phrases to specific tier comparisons. For example, if Ping is `documented` and the competitor is `production_mature`, Claude must use "possible gap, requires validation" not "confirmed gap."
+**What was built:** The capability map passed to Claude was restructured into 5 explicit tiers per lane: `production_mature`, `documented`, `partial`, `unclear`, `sample_only`. The analysis prompt was rewritten with TIER DEFINITIONS, a 6-step REASONING ORDER, and a CLAIM VOCABULARY that anchors specific phrases to specific tier comparisons. For example, if my company is `documented` and the competitor is `production_mature`, Claude must use "possible gap, requires validation" not "confirmed gap."
 
 **The result:** Gap and parity assessments became calibrated to the actual strength of evidence. The first finding from Stage 3 correctly produced `review_flag: TRUE` and confidence 3 rather than a false certainty.
 
@@ -836,9 +836,9 @@ The system is currently at Stage 6.
 
 ### Stage 5: Hybrid Discovery Model (2026-04-05 to 2026-04-09)
 
-**The problem:** The Internal Product Specialist read from a hardcoded list of Ping sources inside a Code node. Adding a new source required editing code and redeploying. There was no way to grow the source list automatically, and no visibility into which sources were active.
+**The problem:** The Internal Product Specialist read from a hardcoded list of my company sources inside a Code node. Adding a new source required editing code and redeploying. There was no way to grow the source list automatically, and no visibility into which sources were active.
 
-**What was built:** Three things. First, the `source_registry` Google Sheets tab replaced the hardcoded list. IPS now reads active sources from Sheets, filtered by P1/P2/P3 priority cadence. Second, the `PI: Source Discovery` workflow was created. It runs monthly, visits Ping's known documentation hub pages, extracts all links, classifies them using rules plus Claude Haiku, and writes new discoveries as `candidate` rows in `source_registry`. Third, source-role guard rails were added to both IPS and CI to prevent catalog/index pages from generating capability claims they can't support.
+**What was built:** Three things. First, the `source_registry` Google Sheets tab replaced the hardcoded list. IPS now reads active sources from Sheets, filtered by P1/P2/P3 priority cadence. Second, the `PI: Source Discovery` workflow was created. It runs monthly, visits my company's known documentation hub pages, extracts all links, classifies them using rules plus Claude Haiku, and writes new discoveries as `candidate` rows in `source_registry`. Third, source-role guard rails were added to both IPS and CI to prevent catalog/index pages from generating capability claims they can't support.
 
 **The result:** The source list became self-growing. The registry now holds 120 active sources migrated from the old hardcoded list. Source Discovery is fully operational. First test run processed 16 seed pages and extracted 639 candidate URLs.
 
