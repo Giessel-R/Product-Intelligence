@@ -59,7 +59,6 @@
       <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
       <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
       <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
-      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
     </div>
   </nav>
 
@@ -72,13 +71,13 @@
 
     <div class="page-header">
       <h1>Hallucination Prevention</h1>
-      <p class="page-subtitle">Four overlapping layers that prevent Claude from inventing capabilities, upgrading weak evidence, or making gap claims without a basis. Every AI call in the system is subject to at least one of these layers.</p>
+      <p class="page-subtitle">Four overlapping layers that prevent the AI model from inventing capabilities, upgrading weak evidence, or making gap claims without a basis. Every AI call in the system is subject to at least one of these layers.</p>
     </div>
 
     <hr class="divider">
 
     <div class="section-title"><span class="material-icons-round">shield</span> Why This Matters</div>
-    <p>Competitive intelligence is only useful if it's accurate. A false gap claim: "Okta has X, Ping doesn't": can influence real product decisions. The system is designed to abstain rather than speculate. When evidence is weak, Claude returns <code>not_enough_evidence: true</code> and the record is dropped entirely.</p>
+    <p>Competitive intelligence is only useful if it's accurate. A false gap claim: "Okta has X, Ping doesn't": can influence real product decisions. The system is designed to abstain rather than speculate. When evidence is weak, the system returns <code>not_enough_evidence: true</code> and the record is dropped entirely.</p>
 
     <hr class="divider">
 
@@ -94,7 +93,7 @@
             <span class="step-tag">Market Watch · IPS · CI</span>
           </div>
           <div class="step-desc">
-            Six rules are included verbatim in every Claude prompt in the system:
+            Six rules are included verbatim in every AI prompt in the system:
             <ol style="margin-top:8px; padding-left:18px; color:#94a3b8; font-size:12.5px; line-height:2;">
               <li>Marketing language (<code>seamless</code>, <code>AI-powered</code>) is not evidence of a capability: ignore it</li>
               <li>GitHub code ≠ shipped feature: only README usage instructions, CHANGELOG entries, or official docs count</li>
@@ -115,7 +114,7 @@
             <span class="step-tag">IPS · Stage 2</span>
           </div>
           <div class="step-desc">
-            Added in Stage 2. The <code>Parse Capabilities</code> Code node in Internal Product Specialist enforces hard limits on Claude's output: regardless of what Claude said:
+            Added in Stage 2. The <code>Parse Capabilities</code> Code node in Internal Product Specialist enforces hard limits on the model's output: regardless of what the model returned:
             <ul style="margin-top:8px; padding-left:18px; color:#94a3b8; font-size:12.5px; line-height:2;">
               <li><code>sample_app</code> source type → hard cap at <code>sample_only</code>, confidence ≤ 3</li>
               <li><code>github_repo</code> → cannot return <code>production_mature</code> unless strong release/version signals are present</li>
@@ -134,7 +133,7 @@
             <span class="step-tag">Market Watch · Stage 4</span>
           </div>
           <div class="step-desc">
-            Added in Stage 4. Before any Claude call is made in Market Watch, a Code node scores the page for relevance. Pages that fail the gate never reach Claude at all: saving cost and preventing low-signal content from being treated as evidence.
+            Added in Stage 4. Before any AI call is made in Market Watch, a Code node scores the page for relevance. Pages that fail the gate never reach the model at all: saving cost and preventing low-signal content from being treated as evidence.
             <br><br>
             Gate formula: <code>base_score(source_type) + title_matches×2 + body_matches×1</code> (body capped at 5). Pass condition: <code>score ≥ 3 AND keywords_matched ≥ 1</code>.
           </div>
@@ -160,7 +159,7 @@
       <div class="callout-icon"><span class="material-icons-round">info</span></div>
       <div class="callout-body">
         <div class="callout-title">Parser Cap Tag</div>
-        <div class="callout-text">When <code>[parser-cap]</code> appears in a <code>maturity_reason</code> field in Google Sheets, the parser overrode Claude's output. The original Claude value is not stored: only the capped value is written to the sheet.</div>
+        <div class="callout-text">When <code>[parser-cap]</code> appears in a <code>maturity_reason</code> field in Google Sheets, the parser overrode the model's output. The original value is not stored: only the capped value is written to the sheet.</div>
       </div>
     </div>
 

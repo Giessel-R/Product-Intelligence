@@ -59,7 +59,6 @@
       <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
       <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
       <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
-      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
     </div>
   </nav>
 
@@ -72,15 +71,15 @@
     <div class="page-header">
       <div class="page-header-meta">
         <span class="badge badge-workflow"><span class="material-icons-round">hub</span> Workflow</span>
-        <span class="badge badge-tue-thu"><span class="material-icons-round">schedule</span> Mon–Fri 7:00 AM PT</span>
+        <span class="badge badge-tue-thu"><span class="material-icons-round">schedule</span> Mon–Fri 9:00 AM PT</span>
       </div>
       <h1>Master Orchestrator</h1>
-      <p class="page-subtitle">The conductor. Wakes up at 7:00 AM PT every weekday, decides which workflows to run based on the day, and chains all sub-workflows in sequence. The only workflow that runs on its own schedule: everything else is called by it.</p>
+      <p class="page-subtitle">The conductor. Wakes up at 9:00 AM PT every weekday, decides which workflows to run based on the day, and chains all sub-workflows in sequence. The only workflow that runs on its own schedule: everything else is called by it.</p>
     </div>
 
     <table class="meta-table">
       <tr><td>Workflow ID</td><td><span class="mono">nzmwZmXRbb9vl5mk</span></td></tr>
-      <tr><td>Triggered by</td><td>Schedule: cron <code>0 7 * * 1-5</code> (7:00 AM PT, Mon–Fri). Docker timezone: <code>America/Vancouver</code>.</td></tr>
+      <tr><td>Triggered by</td><td>Schedule: cron <code>0 9 * * 1-5</code> (9:00 AM PT, Mon–Fri). Docker timezone: <code>America/Vancouver</code>.</td></tr>
       <tr><td>AI model</td><td>None: pure orchestration logic</td></tr>
       <tr><td>Writes to</td><td><code>execution_log</code> (Google Sheets)</td></tr>
       <tr><td>Reads from</td><td>: </td></tr>
@@ -101,10 +100,10 @@
         <div class="step-spine"><div class="step-num">1</div></div>
         <div class="step-content">
           <div class="step-header">
-            <div class="step-title">Daily Schedule 7:00 AM</div>
+            <div class="step-title">Daily Schedule 9:00 AM</div>
             <span class="step-tag">scheduleTrigger</span>
           </div>
-          <div class="step-desc">The alarm clock. Uses cron expression <code>0 7 * * 1-5</code> to fire at exactly 7:00 AM PT (Pacific), Monday through Friday. Docker container timezone is <code>America/Vancouver</code>. Nothing runs unless this fires first. The trigger for the entire pipeline.</div>
+          <div class="step-desc">The alarm clock. Uses cron expression <code>0 9 * * 1-5</code> to fire at exactly 9:00 AM PT (Pacific), Monday through Friday. Docker container timezone is <code>America/Vancouver</code>. Nothing runs unless this fires first. The trigger for the entire pipeline.</div>
         </div>
       </div>
       <div class="step">

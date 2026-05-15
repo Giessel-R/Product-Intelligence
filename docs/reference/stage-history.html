@@ -59,7 +59,6 @@
       <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
       <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
       <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
-      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
     </div>
   </nav>
 
@@ -87,7 +86,6 @@
         <div class="step-content">
           <div class="step-header">
             <div class="step-title">Stage 1: IPS Schema Strengthening</div>
-            <span class="step-tag">2026-03-29</span>
           </div>
           <div class="step-desc">
             Strengthened the <code>internal_capability_map</code> schema from 14 loose fields to 19 precise fields. Key additions: <code>capability_area</code> (renamed from <code>lane</code>), <code>source_weight</code> (deterministic, not Claude-assigned), <code>support_maturity</code> (controlled vocabulary: <code>production_mature</code> / <code>documented</code> / <code>partial</code> / <code>unclear</code> / <code>sample_only</code>), <code>maturity_reason</code> (required justification), <code>capability_tag</code>, <code>freshness_status</code>.
@@ -102,7 +100,6 @@
         <div class="step-content">
           <div class="step-header">
             <div class="step-title">Stage 2: Parser Safety Caps</div>
-            <span class="step-tag">2026-03-30</span>
           </div>
           <div class="step-desc">
             Added source-weighted extraction guidance and parser safety caps to IPS's <code>Parse Capabilities</code> Code node. Hard rules applied after Claude's response: regardless of what Claude returned:
@@ -121,14 +118,13 @@
         <div class="step-content">
           <div class="step-header">
             <div class="step-title">Stage 3: Maturity-Tiered CI Analysis</div>
-            <span class="step-tag">2026-03-31</span>
           </div>
           <div class="step-desc">
             Upgraded Competitor Intelligence to produce maturity-aware analysis. <strong>Node 1: Aggregate Ping Capabilities:</strong> Restructured output from flat array → tiered object per lane, with 5 explicit tier arrays always present (<code>production_mature</code>, <code>documented</code>, <code>partial</code>, <code>unclear</code>, <code>sample_only</code>) plus <code>no_evidence: true</code> flag.
             <br><br>
             <strong>Node 2: Build Analysis Prompts:</strong> Added TIER DEFINITIONS block, REASONING ORDER (6 steps), CLAIM VOCABULARY table with anchored phrases for all tier-vs-tier combinations. <code>unclear</code> kept as its own bucket.
             <br><br>
-            <strong>Validated finding (2026-03-31):</strong> Okta AI_AGENT_IDENTITY: <code>gap_vs_ping</code> = "possible gap: Ping's production claims backed only by press_release source." Press_release confidence downgrade fired from prompt guidance alone.
+            <strong>Validated finding:</strong> Okta AI_AGENT_IDENTITY: <code>gap_vs_ping</code> = "possible gap: Ping's production claims backed only by press_release source." Press_release confidence downgrade fired from prompt guidance alone.
           </div>
         </div>
       </div>
@@ -138,7 +134,6 @@
         <div class="step-content">
           <div class="step-header">
             <div class="step-title">Stage 4: Market Watch Relevance Gate</div>
-            <span class="step-tag">2026-03-31</span>
           </div>
           <div class="step-desc">
             Added a 2-node relevance gate to Market Watch between <code>Has Page Changed?</code> TRUE branch and <code>Build Haiku Prompt</code>. Gate prevents low-signal content from reaching Claude at all.
@@ -147,7 +142,7 @@
             <br><br>
             <strong>Passes Relevance Gate?</strong> (IF node): Routes on <code>relevance_pass === true</code>. FALSE branch still updates the MD5 snapshot: just skips the Claude call.
             <br><br>
-            <strong>Initial test (2026-03-31):</strong> 10 changed pages, all passed (all were docs pages). Drop behavior not yet validated: pending a run where blog/homepage/github sources also change.
+            <strong>Initial test:</strong> 10 changed pages, all passed (all were docs pages). Drop behavior not yet validated: pending a run where blog/homepage/github sources also change.
           </div>
         </div>
       </div>
@@ -157,7 +152,6 @@
         <div class="step-content">
           <div class="step-header">
             <div class="step-title">Stage 5: Hybrid Discovery Model</div>
-            <span class="step-tag">2026-04-05</span>
           </div>
           <div class="step-desc">
             Replaced IPS's hardcoded 80-URL source list with a live <code>source_registry</code> Google Sheets tab. Added the <code>PI: Source Discovery</code> workflow (ID: <code>LhycJpV60D0ddoDS</code>): runs monthly to auto-discover child pages from Ping documentation seed URLs using rules-based link extraction and Claude Haiku classification.
@@ -168,7 +162,7 @@
             <br><br>
             <strong>Guard rails added:</strong> IPS now has a <code>SCOPE CEILING</code> block in its system prompt limiting what <code>family_index</code> sources can claim. CI has an <code>EVIDENCE ROLE RESTRICTIONS</code> block preventing <code>family_index</code> sources from generating narrow capability claims.
             <br><br>
-            <strong>Validated (execution 240, 2026-04-08):</strong> Claude enrichment confirmed working. Claude fires only for <code>unknown</code> items. <code>claude_override</code> written as <code>classification_source</code> on enriched items. <code>not_enough_context: true</code> falls back correctly to <code>classification_source: rules</code>.
+            <strong>Validated:</strong> Claude enrichment confirmed working. Claude fires only for <code>unknown</code> items. <code>claude_override</code> written as <code>classification_source</code> on enriched items. <code>not_enough_context: true</code> falls back correctly to <code>classification_source: rules</code>.
           </div>
         </div>
       </div>
@@ -179,7 +173,7 @@
       <div class="callout-icon"><span class="material-icons-round">info</span></div>
       <div class="callout-body">
         <div class="callout-title">Current Stage: Stage 5: Hybrid Discovery Model</div>
-        <div class="callout-text">All 5 stages deployed and validated. The system is in full production. <code>source_registry</code> tab live in Google Sheets (120 active sources). <code>PI: Source Discovery</code> runs monthly on the first Monday of each month. First scheduled discovery run: May 2026.</div>
+        <div class="callout-text">All 5 stages deployed and validated. The system is in full production. <code>source_registry</code> tab live in Google Sheets (120 active sources). <code>PI: Source Discovery</code> runs monthly on the first Monday of each month.</div>
       </div>
     </div>
 
@@ -187,10 +181,6 @@
       <a href="architecture-quirks.html" class="nav-card">
         <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
         <div><div class="nav-card-label">Previous</div><div class="nav-card-title">Architecture Quirks</div></div>
-      </a>
-      <a href="roadmap.html" class="nav-card nav-card-next">
-        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
-        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Roadmap</div></div>
       </a>
     </div>
   </main>

@@ -59,7 +59,6 @@
       <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
       <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
       <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
-      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
     </div>
   </nav>
 
@@ -71,7 +70,7 @@
     </div>
     <div class="page-header">
       <h1>Weekly Schedule</h1>
-      <p class="page-subtitle">The system runs automatically Mon–Fri at 7:00 AM PT (Pacific). Market Watch runs every day; deeper analysis runs on a staggered schedule to match data availability.</p>
+      <p class="page-subtitle">The system runs automatically Mon–Fri at 9:00 AM PT (Pacific). Market Watch runs every day; deeper analysis runs on a staggered schedule to match data availability.</p>
     </div>
     <hr class="divider">
 
@@ -79,7 +78,7 @@
       <div class="callout-icon"><span class="material-icons-round">schedule</span></div>
       <div class="callout-body">
         <div class="callout-title">Run Timing</div>
-        <div class="callout-text">All runs trigger at 7:00 AM PT (Pacific), Monday through Friday via cron <code>0 7 * * 1-5</code>. The Docker container runs with <code>GENERIC_TIMEZONE=America/Vancouver</code>. The Master Orchestrator handles all scheduling: sub-workflows do not have their own schedules.</div>
+        <div class="callout-text">All runs trigger at 9:00 AM PT (Pacific), Monday through Friday via cron <code>0 9 * * 1-5</code>. The Docker container runs with <code>GENERIC_TIMEZONE=America/Vancouver</code>. The Master Orchestrator handles all scheduling: sub-workflows do not have their own schedules.</div>
       </div>
     </div>
 
@@ -112,7 +111,7 @@
         <tr>
           <td><span class="badge badge-friday">Friday</span></td>
           <td>Market Watch + Competitor Intelligence + Newsletter + Memory &amp; Audit</td>
-          <td>Full pipeline day. Collect → Analyze → Write → Audit. Newsletter is emailed by ~7 AM. Memory &amp; Audit wraps up the week.</td>
+          <td>Full pipeline day. Collect → Analyze → Write → Audit. Newsletter is emailed by ~9 AM. Memory &amp; Audit wraps up the week.</td>
         </tr>
       </tbody>
     </table>

@@ -59,7 +59,6 @@
       <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
       <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
       <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
-      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
     </div>
   </nav>
 
@@ -75,7 +74,7 @@
     </div>
     <hr class="divider">
 
-    <p>The 6 lanes represent the strategic product areas that matter most to Ping Identity. Claude is instructed to use exactly these lane identifiers: no others. Competitor Intelligence groups evidence by lane before analysis, and the newsletter reports findings per lane.</p>
+    <p>The 6 lanes represent the strategic product areas that matter most to Ping Identity. The AI model is instructed to use exactly these lane identifiers: no others. Competitor Intelligence groups evidence by lane before analysis, and the newsletter reports findings per lane.</p>
 
     <div class="lane-grid" style="margin-top:24px">
       <div class="lane-card">
@@ -119,13 +118,13 @@
     <hr class="divider">
 
     <div class="section-title"><span class="material-icons-round">info</span> How Lanes Are Used</div>
-    <p>Every Claude call that produces evidence or findings must assign a lane. The lane is used to:</p>
+    <p>Every AI analysis call that produces evidence or findings must assign a lane. The lane is used to:</p>
     <div class="steps" style="margin-top:16px">
       <div class="step">
         <div class="step-spine"><div class="step-num">1</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Classification (Market Watch)</div></div>
-          <div class="step-desc">Claude Haiku assigns a lane to each evidence record. Lane is stored in <code>evidence_log.lane</code>. The relevance gate uses source type, not lane, for pre-filtering.</div>
+          <div class="step-desc">The AI model assigns a lane to each evidence record. Lane is stored in <code>evidence_log.lane</code>. The relevance gate uses source type, not lane, for pre-filtering.</div>
         </div>
       </div>
       <div class="step">
@@ -139,7 +138,7 @@
         <div class="step-spine"><div class="step-num">3</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Gap Analysis (Competitor Intelligence)</div></div>
-          <div class="step-desc">CI compares competitor evidence per lane against Ping's per-lane capability tiers. The REASONING ORDER prompt instructs Claude to identify the lane first, then check Ping's tiers for that lane specifically.</div>
+          <div class="step-desc">CI compares competitor evidence per lane against Ping's per-lane capability tiers. The REASONING ORDER prompt instructs the AI model to identify the lane first, then check Ping's tiers for that lane specifically.</div>
         </div>
       </div>
     </div>
