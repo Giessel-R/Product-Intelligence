@@ -72,16 +72,16 @@
       <div class="page-header-meta">
         <span class="badge badge-workflow"><span class="material-icons-round">newspaper</span> Workflow</span>
         <span class="badge badge-friday"><span class="material-icons-round">schedule</span> Fridays</span>
-        <span class="badge badge-sonnet"><span class="material-icons-round">psychology</span> Claude Sonnet</span>
+        <span class="badge badge-sonnet"><span class="material-icons-round">psychology</span> the AI model</span>
       </div>
       <h1>Newsletter</h1>
-      <p class="page-subtitle">Reads the week's structured findings, asks Claude Sonnet to write a competitive intelligence briefing, publishes it to Notion, and emails it every Friday morning.</p>
+      <p class="page-subtitle">Reads the week's structured findings, asks the AI model to write a competitive intelligence briefing, publishes it to Notion, and emails it every Friday morning.</p>
     </div>
 
     <table class="meta-table">
       <tr><td>Workflow ID</td><td><span class="mono">mi4bUBXbiA1y5L8h</span></td></tr>
       <tr><td>Triggered by</td><td>Master Orchestrator · Fridays</td></tr>
-      <tr><td>AI model</td><td>Claude Sonnet: newsletter writing</td></tr>
+      <tr><td>AI model</td><td>the AI model: newsletter writing</td></tr>
       <tr><td>Writes to</td><td>Notion Weekly Newsletters · Gmail</td></tr>
       <tr><td>Reads from</td><td><code>structured_findings</code> · <code>error_log</code></td></tr>
     </table>
@@ -90,7 +90,7 @@
 
     <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
     <p>The Newsletter is the final synthesis step of the week. It reads from <code>structured_findings</code>: the processed intelligence layer built by Competitor Intelligence on Tuesday and Thursday: and from <code>error_log</code> for the system health section.</p>
-    <p style="margin-top:12px">The two data reads happen in parallel (Read This Week Findings + Read System Health Data), then merge. Claude Sonnet receives a structured prompt with a two-step novelty evaluation and a hard 500-word limit. Low-confidence items are labeled <code>[LOW CONFIDENCE]</code> in the output: never silently included.</p>
+    <p style="margin-top:12px">The two data reads happen in parallel (Read This Week Findings + Read System Health Data), then merge. the AI model receives a structured prompt with a two-step novelty evaluation and a hard 500-word limit. Low-confidence items are labeled <code>[LOW CONFIDENCE]</code> in the output: never silently included.</p>
     <p style="margin-top:12px">The formatted HTML newsletter uses inline CSS so it renders correctly in Gmail. Dark navy header, orange accent headings, 600px card layout.</p>
 
     <div class="callout callout-info">
@@ -158,14 +158,14 @@
         <div class="step-spine"><div class="step-num">8</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Draft Newsletter (Sonnet)</div><span class="step-tag">HTTP Request → Anthropic</span></div>
-          <div class="step-desc">Sends all findings to Claude Sonnet with a two-step prompt. <strong>Step 1</strong>: evaluate each finding for novelty before writing (new source URL, meaningful content delta, new release note, new capability evidence, or materially changed interpretation). Standing observations and repeated prior-week conclusions are suppressed from the top section. <strong>Step 2</strong>: write using this structure: <em>NEW THIS WEEK</em> (novel findings only, each must answer "what changed?" and "why now?"), <em>ONGOING WATCH</em> (standing signals, max 2 bullets), <em>RECOMMENDED ACTIONS</em> (only if tied to new items), <em>SYSTEM HEALTH</em> (one line). Max 500 words. Items labeled <code>[LOW CONFIDENCE]</code> where appropriate. Quiet weeks produce an explicit "nothing material changed" note.</div>
+          <div class="step-desc">Sends all findings to the AI model with a two-step prompt. <strong>Step 1</strong>: evaluate each finding for novelty before writing (new source URL, meaningful content delta, new release note, new capability evidence, or materially changed interpretation). Standing observations and repeated prior-week conclusions are suppressed from the top section. <strong>Step 2</strong>: write using this structure: <em>NEW THIS WEEK</em> (novel findings only, each must answer "what changed?" and "why now?"), <em>ONGOING WATCH</em> (standing signals, max 2 bullets), <em>RECOMMENDED ACTIONS</em> (only if tied to new items), <em>SYSTEM HEALTH</em> (one line). Max 500 words. Items labeled <code>[LOW CONFIDENCE]</code> where appropriate. Quiet weeks produce an explicit "nothing material changed" note.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">9</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Format HTML Email</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Converts Claude's Markdown output to inline-styled HTML. Dark navy header (<code>#0a0f1e</code>), orange <code>&lt;h2&gt;</code> accents, 600px card layout, all CSS inline for Gmail compatibility. Subject: <em>PI Weekly Intel: [week_label]</em>.</div>
+          <div class="step-desc">Converts the AI Markdown output to inline-styled HTML. Dark navy header (<code>#0a0f1e</code>), orange <code>&lt;h2&gt;</code> accents, 600px card layout, all CSS inline for Gmail compatibility. Subject: <em>PI Weekly Intel: [week_label]</em>.</div>
         </div>
       </div>
       <div class="step">

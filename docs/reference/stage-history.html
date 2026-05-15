@@ -90,7 +90,7 @@
           <div class="step-desc">
             Strengthened the <code>internal_capability_map</code> schema from 14 loose fields to 19 precise fields. Key additions: <code>capability_area</code> (renamed from <code>lane</code>), <code>source_weight</code> (deterministic, not Claude-assigned), <code>support_maturity</code> (controlled vocabulary: <code>production_mature</code> / <code>documented</code> / <code>partial</code> / <code>unclear</code> / <code>sample_only</code>), <code>maturity_reason</code> (required justification), <code>capability_tag</code>, <code>freshness_status</code>.
             <br><br>
-            CI updated to read the new field names. <strong>First real competitive signal:</strong> Okta MCP Server, confidence 4, <code>recommended_action: Draft Brief</code>, <code>review_flag: TRUE</code>.
+            CI updated to read the new field names. <strong>First real competitive signal:</strong> Competitor A MCP Server, confidence 4, <code>recommended_action: Draft Brief</code>, <code>review_flag: TRUE</code>.
           </div>
         </div>
       </div>
@@ -120,11 +120,11 @@
             <div class="step-title">Stage 3: Maturity-Tiered CI Analysis</div>
           </div>
           <div class="step-desc">
-            Upgraded Competitor Intelligence to produce maturity-aware analysis. <strong>Node 1: Aggregate Ping Capabilities:</strong> Restructured output from flat array → tiered object per lane, with 5 explicit tier arrays always present (<code>production_mature</code>, <code>documented</code>, <code>partial</code>, <code>unclear</code>, <code>sample_only</code>) plus <code>no_evidence: true</code> flag.
+            Upgraded Competitor Intelligence to produce maturity-aware analysis. <strong>Node 1: Aggregate my company Capabilities:</strong> Restructured output from flat array → tiered object per lane, with 5 explicit tier arrays always present (<code>production_mature</code>, <code>documented</code>, <code>partial</code>, <code>unclear</code>, <code>sample_only</code>) plus <code>no_evidence: true</code> flag.
             <br><br>
             <strong>Node 2: Build Analysis Prompts:</strong> Added TIER DEFINITIONS block, REASONING ORDER (6 steps), CLAIM VOCABULARY table with anchored phrases for all tier-vs-tier combinations. <code>unclear</code> kept as its own bucket.
             <br><br>
-            <strong>Validated finding:</strong> Okta AI_AGENT_IDENTITY: <code>gap_vs_ping</code> = "possible gap: Ping's production claims backed only by press_release source." Press_release confidence downgrade fired from prompt guidance alone.
+            <strong>Validated finding:</strong> Okta AI_AGENT_IDENTITY: <code>gap_vs_ping</code> = "possible gap: my company's production claims backed only by press_release source." Press_release confidence downgrade fired from prompt guidance alone.
           </div>
         </div>
       </div>
@@ -154,7 +154,7 @@
             <div class="step-title">Stage 5: Hybrid Discovery Model</div>
           </div>
           <div class="step-desc">
-            Replaced IPS's hardcoded 80-URL source list with a live <code>source_registry</code> Google Sheets tab. Added the <code>PI: Source Discovery</code> workflow (ID: <code>LhycJpV60D0ddoDS</code>): runs monthly to auto-discover child pages from Ping documentation seed URLs using rules-based link extraction and Claude Haiku classification.
+            Replaced IPS's hardcoded 80-URL source list with a live <code>source_registry</code> Google Sheets tab. Added the <code>PI: Source Discovery</code> workflow (ID: <code>LhycJpV60D0ddoDS</code>): runs monthly to auto-discover child pages from my company documentation seed URLs using rules-based link extraction and Claude Haiku classification.
             <br><br>
             <strong>source_registry tab</strong> (16 columns): <code>source_id</code>, <code>source_role</code>, <code>priority</code> (P1/P2/P3), <code>status</code> (<code>active</code>/<code>candidate</code>), <code>discovered_from_url</code>, <code>classification_source</code>, and more. Launched with 80 migrated active sources; Discovery adds <code>candidate</code> rows for human promotion.
             <br><br>

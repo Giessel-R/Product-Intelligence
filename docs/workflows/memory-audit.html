@@ -89,7 +89,7 @@
 
     <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
     <p>Memory &amp; Audit is the last workflow to run each Friday. After the Newsletter has been sent, this workflow scans the week's findings for items that deserve human review: things that the automated system flagged as uncertain but potentially important.</p>
-    <p style="margin-top:12px">The flagging logic is deterministic: any finding where <code>confidence_score ≤ 2</code> AND <code>relevance_score ≥ 4</code> is flagged, OR where <code>review_flag = TRUE</code> was already set by Claude during Competitor Intelligence. The audit produces a weekly quality summary: total findings, flagged count, list of flagged IDs with reasons.</p>
+    <p style="margin-top:12px">The flagging logic is deterministic: any finding where <code>confidence_score ≤ 2</code> AND <code>relevance_score ≥ 4</code> is flagged, OR where <code>review_flag = TRUE</code> was already set by the AI during Competitor Intelligence. The audit produces a weekly quality summary: total findings, flagged count, list of flagged IDs with reasons.</p>
     <p style="margin-top:12px">This summary is written to <code>execution_log</code>: giving a historical record of each week's quality metrics over time.</p>
 
     <hr class="divider">

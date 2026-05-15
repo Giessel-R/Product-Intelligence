@@ -76,7 +76,7 @@
         <span class="badge badge-stage5"><span class="material-icons-round">star</span> Stage 5</span>
       </div>
       <h1>Source Discovery</h1>
-      <p class="page-subtitle">Crawls Ping Identity's seed documentation pages monthly, extracts and classifies every internal link, and writes newly discovered URLs to the <code>source_registry</code> as candidates: automatically expanding the IPS source list without manual curation.</p>
+      <p class="page-subtitle">Crawls my company's seed documentation pages monthly, extracts and classifies every internal link, and writes newly discovered URLs to the <code>source_registry</code> as candidates: automatically expanding the IPS source list without manual curation.</p>
     </div>
 
     <table class="meta-table">
@@ -124,7 +124,7 @@
         <div class="step-spine"><div class="step-num">2</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Discovery Config</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Emits a single config item with two runtime flags: <code>USE_CLAUDE_CLASSIFICATION</code> (toggle Claude off entirely for dry runs) and <code>MAX_CLAUDE_CANDIDATES_PER_RUN</code> (cap on items sent to Claude: default 200). Both values are read by downstream nodes.</div>
+          <div class="step-desc">Emits a single config item with two runtime flags: <code>USE_CLAUDE_CLASSIFICATION</code> (toggle AI off entirely for dry runs) and <code>MAX_CLAUDE_CANDIDATES_PER_RUN</code> (cap on items sent to the AI: default 200). Both values are read by downstream nodes.</div>
         </div>
       </div>
       <div class="step">
@@ -193,22 +193,22 @@
       <div class="step highlight">
         <div class="step-spine"><div class="step-num">12</div></div>
         <div class="step-content">
-          <div class="step-header"><div class="step-title">Build Claude Prompt</div><span class="step-tag highlight">Stage 5</span></div>
+          <div class="step-header"><div class="step-title">Build AI Prompt</div><span class="step-tag highlight">Stage 5</span></div>
           <div class="step-desc">Prepares each item for the Claude branch. Only items with <code>source_role = unknown</code> are candidates for Claude enrichment. Applies the <code>MAX_CLAUDE_CANDIDATES_PER_RUN</code> cap: items beyond the cap are marked <code>_skip_claude: true</code> and routed around Claude with their <code>rules</code> classification kept. Confidently-classified items always skip Claude.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">13</div></div>
         <div class="step-content">
-          <div class="step-header"><div class="step-title">Needs Claude?</div><span class="step-tag">IF</span></div>
+          <div class="step-header"><div class="step-title">Needs AI?</div><span class="step-tag">IF</span></div>
           <div class="step-desc">Routes items: <span class="branch-true">TRUE</span> (<code>_skip_claude = false</code>) → Format Claude Prompt → Call Claude Haiku → Parse &amp; Merge. <span class="branch-false">FALSE</span> → Rejoin Classification Paths directly, keeping their rules-based classification.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">14</div></div>
         <div class="step-content">
-          <div class="step-header"><div class="step-title">Format Claude Prompt</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Builds a structured prompt per candidate using: seed page URL, product name, seed page title, candidate URL, and anchor text. Asks Claude to return <code>source_role</code>, <code>capability_tag</code> (from a curated list of ~32 tags), and <code>confidence</code> (1–5). If Claude can't classify with confidence ≥ 3, it returns <code>not_enough_context: true</code>.</div>
+          <div class="step-header"><div class="step-title">Format AI Prompt</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Builds a structured prompt per candidate using: seed page URL, product name, seed page title, candidate URL, and anchor text. Asks Claude to return <code>source_role</code>, <code>capability_tag</code> (from a curated list of ~32 tags), and <code>confidence</code> (1–5). If the AI can't classify with confidence ≥ 3, it returns <code>not_enough_context: true</code>.</div>
         </div>
       </div>
       <div class="step">
@@ -222,7 +222,7 @@
         <div class="step-spine"><div class="step-num">16</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Parse and Merge Classification</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Merges Claude's classification with the rules output. Merge logic: if Claude agrees with the rules-assigned role → <code>claude_assisted</code>. If Claude disagrees and confidence ≥ 4 (≥ 5 for authoritative-classified items) → <code>claude_override</code>. Otherwise the rules-based role is kept. If Claude returned <code>not_enough_context</code> or failed → fall back to rules. Strips internal <code>_claude_prompt</code> and <code>_skip_claude</code> fields.</div>
+          <div class="step-desc">Merges the AI classification with the rules output. Merge logic: if Claude agrees with the rules-assigned role → <code>claude_assisted</code>. If the AI disagrees and confidence ≥ 4 (≥ 5 for authoritative-classified items) → <code>claude_override</code>. Otherwise the rules-based role is kept. If the AI returned <code>not_enough_context</code> or failed, fall back to rules. Strips internal <code>_claude_prompt</code> and <code>_skip_claude</code> fields.</div>
         </div>
       </div>
       <div class="step">
@@ -287,7 +287,7 @@
       <div class="callout-icon"><span class="material-icons-round">warning_amber</span></div>
       <div class="callout-body">
         <div class="callout-title">First Run Not Yet Executed</div>
-        <div class="callout-text">As of Stage 5 deployment (2026-04-05), the first production discovery run has not yet been triggered. Validate by manually triggering the workflow in the n8n UI on a single seed before the first scheduled monthly run. Watch for: unexpected cross-product URLs passing the Reclassify &amp; Filter node, section boundary enforcement working correctly, and Claude fallback behavior on <code>unknown</code> items.</div>
+        <div class="callout-text">The first production discovery run has not yet been triggered. Validate by manually triggering the workflow in the n8n UI on a single seed before the first scheduled monthly run. Watch for: unexpected cross-product URLs passing the Reclassify &amp; Filter node, section boundary enforcement working correctly, and AI fallback behavior on <code>unknown</code> items.</div>
       </div>
     </div>
 

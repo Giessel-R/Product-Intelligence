@@ -72,16 +72,16 @@
       <div class="page-header-meta">
         <span class="badge badge-workflow"><span class="material-icons-round">map</span> Workflow</span>
         <span class="badge badge-monday"><span class="material-icons-round">schedule</span> Mondays</span>
-        <span class="badge badge-sonnet"><span class="material-icons-round">psychology</span> Claude Sonnet</span>
+        <span class="badge badge-sonnet"><span class="material-icons-round">psychology</span> the AI model</span>
       </div>
       <h1>Internal Product Specialist</h1>
-      <p class="page-subtitle">The "know yourself" workflow. Reads Ping's own documentation every Monday to build a capability map: the source of truth used by Competitor Intelligence to identify genuine gaps vs. parity.</p>
+      <p class="page-subtitle">The "know yourself" workflow. Reads my company's own documentation every Monday to build a capability map: the source of truth used by Competitor Intelligence to identify genuine gaps vs. parity.</p>
     </div>
 
     <table class="meta-table">
       <tr><td>Workflow ID</td><td><span class="mono">63fbsmdUxNtnaFXG</span></td></tr>
       <tr><td>Triggered by</td><td>Master Orchestrator · Mondays only</td></tr>
-      <tr><td>AI model</td><td>Claude Sonnet: nuanced capability extraction</td></tr>
+      <tr><td>AI model</td><td>the AI model: nuanced capability extraction</td></tr>
       <tr><td>Writes to</td><td><code>internal_capability_map</code> (Google Sheets)</td></tr>
       <tr><td>Reads from</td><td><code>source_registry</code> tab (Google Sheets): active rows filtered by P1/P2/P3 cadence</td></tr>
     </table>
@@ -89,10 +89,10 @@
     <hr class="divider">
 
     <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
-    <p>Before the system can say "Okta has X that Ping doesn't have," it needs to know what Ping has. IPS reads Ping sources every Monday: pulling from the <code>source_registry</code> tab in Google Sheets (80+ active sources): and asks Claude Sonnet: "What capabilities does this document? Be specific. Only include things clearly supported."</p>
-    <p style="margin-top:12px">Stage 5 replaced the old hardcoded <code>Define Ping Sources</code> node with a live read from <code>source_registry</code>. Sources are staggered by priority cadence: P1 runs every Monday, P2 every other week, P3 once a month. New sources discovered by the Source Discovery workflow enter as <code>candidate</code> and must be promoted to <code>active</code> before IPS picks them up.</p>
-    <p style="margin-top:12px">Stage 2 added parser safety caps: <code>sample_app</code> sources are hard-capped at <code>sample_only</code> maturity regardless of Claude's output. <code>github_repo</code> sources cannot return <code>production_mature</code> without strong release or version signals. When a cap fires, <code>[parser-cap]</code> is prefixed to the <code>maturity_reason</code> field: Claude's original value is not stored.</p>
-    <p style="margin-top:12px">The result: each Monday, <code>internal_capability_map</code> is rebuilt with a precise, source-calibrated picture of Ping's capabilities across all 6 strategic lanes. The sheet is cleared at the start of every run: if it is empty, IPS has not run yet this week or found no qualifying capabilities.</p>
+    <p>Before the system can say "Competitor A has X that my company doesn't have," it needs to know what my company has. IPS reads my company sources every Monday: pulling from the <code>source_registry</code> tab in Google Sheets (80+ active sources): and asks the AI model: "What capabilities does this document? Be specific. Only include things clearly supported."</p>
+    <p style="margin-top:12px">Stage 5 replaced the old hardcoded <code>Define my company Sources</code> node with a live read from <code>source_registry</code>. Sources are staggered by priority cadence: P1 runs every Monday, P2 every other week, P3 once a month. New sources discovered by the Source Discovery workflow enter as <code>candidate</code> and must be promoted to <code>active</code> before IPS picks them up.</p>
+    <p style="margin-top:12px">Stage 2 added parser safety caps: <code>sample_app</code> sources are hard-capped at <code>sample_only</code> maturity regardless of the AI output. <code>github_repo</code> sources cannot return <code>production_mature</code> without strong release or version signals. When a cap fires, <code>[parser-cap]</code> is prefixed to the <code>maturity_reason</code> field: the AI's original value is not stored.</p>
+    <p style="margin-top:12px">The result: each Monday, <code>internal_capability_map</code> is rebuilt with a precise, source-calibrated picture of my company's capabilities across all 6 strategic lanes. The sheet is cleared at the start of every run: if it is empty, IPS has not run yet this week or found no qualifying capabilities.</p>
 
     <div class="callout callout-info">
       <div class="callout-icon"><span class="material-icons-round">info</span></div>
@@ -124,7 +124,7 @@
         <div class="step-spine"><div class="step-num">3</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Read Source Registry</div><span class="step-tag">Google Sheets</span></div>
-          <div class="step-desc">Reads the <code>source_registry</code> tab from Google Sheets. Only rows with <code>status = active</code> are used. This replaced the old hardcoded <code>Define Ping Sources</code> Code node in Stage 5. The registry currently holds 80+ sources; new discoveries from Source Discovery enter as <code>candidate</code> until promoted.</div>
+          <div class="step-desc">Reads the <code>source_registry</code> tab from Google Sheets. Only rows with <code>status = active</code> are used. This replaced the old hardcoded <code>Define my company Sources</code> Code node in Stage 5. The registry currently holds 80+ sources; new discoveries from Source Discovery enter as <code>candidate</code> until promoted.</div>
         </div>
       </div>
       <div class="step">
@@ -166,28 +166,28 @@
         <div class="step-spine"><div class="step-num">9</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Call Sonnet</div><span class="step-tag">HTTP Request → Anthropic</span></div>
-          <div class="step-desc">Sends the extraction prompt to Claude Sonnet. Returns a JSON array of capability objects per document. Each object: <code>feature_name</code>, <code>support_maturity</code>, <code>evidence_summary</code>, <code>confidence_score</code>, <code>maturity_reason</code>, <code>capability_tag</code>.</div>
+          <div class="step-desc">Sends the extraction prompt to the AI model. Returns a JSON array of capability objects per document. Each object: <code>feature_name</code>, <code>support_maturity</code>, <code>evidence_summary</code>, <code>confidence_score</code>, <code>maturity_reason</code>, <code>capability_tag</code>.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">10</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Parse Capabilities</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Parser safety caps applied here. If <code>source_type === 'sample_app'</code> and Claude returned maturity above <code>sample_only</code> → override and prepend <code>[parser-cap]</code> to <code>maturity_reason</code>. If <code>source_type === 'github_repo'</code> and maturity is <code>production_mature</code> without release signals → downgrade. Rows with valid capabilities are passed to the write step.</div>
+          <div class="step-desc">Parser safety caps applied here. If <code>source_type === 'sample_app'</code> and the AI returned maturity above <code>sample_only</code> → override and prepend <code>[parser-cap]</code> to <code>maturity_reason</code>. If <code>source_type === 'github_repo'</code> and maturity is <code>production_mature</code> without release signals → downgrade. Rows with valid capabilities are passed to the write step.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">11</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Any Capabilities Found?</div><span class="step-tag">IF</span></div>
-          <div class="step-desc"><span class="branch-true">TRUE</span> → write to Sheets. <span class="branch-false">FALSE</span> (Claude returned nothing useful for this source) → skip. This prevents appending empty rows.</div>
+          <div class="step-desc"><span class="branch-true">TRUE</span> → write to Sheets. <span class="branch-false">FALSE</span> (the AI returned nothing useful for this source) → skip. This prevents appending empty rows.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">12</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Write to internal_capability_map</div><span class="step-tag">Google Sheets</span></div>
-          <div class="step-desc">Appends each validated capability row to the <code>internal_capability_map</code> tab. This tab is cleared and rebuilt each Monday: it's the single source of truth for what Ping can do, used by Competitor Intelligence for gap analysis.</div>
+          <div class="step-desc">Appends each validated capability row to the <code>internal_capability_map</code> tab. This tab is cleared and rebuilt each Monday: it's the single source of truth for what my company can do, used by Competitor Intelligence for gap analysis.</div>
         </div>
       </div>
     </div>

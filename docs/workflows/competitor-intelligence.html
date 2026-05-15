@@ -72,17 +72,17 @@
       <div class="page-header-meta">
         <span class="badge badge-workflow"><span class="material-icons-round">analytics</span> Workflow</span>
         <span class="badge badge-tue-thu"><span class="material-icons-round">schedule</span> Tue &amp; Thu</span>
-        <span class="badge badge-sonnet"><span class="material-icons-round">psychology</span> Claude Sonnet</span>
+        <span class="badge badge-sonnet"><span class="material-icons-round">psychology</span> the AI model</span>
         <span class="badge badge-stage4"><span class="material-icons-round">star</span> Stage 3</span>
       </div>
       <h1>Competitor Intelligence</h1>
-      <p class="page-subtitle">Compares raw evidence from Market Watch against Ping's capability map to identify gaps, parity, and strategic signals. Uses maturity-tiered analysis to prevent both over-claiming and under-claiming competitive differences.</p>
+      <p class="page-subtitle">Compares raw evidence from Market Watch against my company's capability map to identify gaps, parity, and strategic signals. Uses maturity-tiered analysis to prevent both over-claiming and under-claiming competitive differences.</p>
     </div>
 
     <table class="meta-table">
       <tr><td>Workflow ID</td><td><span class="mono">[redacted]</span></td></tr>
       <tr><td>Triggered by</td><td>Master Orchestrator · Tuesdays and Thursdays</td></tr>
-      <tr><td>AI model</td><td>Claude Sonnet: maturity-aware gap analysis</td></tr>
+      <tr><td>AI model</td><td>the AI model: maturity-aware gap analysis</td></tr>
       <tr><td>Writes to</td><td><code>structured_findings</code> (Google Sheets) · Notion Competitor Cards</td></tr>
       <tr><td>Reads from</td><td><code>evidence_log</code> · <code>internal_capability_map</code></td></tr>
     </table>
@@ -90,8 +90,8 @@
     <hr class="divider">
 
     <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
-    <p>CI picks up raw evidence from Market Watch and turns it into structured competitive analysis. It reads new evidence from the last 3 days only, groups it by competitor, then reads Ping's tiered capability map. The grouping ensures Claude sees all of Okta's recent signals together: not one page change at a time.</p>
-    <p style="margin-top:12px">Stage 3 upgraded the analysis prompts to use a tiered capability structure. Not just "Ping has MCP" but "Ping has MCP at <code>documented</code> level from developer_portal, with <code>production_mature</code> from release_notes for PingGateway." This precision prevents both over-claiming gaps (when Ping has the capability but at lower maturity) and dismissing real gaps (when Ping's evidence is weak).</p>
+    <p>CI picks up raw evidence from Market Watch and turns it into structured competitive analysis. It reads new evidence from the last 3 days only, groups it by competitor, then reads my company's tiered capability map. The grouping ensures the AI sees all of a competitor's recent signals together: not one page change at a time.</p>
+    <p style="margin-top:12px">Stage 3 upgraded the analysis prompts to use a tiered capability structure. Not just "my company has MCP" but "my company has MCP at <code>documented</code> level from developer_portal, with <code>production_mature</code> from release_notes." This precision prevents both over-claiming gaps (when my company has the capability but at lower maturity) and dismissing real gaps (when my company's evidence is weak).</p>
     <p style="margin-top:12px">The recommended action vocabulary is deliberately narrow: <code>Watch</code> | <code>Validate</code> | <code>Draft Brief</code>. No other values.</p>
 
     <hr class="divider">
@@ -123,20 +123,20 @@
         <div class="step-spine"><div class="step-num">4</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Filter New Only</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Filters to rows with <code>status = "new"</code> AND <code>date_found &gt;= 3 days ago</code>. Groups by <code>competitor_id</code>: all Okta findings bundled, all Auth0 findings bundled. If zero evidence remains after filtering, the workflow exits gracefully without errors.</div>
+          <div class="step-desc">Filters to rows with <code>status = "new"</code> AND <code>date_found &gt;= 3 days ago</code>. Groups by <code>competitor_id</code>: all Competitor A findings bundled, all Competitor B findings bundled. If zero evidence remains after filtering, the workflow exits gracefully without errors.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">5</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Read Capability Map</div><span class="step-tag">Google Sheets</span></div>
-          <div class="step-desc">Reads <code>internal_capability_map</code>: the Monday-rebuilt map of Ping's capabilities. This must run before analysis.</div>
+          <div class="step-desc">Reads <code>internal_capability_map</code>: the Monday-rebuilt map of my company's capabilities. This must run before analysis.</div>
         </div>
       </div>
       <div class="step highlight">
         <div class="step-spine"><div class="step-num">6</div></div>
         <div class="step-content">
-          <div class="step-header"><div class="step-title">Aggregate Ping Capabilities</div><span class="step-tag highlight">Stage 3</span></div>
+          <div class="step-header"><div class="step-title">Aggregate my company Capabilities</div><span class="step-tag highlight">Stage 3</span></div>
           <div class="step-desc">Stage 3 node. Restructures flat capability rows into a tiered object per lane. For each of the 6 lanes: <code>{ production_mature: [...], documented: [...], partial: [...], unclear: [...], sample_only: [], no_evidence: bool, source_types_present: [] }</code>. All 5 tiers always present: even if empty. <code>unclear</code> is its own bucket, never merged into <code>partial</code>. Source type is included in each capability entry for prompt context.</div>
         </div>
       </div>
@@ -144,21 +144,21 @@
         <div class="step-spine"><div class="step-num">7</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Build Analysis Prompts</div><span class="step-tag highlight">Stage 3</span></div>
-          <div class="step-desc">Stage 3 node. Constructs the Sonnet analysis prompt with: TIER DEFINITIONS (explains all 5 maturity tiers + no_evidence to Claude), REASONING ORDER (6 steps: identify lane → state competitor evidence → check Ping tiers → compare → note press_release → set action), CLAIM VOCABULARY (anchored phrases for all tier combinations), CONFIDENCE BEHAVIOR (unclear/weak Ping → reduce confidence; press_release alone → no confidence raise), SOURCE TYPE CALIBRATION.</div>
+          <div class="step-desc">Stage 3 node. Constructs the Sonnet analysis prompt with: TIER DEFINITIONS (explains all 5 maturity tiers + no_evidence to Claude), REASONING ORDER (6 steps: identify lane → state competitor evidence → check my company tiers → compare → note press_release → set action), CLAIM VOCABULARY (anchored phrases for all tier combinations), CONFIDENCE BEHAVIOR (unclear/weak my company → reduce confidence; press_release alone → no confidence raise), SOURCE TYPE CALIBRATION.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">8</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Analyze with Sonnet</div><span class="step-tag">HTTP Request → Anthropic</span></div>
-          <div class="step-desc">Sends the analysis prompt to Claude Sonnet. Returns structured JSON: <code>gap_vs_ping</code>, <code>parity_vs_ping</code>, <code>ping_advantage</code>, <code>observed_facts</code>, <code>analyst_interpretation</code>, <code>recommended_action</code> (<code>Watch</code>|<code>Validate</code>|<code>Draft Brief</code>), <code>confidence_score</code>, <code>review_flag</code>.</div>
+          <div class="step-desc">Sends the analysis prompt to the AI model. Returns structured JSON: <code>gap_vs_ping</code>, <code>parity_vs_ping</code>, <code>ping_advantage</code>, <code>observed_facts</code>, <code>analyst_interpretation</code>, <code>recommended_action</code> (<code>Watch</code>|<code>Validate</code>|<code>Draft Brief</code>), <code>confidence_score</code>, <code>review_flag</code>.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">9</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Parse and Build Finding</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Parses Claude's response and assigns a unique finding ID: <code>SF-{competitor}-{timestamp}</code>. Validates recommended_action is one of the 3 allowed values.</div>
+          <div class="step-desc">Parses the AI response and assigns a unique finding ID: <code>SF-{competitor}-{timestamp}</code>. Validates recommended_action is one of the 3 allowed values.</div>
         </div>
       </div>
       <div class="step">

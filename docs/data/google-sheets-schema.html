@@ -91,8 +91,8 @@
     <table class="data-table">
       <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td>competitor_id</td><td class="field-type">string</td><td>Short identifier: <code>okta</code>, <code>auth0</code></td></tr>
-        <tr><td>name</td><td class="field-type">string</td><td>Display name: <code>Okta</code>, <code>Auth0</code></td></tr>
+        <tr><td>competitor_id</td><td class="field-type">string</td><td>Short identifier: <code>competitor-a</code>, <code>competitor-b</code></td></tr>
+        <tr><td>name</td><td class="field-type">string</td><td>Display name: e.g. <code>Competitor A</code>, <code>Competitor B</code></td></tr>
         <tr><td>tier</td><td class="field-type">string</td><td><code>broad</code> (Phase 1: all sources are broad tier)</td></tr>
         <tr><td>source_type</td><td class="field-type">string</td><td><code>docs</code>, <code>changelog</code>, <code>blog</code>, <code>github</code>, <code>release-notes</code>, <code>website</code></td></tr>
         <tr><td>url</td><td class="field-type">string</td><td>Full URL to monitor</td></tr>
@@ -126,13 +126,13 @@
         <tr><td>ev_id</td><td class="field-type">string</td><td>Unique ID: <code>EV-{competitor}-{timestamp}</code></td></tr>
         <tr><td>date_found</td><td class="field-type">date</td><td>Date this evidence was detected</td></tr>
         <tr><td>week</td><td class="field-type">string</td><td>Week label, e.g. <code>2026-W13</code></td></tr>
-        <tr><td>competitor_id</td><td class="field-type">string</td><td><code>okta</code> or <code>auth0</code></td></tr>
+        <tr><td>competitor_id</td><td class="field-type">string</td><td><code>competitor-a</code> or <code>competitor-b</code></td></tr>
         <tr><td>source_type</td><td class="field-type">string</td><td>Type of source that changed</td></tr>
         <tr><td>source_url</td><td class="field-type">string</td><td>URL where the change was detected</td></tr>
         <tr><td>observed_fact</td><td class="field-type">string</td><td>What is explicitly stated in the source: no inference</td></tr>
         <tr><td>analyst_interpretation</td><td class="field-type">string</td><td>What this might mean strategically: labeled as interpretation</td></tr>
         <tr><td>lane</td><td class="field-type">string</td><td>One of the 6 strategic lanes</td></tr>
-        <tr><td>importance_score</td><td class="field-type">integer</td><td>1–5: How meaningful for Ping's product scope</td></tr>
+        <tr><td>importance_score</td><td class="field-type">integer</td><td>1–5: How meaningful for my company's product scope</td></tr>
         <tr><td>confidence_score</td><td class="field-type">integer</td><td>1–5: How certain the claim is real</td></tr>
         <tr><td>evidence_strength</td><td class="field-type">string</td><td><code>direct</code> | <code>inferred</code> | <code>weak</code> | <code>speculative</code></td></tr>
         <tr><td>status</td><td class="field-type">string</td><td><code>new</code> | <code>processed</code> | <code>archived</code></td></tr>
@@ -141,7 +141,7 @@
 
     <hr class="divider">
 
-    <h3>internal_capability_map: Ping's own capabilities</h3>
+    <h3>internal_capability_map: my company's own capabilities</h3>
     <p style="margin-bottom:8px">Rebuilt every Monday by the Internal Product Specialist. The source of truth for gap analysis in CI. Support maturity vocabulary is controlled: only 5 values allowed.</p>
     <table class="data-table">
       <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
@@ -168,10 +168,10 @@
       <tbody>
         <tr><td>finding_id</td><td class="field-type">string</td><td>Unique ID: <code>SF-{competitor}-{timestamp}</code></td></tr>
         <tr><td>week</td><td class="field-type">string</td><td>Week label</td></tr>
-        <tr><td>competitor_id</td><td class="field-type">string</td><td><code>okta</code> or <code>auth0</code></td></tr>
-        <tr><td>gap_vs_ping</td><td class="field-type">string</td><td>What competitors have that Ping may not (anchored vocabulary)</td></tr>
-        <tr><td>parity_vs_ping</td><td class="field-type">string</td><td>Where competitors and Ping appear to match (with calibration)</td></tr>
-        <tr><td>ping_advantage</td><td class="field-type">string</td><td>Where Ping appears stronger</td></tr>
+        <tr><td>competitor_id</td><td class="field-type">string</td><td><code>competitor-a</code> or <code>competitor-b</code></td></tr>
+        <tr><td>gap_vs_ping</td><td class="field-type">string</td><td>What competitors have that my company may not (anchored vocabulary)</td></tr>
+        <tr><td>parity_vs_ping</td><td class="field-type">string</td><td>Where competitors and my company appear to match (with calibration)</td></tr>
+        <tr><td>ping_advantage</td><td class="field-type">string</td><td>Where my company appears stronger</td></tr>
         <tr><td>recommended_action</td><td class="field-type">string</td><td><code>Watch</code> | <code>Validate</code> | <code>Draft Brief</code>: no other values</td></tr>
         <tr><td>confidence_score</td><td class="field-type">integer</td><td>1–5: Overall confidence in this finding</td></tr>
         <tr><td>review_flag</td><td class="field-type">boolean</td><td><code>TRUE</code> if Claude flagged this finding for human review</td></tr>
