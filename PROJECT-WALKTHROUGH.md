@@ -37,7 +37,7 @@ _Last updated: 2026-05-12_
 
 ### The Problem
 
-As a Director of Product at Ping Identity (a company that makes identity and authentication software), you need to know what your competitors are doing. Specifically:
+As a Director of Product I need to know what the competitors are doing. Specifically:
 - What features are competitors shipping?
 - Are they building things that Ping doesn't have?
 - Are there product gaps you should be worried about?
