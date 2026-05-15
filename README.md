@@ -2,7 +2,7 @@
 
 An automated competitive intelligence system built on **n8n**, **Claude AI**, **Google Sheets**, and **Notion**. It monitors competitor websites daily, extracts structured intelligence, compares it against your own capability map, and delivers a weekly briefing — all without manual research.
 
-Originally built for tracking identity/auth competitors (Okta, Auth0 vs. Ping Identity), but the architecture adapts to any competitive monitoring use case.
+Originally built for tracking identity/auth competitors, but the architecture adapts to any competitive monitoring use case.
 
 ---
 
@@ -191,7 +191,7 @@ For each workflow, open it in n8n and update:
 
 In your Google Sheets workbook, open the `config` tab and add competitor URLs to watch. Each row needs at minimum:
 - `url` — the page to monitor
-- `competitor` — competitor name (e.g., `Okta`, `Auth0`)
+- `competitor` — competitor name (e.g., `CompetitorA`, `CompetitorB`)
 - `active` — `TRUE` to enable monitoring
 
 ### 7. Populate source_registry
