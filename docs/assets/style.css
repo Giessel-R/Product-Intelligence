@@ -332,8 +332,8 @@ hr.divider { border: none; border-top: 1px solid #1e1e1e; margin: 32px 0; }
 
 .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 40px; }
 .stat-card { background: #111; border: 1px solid #1e1e1e; border-radius: 8px; padding: 14px 16px; }
-.stat-value { font-size: 22px; font-weight: 800; color: #f8fafc; margin-bottom: 2px; }
-.stat-label { color: #64748b; font-size: 11px; }
+.stat-value { font-size: 28px; font-weight: 800; color: #f8fafc; margin-bottom: 2px; }
+.stat-label { color: #64748b; font-size: 13px; }
 
 .workflow-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 40px; }
 .workflow-card { background: #111; border: 1px solid #1e1e1e; border-radius: 8px; padding: 16px; display: block; transition: border-color .15s; }
@@ -341,13 +341,13 @@ hr.divider { border: none; border-top: 1px solid #1e1e1e; margin: 32px 0; }
 .workflow-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .workflow-icon { width: 30px; height: 30px; border-radius: 7px; background: #1a1028; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .workflow-icon .material-icons-round { font-size: 16px; color: #c084fc; }
-.workflow-card-name { color: #f1f5f9; font-size: 13px; font-weight: 600; }
-.workflow-card-desc { color: #64748b; font-size: 11px; line-height: 1.55; margin-bottom: 10px; }
+.workflow-card-name { color: #f1f5f9; font-size: 15px; font-weight: 600; }
+.workflow-card-desc { color: #64748b; font-size: 13px; line-height: 1.55; margin-bottom: 10px; }
 .workflow-card-footer { display: flex; justify-content: space-between; align-items: center; }
-.workflow-card-id { font-family: 'JetBrains Mono', monospace; color: #334155; font-size: 9px; }
+.workflow-card-id { font-family: 'JetBrains Mono', monospace; color: #334155; font-size: 11px; }
 
 /* Schedule pills */
-.pill { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; display: inline-block; }
+.pill { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; display: inline-block; }
 .pill-schedule { background: #0f172a; color: #60a5fa; border: 1px solid #1e3a5f; }
 .pill-daily    { background: #0f2a1a; color: #4ade80; border: 1px solid #14532d; }
 .pill-monday   { background: #1f1a0a; color: #facc15; border: 1px solid #422006; }
@@ -360,8 +360,8 @@ hr.divider { border: none; border-top: 1px solid #1e1e1e; margin: 32px 0; }
 .quicklink-icon-wrap { width: 32px; height: 32px; background: #1a1028; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .quicklink-icon-wrap .material-icons-round { font-size: 17px; color: #c084fc; }
 .quicklink-text { flex: 1; }
-.quicklink-title { color: #e2e8f0; font-size: 12px; font-weight: 600; margin-bottom: 2px; }
-.quicklink-desc { color: #64748b; font-size: 11px; }
+.quicklink-title { color: #e2e8f0; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.quicklink-desc { color: #64748b; font-size: 13px; }
 
 /* ── DATA TABLES (schema pages) ── */
 .data-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 12px; }

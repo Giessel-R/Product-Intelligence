@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-31T21:54:01.397Z",
+  "updatedAt": "2026-04-17T21:01:22.564Z",
   "createdAt": "2026-03-22T22:24:04.602Z",
   "id": "ppMzAEKShjv6L4EP",
   "name": "PI: Market Watch",
@@ -7,7 +7,7 @@
   "active": true,
   "isArchived": false,
   "nodes": [
-    {
+    {                                                                                                          
       "parameters": {
         "inputSource": "passthrough"
       },
@@ -20,7 +20,7 @@
         400
       ]
     },
-    {
+    {                                                              
       "parameters": {
         "jsCode": "const runId = $input.first().json.run_id || `MW-${Date.now()}`;\nreturn [{ json: { run_id: runId, run_date: new Date().toISOString(), week: new Date().toISOString().substring(0,7) } }];"
       },
@@ -37,7 +37,7 @@
       "parameters": {
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -56,7 +56,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -78,7 +78,7 @@
       "parameters": {
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -96,7 +96,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -214,7 +214,7 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -246,7 +246,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -332,7 +332,7 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "P6dgBaH33wjoGxqb",
+          "id": "YOUR_ANTHROPIC_CREDENTIAL_ID",
           "name": "Header Auth account"
         }
       },
@@ -341,7 +341,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Get original item data from prompt builder (paired item)\nconst origItem = $('Build Haiku Prompt').item.json;\n\n// Get API response for this item\nconst apiResponse = $input.item.json;\n\nlet ai = {};\ntry {\n  const text = apiResponse.content?.[0]?.text || '';\n  const match = text.match(/\\{[\\s\\S]*\\}/);\n  if (match) ai = JSON.parse(match[0]);\n} catch(e) { ai = { not_enough_evidence: true }; }\n\n// Drop records with not_enough_evidence or confidence <= 1\nif (ai.not_enough_evidence) return { json: { _dropped: true } };\nif ((ai.confidence_score || 0) <= 1) return { json: { _dropped: true } };\n\nconst now = new Date().toISOString();\nreturn { json: {\n  ev_id: `EV-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,\n  date_found: now,\n  week: now.substring(0,7),\n  competitor_id: origItem.competitor_id,\n  source_type: origItem.source_type,\n  source_url: origItem.url,\n  title: `${origItem.name} ${origItem.source_type} update`,\n  summary: ai.summary || '',\n  observed_fact: ai.observed_fact || '',\n  analyst_interpretation: ai.analyst_interpretation || '',\n  product_area: ai.product_area || '',\n  lane: (ai.lane || '').toUpperCase(),\n  importance_score: ai.importance_score || 2,\n  confidence_score: ai.confidence_score || 2,\n  freshness: 'this_week',\n  evidence_strength: ai.evidence_strength || 'inferred',\n  status: 'new',\n  new_hash: origItem.new_hash,\n  snapshot_url: origItem.url,\n  checked_at: origItem.checked_at\n} };"
+        "jsCode": "// Get original item data from prompt builder (paired item)\nconst origItem = $('Build Haiku Prompt').item?.json ?? $input.item.json;\n\n// Get API response for this item\nconst apiResponse = $input.item.json;\n\nlet ai = {};\ntry {\n  const text = apiResponse.content?.[0]?.text || '';\n  const match = text.match(/\\{[\\s\\S]*\\}/);\n  if (match) ai = JSON.parse(match[0]);\n} catch(e) { ai = { not_enough_evidence: true }; }\n\n// Drop records with not_enough_evidence or confidence <= 1\nif (ai.not_enough_evidence) return { json: { _dropped: true } };\nif ((ai.confidence_score || 0) <= 1) return { json: { _dropped: true } };\n\nconst now = new Date().toISOString();\nreturn { json: {\n  ev_id: `EV-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,\n  date_found: now,\n  week: now.substring(0,7),\n  competitor_id: origItem.competitor_id,\n  source_type: origItem.source_type,\n  source_url: origItem.url,\n  title: `${origItem.name} ${origItem.source_type} update`,\n  summary: ai.summary || '',\n  observed_fact: ai.observed_fact || '',\n  analyst_interpretation: ai.analyst_interpretation || '',\n  product_area: ai.product_area || '',\n  lane: String(Array.isArray(ai.lane) ? ai.lane[0] : (ai.lane || '')).toUpperCase(),\n  importance_score: ai.importance_score || 2,\n  confidence_score: ai.confidence_score || 2,\n  freshness: 'this_week',\n  evidence_strength: ai.evidence_strength || 'inferred',\n  status: 'new',\n  new_hash: origItem.new_hash,\n  snapshot_url: origItem.url,\n  checked_at: origItem.checked_at\n} };"
       },
       "id": "parse-ai",
       "name": "Parse AI and Build Record",
@@ -389,7 +389,7 @@
         "operation": "append",
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -410,7 +410,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -420,7 +420,7 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -452,7 +452,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -802,9 +802,9 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "9b984bba-6e73-4775-8d72-c6ea585ddf1e",
-  "activeVersionId": "98347c2d-5825-4118-a2d8-f40879baa4ff",
-  "versionCounter": 127,
+  "versionId": "340b8ae3-f0a1-4416-a788-de9cd33214a3",
+  "activeVersionId": "340b8ae3-f0a1-4416-a788-de9cd33214a3",
+  "versionCounter": 135,
   "triggerCount": 0,
   "shared": [
     {
@@ -817,7 +817,7 @@
         "updatedAt": "2026-03-21T23:31:19.647Z",
         "createdAt": "2026-03-21T23:26:38.308Z",
         "id": "Oa57UYSvQEVoNZvh",
-        "name": "giessel razavi <giesselrazavi@gmail.com>",
+        "name": "Your Name <YOUR_EMAIL@example.com>",
         "type": "personal",
         "icon": null,
         "description": null,
@@ -827,9 +827,9 @@
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-03-31T21:46:04.248Z",
-    "createdAt": "2026-03-31T21:46:04.248Z",
-    "versionId": "98347c2d-5825-4118-a2d8-f40879baa4ff",
+    "updatedAt": "2026-04-17T21:01:22.567Z",
+    "createdAt": "2026-04-17T21:01:22.567Z",
+    "versionId": "340b8ae3-f0a1-4416-a788-de9cd33214a3",
     "workflowId": "ppMzAEKShjv6L4EP",
     "nodes": [
       {
@@ -862,7 +862,7 @@
         "parameters": {
           "documentId": {
             "mode": "id",
-            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+            "value": "YOUR_GOOGLE_SHEETS_ID"
           },
           "sheetName": {
             "mode": "name",
@@ -881,7 +881,7 @@
         "alwaysOutputData": true,
         "credentials": {
           "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
             "name": "Google Sheets account"
           }
         }
@@ -903,7 +903,7 @@
         "parameters": {
           "documentId": {
             "mode": "id",
-            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+            "value": "YOUR_GOOGLE_SHEETS_ID"
           },
           "sheetName": {
             "mode": "name",
@@ -921,7 +921,7 @@
         ],
         "credentials": {
           "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
             "name": "Google Sheets account"
           }
         }
@@ -1039,7 +1039,7 @@
           "operation": "appendOrUpdate",
           "documentId": {
             "mode": "id",
-            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+            "value": "YOUR_GOOGLE_SHEETS_ID"
           },
           "sheetName": {
             "mode": "name",
@@ -1071,7 +1071,7 @@
         ],
         "credentials": {
           "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
             "name": "Google Sheets account"
           }
         }
@@ -1155,18 +1155,18 @@
           3120,
           304
         ],
-        "continueOnFail": true,
         "credentials": {
           "httpHeaderAuth": {
-            "id": "P6dgBaH33wjoGxqb",
+            "id": "YOUR_ANTHROPIC_CREDENTIAL_ID",
             "name": "Header Auth account"
           }
-        }
+        },
+        "continueOnFail": true
       },
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "// Get original item data from prompt builder (paired item)\nconst origItem = $('Build Haiku Prompt').item.json;\n\n// Get API response for this item\nconst apiResponse = $input.item.json;\n\nlet ai = {};\ntry {\n  const text = apiResponse.content?.[0]?.text || '';\n  const match = text.match(/\\{[\\s\\S]*\\}/);\n  if (match) ai = JSON.parse(match[0]);\n} catch(e) { ai = { not_enough_evidence: true }; }\n\n// Drop records with not_enough_evidence or confidence <= 1\nif (ai.not_enough_evidence) return { json: { _dropped: true } };\nif ((ai.confidence_score || 0) <= 1) return { json: { _dropped: true } };\n\nconst now = new Date().toISOString();\nreturn { json: {\n  ev_id: `EV-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,\n  date_found: now,\n  week: now.substring(0,7),\n  competitor_id: origItem.competitor_id,\n  source_type: origItem.source_type,\n  source_url: origItem.url,\n  title: `${origItem.name} ${origItem.source_type} update`,\n  summary: ai.summary || '',\n  observed_fact: ai.observed_fact || '',\n  analyst_interpretation: ai.analyst_interpretation || '',\n  product_area: ai.product_area || '',\n  lane: (ai.lane || '').toUpperCase(),\n  importance_score: ai.importance_score || 2,\n  confidence_score: ai.confidence_score || 2,\n  freshness: 'this_week',\n  evidence_strength: ai.evidence_strength || 'inferred',\n  status: 'new',\n  new_hash: origItem.new_hash,\n  snapshot_url: origItem.url,\n  checked_at: origItem.checked_at\n} };"
+          "jsCode": "// Get original item data from prompt builder (paired item)\nconst origItem = $('Build Haiku Prompt').item?.json ?? $input.item.json;\n\n// Get API response for this item\nconst apiResponse = $input.item.json;\n\nlet ai = {};\ntry {\n  const text = apiResponse.content?.[0]?.text || '';\n  const match = text.match(/\\{[\\s\\S]*\\}/);\n  if (match) ai = JSON.parse(match[0]);\n} catch(e) { ai = { not_enough_evidence: true }; }\n\n// Drop records with not_enough_evidence or confidence <= 1\nif (ai.not_enough_evidence) return { json: { _dropped: true } };\nif ((ai.confidence_score || 0) <= 1) return { json: { _dropped: true } };\n\nconst now = new Date().toISOString();\nreturn { json: {\n  ev_id: `EV-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,\n  date_found: now,\n  week: now.substring(0,7),\n  competitor_id: origItem.competitor_id,\n  source_type: origItem.source_type,\n  source_url: origItem.url,\n  title: `${origItem.name} ${origItem.source_type} update`,\n  summary: ai.summary || '',\n  observed_fact: ai.observed_fact || '',\n  analyst_interpretation: ai.analyst_interpretation || '',\n  product_area: ai.product_area || '',\n  lane: String(Array.isArray(ai.lane) ? ai.lane[0] : (ai.lane || '')).toUpperCase(),\n  importance_score: ai.importance_score || 2,\n  confidence_score: ai.confidence_score || 2,\n  freshness: 'this_week',\n  evidence_strength: ai.evidence_strength || 'inferred',\n  status: 'new',\n  new_hash: origItem.new_hash,\n  snapshot_url: origItem.url,\n  checked_at: origItem.checked_at\n} };"
         },
         "id": "parse-ai",
         "name": "Parse AI and Build Record",
@@ -1214,7 +1214,7 @@
           "operation": "append",
           "documentId": {
             "mode": "id",
-            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+            "value": "YOUR_GOOGLE_SHEETS_ID"
           },
           "sheetName": {
             "mode": "name",
@@ -1235,7 +1235,7 @@
         ],
         "credentials": {
           "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
             "name": "Google Sheets account"
           }
         }
@@ -1245,7 +1245,7 @@
           "operation": "appendOrUpdate",
           "documentId": {
             "mode": "id",
-            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+            "value": "YOUR_GOOGLE_SHEETS_ID"
           },
           "sheetName": {
             "mode": "name",
@@ -1277,7 +1277,7 @@
         ],
         "credentials": {
           "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
             "name": "Google Sheets account"
           }
         }
@@ -1327,7 +1327,7 @@
         "typeVersion": 2,
         "position": [
           2672,
-          700
+          704
         ]
       },
       {
@@ -1336,7 +1336,8 @@
             "options": {
               "caseSensitive": true,
               "leftValue": "",
-              "typeValidation": "strict"
+              "typeValidation": "strict",
+              "version": 1
             },
             "conditions": [
               {
@@ -1350,7 +1351,8 @@
               }
             ],
             "combinator": "and"
-          }
+          },
+          "options": {}
         },
         "id": "passes-gate",
         "name": "Passes Relevance Gate?",
@@ -1358,7 +1360,7 @@
         "typeVersion": 2,
         "position": [
           2896,
-          700
+          704
         ]
       }
     ],
@@ -1621,18 +1623,18 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-31T21:46:04.288Z",
-        "id": 163,
+        "createdAt": "2026-04-17T21:01:22.627Z",
+        "id": 297,
         "workflowId": "ppMzAEKShjv6L4EP",
-        "versionId": "98347c2d-5825-4118-a2d8-f40879baa4ff",
+        "versionId": "340b8ae3-f0a1-4416-a788-de9cd33214a3",
         "event": "activated",
         "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
       },
       {
-        "createdAt": "2026-03-31T21:46:04.280Z",
-        "id": 162,
+        "createdAt": "2026-04-17T21:01:22.620Z",
+        "id": 296,
         "workflowId": "ppMzAEKShjv6L4EP",
-        "versionId": "98347c2d-5825-4118-a2d8-f40879baa4ff",
+        "versionId": "340b8ae3-f0a1-4416-a788-de9cd33214a3",
         "event": "deactivated",
         "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
       }

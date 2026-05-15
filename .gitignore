@@ -1,2 +1,15 @@
+# Claude Code / dev tooling (not for public repo)
 .claude/
 .superpowers/
+CLAUDE.md
+progress.md
+
+# Personal / internal docs
+docs/presentation/
+docs/superpowers/
+scripts/
+prompts/
+
+# macOS
+.DS_Store
+docs/.DS_Store

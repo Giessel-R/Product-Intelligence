@@ -60,7 +60,7 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo",
+          "value": "YOUR_GOOGLE_SHEETS_ID",
           "mode": "id"
         },
         "sheetName": {
@@ -102,7 +102,7 @@
       "position": [688, 400],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -345,7 +345,7 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo",
+          "value": "YOUR_GOOGLE_SHEETS_ID",
           "mode": "id"
         },
         "sheetName": {
@@ -372,7 +372,7 @@
       "position": [3264, 400],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }

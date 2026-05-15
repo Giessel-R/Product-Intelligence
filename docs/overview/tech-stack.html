@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tech Stack — Product Intelligence OS</title>
+  <title>Tech Stack: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -70,7 +71,7 @@
     </div>
     <div class="page-header">
       <h1>Tech Stack</h1>
-      <p class="page-subtitle">The full system runs on ~$15/month. Every tool was chosen for zero marginal cost, except Claude — which is the only component that actually requires spending money.</p>
+      <p class="page-subtitle">The full system runs on ~$15/month. Every tool was chosen for zero marginal cost, except Claude: which is the only component that actually requires spending money.</p>
     </div>
     <hr class="divider">
 
@@ -83,7 +84,7 @@
         <tr>
           <td>n8n</td>
           <td>Self-hosted workflow automation</td>
-          <td>Orchestration, scheduling, node chaining. Already running — no new infrastructure.</td>
+          <td>Orchestration, scheduling, node chaining. Already running: no new infrastructure.</td>
           <td style="color:#4ade80">$0</td>
         </tr>
         <tr>
@@ -113,7 +114,7 @@
         <tr>
           <td>Gmail (n8n node)</td>
           <td>Email via Google OAuth</td>
-          <td>Delivers the weekly newsletter and critical error alerts. No SMTP setup required — uses n8n's Gmail credential.</td>
+          <td>Delivers the weekly newsletter and critical error alerts. No SMTP setup required: uses n8n's Gmail credential.</td>
           <td style="color:#4ade80">$0</td>
         </tr>
         <tr>
@@ -137,7 +138,7 @@
         <tr>
           <td>Background</td>
           <td><span class="badge badge-haiku">Haiku</span></td>
-          <td>Market Watch — change classification, lane tagging, importance/confidence scoring. High volume, low depth. ~3,000 chars input per call.</td>
+          <td>Market Watch: change classification, lane tagging, importance/confidence scoring. High volume, low depth. ~3,000 chars input per call.</td>
           <td style="color:#94a3b8">~$0.001/call</td>
         </tr>
         <tr>
@@ -149,7 +150,7 @@
         <tr>
           <td>Executive</td>
           <td><span class="badge badge-workflow" style="background:#111;color:#475569;border-color:#262626">Opus</span></td>
-          <td>Monthly Strategy Memo — Phase 3, not yet built. Once-per-month executive synthesis. Highest reasoning quality.</td>
+          <td>Monthly Strategy Memo: Phase 3, not yet built. Once-per-month executive synthesis. Highest reasoning quality.</td>
           <td style="color:#475569">Phase 3</td>
         </tr>
       </tbody>
@@ -159,7 +160,7 @@
       <div class="callout-icon"><span class="material-icons-round">info</span></div>
       <div class="callout-body">
         <div class="callout-title">Credential Pattern</div>
-        <div class="callout-text">All Anthropic calls use <code>predefinedCredentialType: httpHeaderAuth</code> with credential ID <code>P6dgBaH33wjoGxqb</code>. The <code>$env.ANTHROPIC_API_KEY</code> pattern is blocked in HTTP Request node headers — use the n8n credential system instead.</div>
+        <div class="callout-text">All Anthropic calls use <code>predefinedCredentialType: httpHeaderAuth</code> with credential ID <code>YOUR_ANTHROPIC_CREDENTIAL_ID</code>. The <code>$env.ANTHROPIC_API_KEY</code> pattern is blocked in HTTP Request node headers: use the n8n credential system instead.</div>
       </div>
     </div>
 

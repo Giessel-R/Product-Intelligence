@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hallucination Prevention — Product Intelligence OS</title>
+  <title>Hallucination Prevention: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -77,7 +78,7 @@
     <hr class="divider">
 
     <div class="section-title"><span class="material-icons-round">shield</span> Why This Matters</div>
-    <p>Competitive intelligence is only useful if it's accurate. A false gap claim — "Okta has X, Ping doesn't" — can influence real product decisions. The system is designed to abstain rather than speculate. When evidence is weak, Claude returns <code>not_enough_evidence: true</code> and the record is dropped entirely.</p>
+    <p>Competitive intelligence is only useful if it's accurate. A false gap claim: "Okta has X, Ping doesn't": can influence real product decisions. The system is designed to abstain rather than speculate. When evidence is weak, Claude returns <code>not_enough_evidence: true</code> and the record is dropped entirely.</p>
 
     <hr class="divider">
 
@@ -95,9 +96,9 @@
           <div class="step-desc">
             Six rules are included verbatim in every Claude prompt in the system:
             <ol style="margin-top:8px; padding-left:18px; color:#94a3b8; font-size:12.5px; line-height:2;">
-              <li>Marketing language (<code>seamless</code>, <code>AI-powered</code>) is not evidence of a capability — ignore it</li>
-              <li>GitHub code ≠ shipped feature — only README usage instructions, CHANGELOG entries, or official docs count</li>
-              <li>Abstain by default — if evidence is weak, return <code>not_enough_evidence: true</code></li>
+              <li>Marketing language (<code>seamless</code>, <code>AI-powered</code>) is not evidence of a capability: ignore it</li>
+              <li>GitHub code ≠ shipped feature: only README usage instructions, CHANGELOG entries, or official docs count</li>
+              <li>Abstain by default: if evidence is weak, return <code>not_enough_evidence: true</code></li>
               <li><code>observed_fact</code> and <code>analyst_interpretation</code> are always separate fields</li>
               <li>No gap claims without reading <code>internal_capability_map</code> first</li>
               <li>Gap or requirement claims require confidence ≥ 4</li>
@@ -114,7 +115,7 @@
             <span class="step-tag">IPS · Stage 2</span>
           </div>
           <div class="step-desc">
-            Added in Stage 2. The <code>Parse Capabilities</code> Code node in Internal Product Specialist enforces hard limits on Claude's output — regardless of what Claude said:
+            Added in Stage 2. The <code>Parse Capabilities</code> Code node in Internal Product Specialist enforces hard limits on Claude's output: regardless of what Claude said:
             <ul style="margin-top:8px; padding-left:18px; color:#94a3b8; font-size:12.5px; line-height:2;">
               <li><code>sample_app</code> source type → hard cap at <code>sample_only</code>, confidence ≤ 3</li>
               <li><code>github_repo</code> → cannot return <code>production_mature</code> unless strong release/version signals are present</li>
@@ -133,7 +134,7 @@
             <span class="step-tag">Market Watch · Stage 4</span>
           </div>
           <div class="step-desc">
-            Added in Stage 4. Before any Claude call is made in Market Watch, a Code node scores the page for relevance. Pages that fail the gate never reach Claude at all — saving cost and preventing low-signal content from being treated as evidence.
+            Added in Stage 4. Before any Claude call is made in Market Watch, a Code node scores the page for relevance. Pages that fail the gate never reach Claude at all: saving cost and preventing low-signal content from being treated as evidence.
             <br><br>
             Gate formula: <code>base_score(source_type) + title_matches×2 + body_matches×1</code> (body capped at 5). Pass condition: <code>score ≥ 3 AND keywords_matched ≥ 1</code>.
           </div>
@@ -159,7 +160,7 @@
       <div class="callout-icon"><span class="material-icons-round">info</span></div>
       <div class="callout-body">
         <div class="callout-title">Parser Cap Tag</div>
-        <div class="callout-text">When <code>[parser-cap]</code> appears in a <code>maturity_reason</code> field in Google Sheets, the parser overrode Claude's output. The original Claude value is not stored — only the capped value is written to the sheet.</div>
+        <div class="callout-text">When <code>[parser-cap]</code> appears in a <code>maturity_reason</code> field in Google Sheets, the parser overrode Claude's output. The original Claude value is not stored: only the capped value is written to the sheet.</div>
       </div>
     </div>
 

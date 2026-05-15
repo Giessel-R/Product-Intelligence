@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home — Product Intelligence OS</title>
+  <title>Home: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
@@ -12,7 +12,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -41,6 +41,7 @@
       <a href="workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -68,7 +69,7 @@
     <div class="hero">
       <div class="hero-eyebrow">Ping Identity · Internal Tool</div>
       <h1 class="hero-title">Product Intelligence<br><span class="gradient">Operating System</span></h1>
-      <p class="hero-sub">An automated competitive intelligence system that watches Okta and Auth0, detects product changes, and delivers a weekly strategic briefing — every Friday morning.</p>
+      <p class="hero-sub">An automated competitive intelligence system that watches Okta and Auth0, detects product changes, and delivers a weekly strategic briefing: every Friday morning.</p>
       <div class="hero-tags">
         <span class="tag">n8n · self-hosted</span>
         <span class="tag">Claude Haiku + Sonnet</span>
@@ -81,15 +82,15 @@
     <!-- Status -->
     <div class="status-bar">
       <div class="status-bar-dot"></div>
-      <div class="status-bar-text"><strong>Production</strong> · All 7 workflows active · Stages 1–4 deployed · Last run: 2026-03-31</div>
+      <div class="status-bar-text"><strong>Production</strong> · All 8 workflows active · Stages 1–5 deployed · Last updated: 2026-04-25</div>
       <div class="status-bar-meta">Okta · Auth0</div>
     </div>
 
     <!-- Stats -->
     <div class="section-heading">At a Glance</div>
     <div class="stats-row">
-      <div class="stat-card"><div class="stat-value">7</div><div class="stat-label">Active workflows</div></div>
-      <div class="stat-card"><div class="stat-value">2</div><div class="stat-label">Competitors tracked</div></div>
+      <div class="stat-card"><div class="stat-value">8</div><div class="stat-label">Active workflows</div></div>
+      <div class="stat-card"><div class="stat-value">114</div><div class="stat-label">URLs monitored</div></div>
       <div class="stat-card"><div class="stat-value">5×</div><div class="stat-label">Runs per week</div></div>
       <div class="stat-card"><div class="stat-value">~$15</div><div class="stat-label">Per month</div></div>
     </div>
@@ -102,9 +103,9 @@
           <div class="workflow-icon"><span class="material-icons-round">hub</span></div>
           <div class="workflow-card-name">Master Orchestrator</div>
         </div>
-        <div class="workflow-card-desc">Wakes up at 6:30 AM, decides what runs based on the day, and chains all sub-workflows in sequence.</div>
+        <div class="workflow-card-desc">Wakes up at 7:00 AM PT, decides what runs based on the day, and chains all sub-workflows in sequence.</div>
         <div class="workflow-card-footer">
-          <span class="pill pill-schedule">Mon–Fri 6:30 AM</span>
+          <span class="pill pill-schedule">Mon–Fri 7:00 AM PT</span>
           <div class="workflow-card-id">nzmwZmXRbb9vl5mk</div>
         </div>
       </a>
@@ -124,7 +125,7 @@
           <div class="workflow-icon"><span class="material-icons-round">map</span></div>
           <div class="workflow-card-name">Internal Product Specialist</div>
         </div>
-        <div class="workflow-card-desc">Reads Ping's own docs every Monday to build a capability map — the source of truth for gap analysis.</div>
+        <div class="workflow-card-desc">Reads Ping's own docs every Monday to build a capability map: the source of truth for gap analysis.</div>
         <div class="workflow-card-footer">
           <span class="pill pill-monday">Mondays</span>
           <div class="workflow-card-id">63fbsmdUxNtnaFXG</div>
@@ -146,7 +147,7 @@
           <div class="workflow-icon"><span class="material-icons-round">newspaper</span></div>
           <div class="workflow-card-name">Newsletter</div>
         </div>
-        <div class="workflow-card-desc">Writes and sends the weekly competitive intelligence briefing — published to Notion and emailed every Friday morning.</div>
+        <div class="workflow-card-desc">Writes and sends the weekly competitive intelligence briefing: published to Notion and emailed every Friday morning.</div>
         <div class="workflow-card-footer">
           <span class="pill pill-friday">Fridays</span>
           <div class="workflow-card-id">mi4bUBXbiA1y5L8h</div>
@@ -163,12 +164,23 @@
           <div class="workflow-card-id">skUbNsPy00W8DiDa</div>
         </div>
       </a>
+      <a href="workflows/source-discovery.html" class="workflow-card">
+        <div class="workflow-card-header">
+          <div class="workflow-icon"><span class="material-icons-round">travel_explore</span></div>
+          <div class="workflow-card-name">Source Discovery</div>
+        </div>
+        <div class="workflow-card-desc">Crawls Ping's seed documentation pages monthly, extracts and classifies links, and writes new discoveries to the source registry as candidates.</div>
+        <div class="workflow-card-footer">
+          <span class="pill pill-schedule">Monthly</span>
+          <div class="workflow-card-id">LhycJpV60D0ddoDS</div>
+        </div>
+      </a>
       <a href="workflows/error-handler.html" class="workflow-card" style="grid-column: 1 / -1;">
         <div class="workflow-card-header">
           <div class="workflow-icon"><span class="material-icons-round">error_outline</span></div>
           <div class="workflow-card-name">Error Handler</div>
         </div>
-        <div class="workflow-card-desc">Catches every crash across all workflows. Logs it to Google Sheets. Emails you immediately for critical failures.</div>
+        <div class="workflow-card-desc">Catches every crash across all workflows. Logs it to Google Sheets. Sends a push notification via ntfy.sh for critical failures.</div>
         <div class="workflow-card-footer">
           <span class="pill pill-error">Always on</span>
           <div class="workflow-card-id">yiv73Orxf8eRQ0sv</div>
@@ -181,7 +193,7 @@
     <div class="quicklinks">
       <a href="data/google-sheets-schema.html" class="quicklink">
         <div class="quicklink-icon-wrap"><span class="material-icons-round">table_chart</span></div>
-        <div class="quicklink-text"><div class="quicklink-title">Data Layer</div><div class="quicklink-desc">Google Sheets schema — 7 tabs, every field explained</div></div>
+        <div class="quicklink-text"><div class="quicklink-title">Data Layer</div><div class="quicklink-desc">Google Sheets schema: 8 tabs, every field explained</div></div>
         <span class="material-icons-round" style="color:#475569;font-size:16px">arrow_forward</span>
       </a>
       <a href="intelligence/strategic-lanes.html" class="quicklink">

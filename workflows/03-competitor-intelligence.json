@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-03T17:18:10.050Z",
+  "updatedAt": "2026-04-05T01:02:17.918Z",
   "createdAt": "2026-03-22T22:27:30.661Z",
   "id": "mY5wIkPWlolzcUbn",
   "name": "PI: Competitor Intelligence",
@@ -37,7 +37,7 @@
       "parameters": {
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -55,14 +55,14 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const run = $('Set Run Context').first().json;\nconst allItems = $input.all();\nconst cutoff = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();\nconst newItems = allItems.filter(i => i.json.status === 'new' && i.json.date_found >= cutoff);\nconst grouped = {};\nfor (const item of newItems) {\n  const cid = item.json.competitor_id;\n  if (!grouped[cid]) grouped[cid] = [];\n  grouped[cid].push(item.json);\n}\nconst groups = Object.entries(grouped).map(([cid, evidence]) => ({ competitor_id: cid, evidence, evidence_count: evidence.length, run_id: run.run_id, week: run.week }));\nif (groups.length === 0) return [{ json: { status: 'no_new_evidence', run_id: run.run_id } }];\nreturn groups.map(g => ({ json: g }));"
+        "jsCode": "const run = $('Set Run Context').first().json;\nconst allItems = $input.all();\nconst cutoff = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();\nconst newItems = allItems.filter(i => i.json.status === 'new' && i.json.date_found >= cutoff);\nif (newItems.length === 0) return [{ json: { status: 'no_new_evidence', run_id: run.run_id } }];\nreturn newItems.map(i => ({ json: { ...i.json, run_id: run.run_id, week: run.week } }));"
       },
       "id": "ci-filter",
       "name": "Filter New Only",
@@ -77,7 +77,7 @@
       "parameters": {
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -96,7 +96,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       },
@@ -117,7 +117,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Stage 3 Section 2: Maturity-aware analysis prompts\nconst capData = $input.first().json;\nconst pingCapMap = capData.ping_capability_map || {};\nconst capMapEmpty = Object.keys(pingCapMap).length === 0;\nconst capMapNote = capMapEmpty\n  ? 'Internal capability map is not yet populated. Cannot confirm gaps against Ping.'\n  : JSON.stringify(pingCapMap);\n\nconst competitorGroups = $('Filter New Only').all();\nconst results = [];\n\nfor (const g of competitorGroups) {\n  const item = g.json;\n  if (item.status === 'no_new_evidence') {\n    results.push({ json: { ...item, skip: true } });\n    continue;\n  }\n\n  const systemPrompt = `You are a senior product intelligence analyst for Ping Identity. Produce rigorous, evidence-based competitive analysis.\n\nTIER DEFINITIONS \u2014 the Ping capability map uses these tiers per lane:\n- production_mature: Versioned release history, release notes, or GA announcement confirms this capability ships in a production product.\n- documented: Developer portal or official documentation confirms capability is publicly available, but production deployment scale is unconfirmed.\n- partial: Some evidence exists but coverage is incomplete \u2014 may be beta, preview, or partial documentation.\n- unclear: Evidence was found but maturity could not be reliably assessed from available sources.\n- sample_only: Only a sample app or demo confirms this capability. Not a shipping product feature.\n- no_evidence: true means no Ping data was found for this lane. Gap and parity cannot be confirmed.\n\nREASONING ORDER \u2014 follow these steps in sequence before writing output:\n1. Identify which capability_area(s) the competitor evidence maps to.\n2. State the competitor's strongest evidence: what source type, what maturity level.\n3. Check Ping's tiers for that lane. Identify the highest tier with entries: production_mature > documented > partial > unclear > sample_only. If no_evidence is true, Ping has no data.\n4. Compare competitor tier vs Ping best tier. Apply CLAIM VOCABULARY below.\n5. Note whether any Ping entries are backed only by press_release source_type \u2014 these carry lower confidence than documentation or release_notes.\n6. Set recommended_action using DEFAULT ACTION GUIDANCE below, applying judgment based on strategic relevance, competitor strength, confidence, and uncertainty in Ping evidence.\n\nCLAIM VOCABULARY \u2014 use these as anchors for gap_vs_ping and parity_vs_ping:\n\nPing no_evidence vs any competitor \u2192 gap_vs_ping: \"requires validation \u2014 no Ping evidence found for this lane\" | parity_vs_ping: \"insufficient evidence\"\nPing unclear vs production_mature competitor \u2192 gap_vs_ping: \"requires validation \u2014 Ping evidence is unclear\" | parity_vs_ping: \"insufficient evidence\"\nPing unclear vs documented competitor \u2192 gap_vs_ping: \"requires validation \u2014 Ping evidence is unclear\" | parity_vs_ping: \"insufficient evidence\"\nPing sample_only vs production_mature competitor \u2192 gap_vs_ping: \"likely gap \u2014 Ping has sample/demo only; competitor ships production feature\" | parity_vs_ping: \"insufficient evidence\"\nPing partial vs production_mature competitor \u2192 gap_vs_ping: \"possible gap \u2014 Ping has partial coverage only\" | parity_vs_ping: \"insufficient evidence\"\nPing documented vs production_mature competitor \u2192 gap_vs_ping: \"possible gap \u2014 Ping publicly documented but production confirmation pending\" | parity_vs_ping: \"possible parity, requires validation\"\nPing production_mature vs production_mature competitor \u2192 gap_vs_ping: \"no gap detected\" | parity_vs_ping: \"likely parity based on public production evidence\"\nPing production_mature vs documented competitor \u2192 gap_vs_ping: \"no gap detected\" | parity_vs_ping: \"likely parity based on public production evidence\"\nPing documented vs documented competitor \u2192 gap_vs_ping: \"no gap detected\" | parity_vs_ping: \"public evidence suggests parity\"\nPing partial vs documented competitor \u2192 gap_vs_ping: \"possible gap \u2014 Ping has partial coverage only\" | parity_vs_ping: \"insufficient evidence\"\nPing sample_only vs documented competitor \u2192 gap_vs_ping: \"possible gap \u2014 Ping has sample/demo only\" | parity_vs_ping: \"insufficient evidence\"\n\nFor ping_advantage: use only if Ping tier is materially higher than competitor tier. Otherwise write \"insufficient evidence\".\n\nDEFAULT ACTION GUIDANCE \u2014 these are defaults, not strict rules. Apply judgment based on strategic relevance, confidence, competitor strength, and uncertainty in Ping evidence:\n- \"likely gap\" \u2192 default: Draft Brief\n- \"possible gap\" vs production_mature competitor \u2192 default: Validate\n- \"possible gap\" vs documented competitor \u2192 default: Watch\n- \"requires validation\" (unclear or no_evidence) vs production_mature \u2192 default: Validate\n- \"requires validation\" (unclear or no_evidence) vs documented \u2192 default: Watch or Validate based on strategic relevance\n- \"likely parity\" or \"no gap detected\" \u2192 default: Watch\nEscalate default action when: strategic relevance is high, competitor confidence >= 4, or Ping evidence is weak relative to a strong competitor signal.\n\nCONFIDENCE BEHAVIOR:\n- unclear or weak Ping evidence should reduce your confidence in parity and gap claims \u2014 reflect this in confidence_score.\n- press_release-backed Ping evidence alone should not materially raise confidence_score. Treat as supporting context.\n- release_notes-backed Ping evidence can support higher confidence for confirmed shipped capability.\n- Confidence floor for making strong claims (gap or parity): 4. Below that, describe observations only.\n\nSOURCE TYPE CALIBRATION:\n- press_release: Commercial/announcement signal only. Does not confirm production deployment or feature completeness.\n- release_notes: Strong evidence \u2014 confirms shipped, versioned capability.\n- documentation / developer_portal: Confirms documented support; does not confirm production deployment at scale.\n- github_repo: Quality depends on release history. Check maturity_reason for [parser-cap] flags before elevating confidence.\n- sample_app: Confirms concept only. Cannot support strong parity claims. May support weak gap interpretation when competitor evidence is materially stronger.\n\nRULES:\n1. ALWAYS separate observed facts from interpretation.\n2. No marketing language. No inferred capabilities.\n3. recommended_action options: Watch | Validate | Draft Brief\n4. Set review_flag: true when the finding warrants analyst attention \u2014 typically when there is a gap signal, validation need, or competitor confidence >= 4.\n\nOutput ONLY valid JSON with no markdown fences.`;\n\n  const userPrompt = `Competitor: ${item.competitor_id}\\nEvidence count: ${item.evidence_count}\\nEvidence:\\n${JSON.stringify(item.evidence)}\\n\\nPing Capability Map (tiered by maturity, last 30 days):\\nEach lane shows: production_mature / documented / partial / unclear / sample_only tiers, plus no_evidence flag and source_types_present.\\n${capMapNote}\\n\\nOutput ONLY valid JSON:\\n{\"what_changed\":[],\"likely_direction\":\"\",\"product_area_tags\":[],\"relevance_score\":3,\"confidence_score\":3,\"observed_facts\":\"\",\"analyst_interpretation\":\"\",\"gap_vs_ping\":\"insufficient evidence\",\"parity_vs_ping\":\"insufficient evidence\",\"ping_advantage\":\"insufficient evidence\",\"recommended_action\":\"Watch\",\"review_flag\":false,\"review_flag_reason\":\"\"}`;\n\n  results.push({ json: { ...item, skip: false, systemPrompt, userPrompt } });\n}\nreturn results;"
+        "jsCode": "// Per-evidence-item analysis prompts (redesign: one finding per evidence)\nconst capData = $input.first().json;\nconst pingCapMap = capData.ping_capability_map || {};\nconst capMapEmpty = Object.keys(pingCapMap).length === 0;\n\nconst evidenceItems = $('Filter New Only').all();\nconst results = [];\n\nfor (const g of evidenceItems) {\n  const ev = g.json;\n  if (ev.status === 'no_new_evidence') {\n    results.push({ json: { ...ev, skip: true } });\n    continue;\n  }\n\n  const lane = ev.lane || '';\n  const laneCapData = lane && pingCapMap[lane] ? { [lane]: pingCapMap[lane] } : null;\n  const capMapNote = capMapEmpty\n    ? 'Internal capability map is not yet populated. Cannot confirm gaps against Ping.'\n    : laneCapData\n      ? JSON.stringify(laneCapData)\n      : `No Ping capability data found for lane: ${lane || 'unknown'}`;\n\n  const systemPrompt = `You are a senior product intelligence analyst for Ping Identity. Produce rigorous, evidence-based competitive analysis.\\n\\nTIER DEFINITIONS \\u2014 the Ping capability map uses these tiers per lane:\\n- production_mature: Versioned release history, release notes, or GA announcement confirms this capability ships in a production product.\\n- documented: Developer portal or official documentation confirms capability is publicly available, but production deployment scale is unconfirmed.\\n- partial: Some evidence exists but coverage is incomplete \\u2014 may be beta, preview, or partial documentation.\\n- unclear: Evidence was found but maturity could not be reliably assessed from available sources.\\n- sample_only: Only a sample app or demo confirms this capability. Not a shipping product feature.\\n- no_evidence: true means no Ping data was found for this lane. Gap and parity cannot be confirmed.\\n\\nREASONING ORDER \\u2014 follow these steps in sequence before writing output:\\n1. Identify which capability_area(s) the competitor evidence maps to.\\n2. State the competitor's strongest evidence: what source type, what maturity level.\\n3. Check Ping's tiers for that lane. Identify the highest tier with entries: production_mature > documented > partial > unclear > sample_only. If no_evidence is true, Ping has no data.\\n4. Compare competitor tier vs Ping best tier. Apply CLAIM VOCABULARY below.\\n5. Note whether any Ping entries are backed only by press_release source_type \\u2014 these carry lower confidence than documentation or release_notes.\\n6. Set recommended_action using DEFAULT ACTION GUIDANCE below, applying judgment based on strategic relevance, competitor strength, confidence, and uncertainty in Ping evidence.\\n\\nEVIDENCE ROLE RESTRICTIONS\\n\\nEach evidence item has a source_role field inherited from source_registry. Apply these rules before\\nany parity analysis.\\n\\nsource_role = family_index\\n  This evidence came from a product index or hub page. It proves the product family exists.\\n  It does NOT prove specific capability support.\\n  Permitted use only: note the product family exists in the landscape summary section.\\n  Not permitted: parity claims on any specific technology, platform, framework, or feature.\\n  Do not write \\\"parity\\\" or \\\"gap\\\" based on family_index evidence alone.\\n\\nsource_role = discovery_only\\n  Ignore this evidence entirely. Make no analytical claims from it.\\n  Do not reference it in any output field.\\n\\nsource_role = sample_only\\n  Cannot support production parity claims.\\n  Sample presence does not equal production availability. Do not write parity based on sample evidence alone.\\n\\nsource_role = api_reference\\n  Supports specific documented capability evidence only.\\n  Broad parity claims require corroboration from product documentation or release_notes evidence.\\n  api_reference alone is not sufficient for \\\"parity confirmed\\\" conclusions.\\n\\nsource_role = release_notes\\n  Supports stronger shipped evidence for the capability explicitly described.\\n  Evidence is source-bounded: applies only to the specific capability documented.\\n  Do not generalize release_notes evidence to the product broadly.\\n\\nsource_role = capability_definition | platform_specific | use_case\\n  Normal analysis rules apply. PARITY SCOPE rules still govern claim specificity.\\n\\nIf source_role is blank or unrecognized, treat as capability_definition.\\n\\n---\\n\\nPARITY SCOPE \\u2014 read before applying CLAIM VOCABULARY:\\nThe claim vocabulary compares tiers only when the technologies match. Before claiming parity, verify that Ping's capability map contains evidence for the SAME specific capability, technology, language, or platform as the competitor finding.\\n- If competitor evidence is about a specific SDK, language, or platform (e.g., .NET SDK, Swift, Android widget), check whether Ping's map has an entry for THAT specific technology. Ping having other SDKs or capabilities in the same lane does NOT constitute parity for the missing technology.\\n- If no Ping entry specifically covers the competitor's technology, the comparison produces a gap or \\\"requires validation\\\" \\u2014 not parity \\u2014 even if Ping has documented capabilities elsewhere in the lane.\\n- \\\"Comparable coverage\\\" is not parity. Write the specific observation: e.g., \\\"Ping has no documented .NET SDK\\\" or \\\"Ping Login Widget has no confirmed mobile support.\\\" Do not generalize from adjacent evidence.\\n- Technology-specific parity claims require technology-specific evidence on both sides.\\n\\nCLAIM VOCABULARY \\u2014 use these as anchors for gap_vs_ping and parity_vs_ping:\\n\\nPing no_evidence vs any competitor \\u2192 gap_vs_ping: \\\"requires validation \\u2014 no Ping evidence found for this lane\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing unclear vs production_mature competitor \\u2192 gap_vs_ping: \\\"requires validation \\u2014 Ping evidence is unclear\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing unclear vs documented competitor \\u2192 gap_vs_ping: \\\"requires validation \\u2014 Ping evidence is unclear\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing sample_only vs production_mature competitor \\u2192 gap_vs_ping: \\\"likely gap \\u2014 Ping has sample/demo only; competitor ships production feature\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing partial vs production_mature competitor \\u2192 gap_vs_ping: \\\"possible gap \\u2014 Ping has partial coverage only\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing documented vs production_mature competitor \\u2192 gap_vs_ping: \\\"possible gap \\u2014 Ping publicly documented but production confirmation pending\\\" | parity_vs_ping: \\\"possible parity, requires validation\\\"\\nPing production_mature vs production_mature competitor \\u2192 gap_vs_ping: \\\"no gap detected\\\" | parity_vs_ping: \\\"likely parity based on public production evidence\\\"\\nPing production_mature vs documented competitor \\u2192 gap_vs_ping: \\\"no gap detected\\\" | parity_vs_ping: \\\"likely parity based on public production evidence\\\"\\nPing documented vs documented competitor \\u2192 gap_vs_ping: \\\"no gap detected\\\" | parity_vs_ping: \\\"public evidence suggests parity\\\"\\nPing partial vs documented competitor \\u2192 gap_vs_ping: \\\"possible gap \\u2014 Ping has partial coverage only\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing sample_only vs documented competitor \\u2192 gap_vs_ping: \\\"possible gap \\u2014 Ping has sample/demo only\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\n\\nFor ping_advantage: use only if Ping tier is materially higher than competitor tier. Otherwise write \\\"insufficient evidence\\\".\\n\\nDEFAULT ACTION GUIDANCE \\u2014 these are defaults, not strict rules. Apply judgment based on strategic relevance, confidence, competitor strength, and uncertainty in Ping evidence:\\n- \\\"likely gap\\\" \\u2192 default: Draft Brief\\n- \\\"possible gap\\\" vs production_mature competitor \\u2192 default: Validate\\n- \\\"possible gap\\\" vs documented competitor \\u2192 default: Watch\\n- \\\"requires validation\\\" (unclear or no_evidence) vs production_mature \\u2192 default: Validate\\n- \\\"requires validation\\\" (unclear or no_evidence) vs documented \\u2192 default: Watch or Validate based on strategic relevance\\n- \\\"likely parity\\\" or \\\"no gap detected\\\" \\u2192 default: Watch\\nEscalate default action when: strategic relevance is high, competitor confidence >= 4, or Ping evidence is weak relative to a strong competitor signal.\\n\\nCONFIDENCE BEHAVIOR:\\n- unclear or weak Ping evidence should reduce your confidence in parity and gap claims \\u2014 reflect this in confidence_score.\\n- press_release-backed Ping evidence alone should not materially raise confidence_score. Treat as supporting context.\\n- release_notes-backed Ping evidence can support higher confidence for confirmed shipped capability.\\n- Confidence floor for making strong claims (gap or parity): 4. Below that, describe observations only.\\n\\nSOURCE TYPE CALIBRATION:\\n- press_release: Commercial/announcement signal only. Does not confirm production deployment or feature completeness.\\n- release_notes: Strong evidence \\u2014 confirms shipped, versioned capability.\\n- documentation / developer_portal: Confirms documented support; does not confirm production deployment at scale.\\n- github_repo: Quality depends on release history. Check maturity_reason for [parser-cap] flags before elevating confidence.\\n- sample_app: Confirms concept only. Cannot support strong parity claims. May support weak gap interpretation when competitor evidence is materially stronger.\\n\\nRULES:\\n1. ALWAYS separate observed facts from interpretation.\\n2. No marketing language. No inferred capabilities.\\n3. recommended_action options: Watch | Validate | Draft Brief\\n4. Set review_flag: true when the finding warrants analyst attention \\u2014 typically when there is a gap signal, validation need, or competitor confidence >= 4.\\n5. Technology-specific parity requires technology-specific evidence. If the competitor finding is about a specific SDK, language, platform, or framework, Ping must have an entry for THAT specific technology in the capability map. Ping having adjacent or related technologies in the same lane does not constitute parity for the missing technology.\\n6. Never write \\\"comparable coverage\\\" or similar generalizations when the specific technology is absent from Ping's capability map. State the specific observation (e.g., \\\"Ping has no documented .NET SDK in its capability map\\\").\\n7. If the competitor source distinguishes between embedded widget support, hosted redirect, and custom UI, the comparison must preserve those distinctions. Do not merge them into a single capability bucket. Hosted sign-in fallback is not embedded widget parity. Mobile custom UI support is not embedded widget parity. SDK presence is not widget framework parity. Each delivery model must be compared only against the same delivery model in Ping's evidence.\\n\\nOutput ONLY valid JSON with no markdown fences.`;\n\n  const userPrompt = `Competitor: ${ev.competitor_id}\\nLane: ${ev.lane || 'unknown'}\\nSource type: ${ev.source_type || 'unknown'}\\nSource URL: ${ev.source_url || 'unknown'}\\nObserved fact: ${ev.observed_fact || ''}\\nAnalyst interpretation: ${ev.analyst_interpretation || ''}\\nImportance score: ${ev.importance_score || ''}\\n\\nPing Capability Map for this lane (tiered by maturity, last 30 days):\\n${capMapNote}\\n\\nOutput ONLY valid JSON:\\n{\\\"what_changed\\\":[],\\\"likely_direction\\\":\\\"\\\",\\\"product_area_tags\\\":[],\\\"relevance_score\\\":3,\\\"confidence_score\\\":3,\\\"observed_facts\\\":\\\"\\\",\\\"analyst_interpretation\\\":\\\"\\\",\\\"gap_vs_ping\\\":\\\"insufficient evidence\\\",\\\"parity_vs_ping\\\":\\\"insufficient evidence\\\",\\\"ping_advantage\\\":\\\"insufficient evidence\\\",\\\"recommended_action\\\":\\\"Watch\\\",\\\"review_flag\\\":false,\\\"review_flag_reason\\\":\\\"\\\"}`;\n\n  results.push({ json: { ...ev, skip: false, systemPrompt, userPrompt } });\n}\nreturn results;"
       },
       "id": "ci-sonnet",
       "name": "Build Analysis Prompts",
@@ -132,6 +132,7 @@
       "parameters": {
         "conditions": {
           "options": {
+            "version": 2,
             "caseSensitive": false,
             "typeValidation": "loose",
             "leftValue": ""
@@ -140,10 +141,10 @@
             {
               "id": "c1",
               "leftValue": "={{ $json.skip }}",
-              "rightValue": true,
               "operator": {
                 "type": "boolean",
-                "operation": "false"
+                "operation": "false",
+                "singleValue": true
               }
             }
           ],
@@ -195,7 +196,7 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "P6dgBaH33wjoGxqb",
+          "id": "YOUR_ANTHROPIC_CREDENTIAL_ID",
           "name": "Header Auth account"
         }
       },
@@ -203,7 +204,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Get original competitor group data from prompt builder node\nconst item = $('Build Analysis Prompts').item.json;\n\n// Get API response\nconst apiResponse = $input.first().json;\n\nlet ai = {};\ntry {\n  const text = apiResponse.content?.[0]?.text || '{}';\n  const m = text.match(/\\{[\\s\\S]*\\}/);\n  if (m) ai = JSON.parse(m[0]);\n} catch(e) {}\n\nconst now = new Date().toISOString();\nreturn [{ json: {\n  finding_id: `SF-${item.competitor_id}-${Date.now()}`,\n  week: item.week, run_id: item.run_id, competitor_id: item.competitor_id,\n  evidence_count: item.evidence_count,\n  ev_ids: (item.evidence || []).map(e => e.ev_id).filter(Boolean),\n  what_changed: JSON.stringify(ai.what_changed || []),\n  likely_direction: ai.likely_direction || '',\n  product_area_tags: JSON.stringify(ai.product_area_tags || []),\n  relevance_score: ai.relevance_score || 2, confidence_score: ai.confidence_score || 2,\n  observed_facts: ai.observed_facts || '', analyst_interpretation: ai.analyst_interpretation || '',\n  gap_vs_ping: ai.gap_vs_ping || 'insufficient evidence',\n  parity_vs_ping: ai.parity_vs_ping || 'insufficient evidence',\n  ping_advantage: ai.ping_advantage || 'insufficient evidence',\n  recommended_action: ai.recommended_action || 'Watch',\n  review_flag: ai.review_flag ? 'TRUE' : 'FALSE',\n  review_flag_reason: ai.review_flag_reason || '',\n  status: 'draft', created_at: now\n} }];"
+        "jsCode": "const ev = $('Build Analysis Prompts').item.json;\nconst apiResponse = $input.first().json;\n\nlet ai = {};\ntry {\n  const text = apiResponse.content?.[0]?.text || '{}';\n  const m = text.match(/\\{[\\s\\S]*\\}/);\n  if (m) ai = JSON.parse(m[0]);\n} catch(e) {}\n\nconst now = new Date().toISOString();\nreturn [{ json: {\n  finding_id: `SF-${ev.competitor_id}-${ev.ev_id || Date.now()}`,\n  week: ev.week, run_id: ev.run_id, competitor_id: ev.competitor_id,\n  lane: ev.lane || '',\n  source_url: ev.source_url || '',\n  source_type: ev.source_type || '',\n  evidence_count: 1,\n  ev_ids: [ev.ev_id].filter(Boolean),\n  what_changed: JSON.stringify(ai.what_changed || []),\n  likely_direction: ai.likely_direction || '',\n  product_area_tags: JSON.stringify(ai.product_area_tags || []),\n  relevance_score: ai.relevance_score || 2, confidence_score: ai.confidence_score || 2,\n  observed_facts: ai.observed_facts || '', analyst_interpretation: ai.analyst_interpretation || '',\n  gap_vs_ping: ai.gap_vs_ping || 'insufficient evidence',\n  parity_vs_ping: ai.parity_vs_ping || 'insufficient evidence',\n  ping_advantage: ai.ping_advantage || 'insufficient evidence',\n  recommended_action: ai.recommended_action || 'Watch',\n  review_flag: ai.review_flag ? 'TRUE' : 'FALSE',\n  review_flag_reason: ai.review_flag_reason || '',\n  status: 'draft', created_at: now\n} }];"
       },
       "id": "ci-parse",
       "name": "Parse and Build Finding",
@@ -219,7 +220,7 @@
         "operation": "append",
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -245,7 +246,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -303,7 +304,7 @@
         "operation": "update",
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -331,7 +332,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       },
@@ -367,12 +368,12 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ parent: { database_id: '33166d8d085080d0b753ebe3e02098cb' }, properties: { Name: { title: [{ text: { content: ($json.competitor_id || '') + ' \u2014 Week ' + ($json.week || '') } }] }, Competitor: { rich_text: [{ text: { content: String($json.competitor_id || '') } }] }, Week: { rich_text: [{ text: { content: String($json.week || '') } }] }, Confidence: { number: Number($json.confidence_score) || 0 }, Direction: { rich_text: [{ text: { content: String($json.likely_direction || '').substring(0, 2000) } }] }, 'Recommended Action': { rich_text: [{ text: { content: String($json.recommended_action || '') } }] }, 'Review Flag': { checkbox: $json.review_flag === 'TRUE' }, 'Gap vs Ping': { rich_text: [{ text: { content: String($json.gap_vs_ping || '').substring(0, 2000) } }] }, 'Parity vs Ping': { rich_text: [{ text: { content: String($json.parity_vs_ping || '').substring(0, 2000) } }] }, 'Ping Advantage': { rich_text: [{ text: { content: String($json.ping_advantage || '').substring(0, 2000) } }] }, 'Review Flag Reason': { rich_text: [{ text: { content: String($json.review_flag_reason || '').substring(0, 2000) } }] } } }) }}",
+        "body": "={{ JSON.stringify({ parent: { database_id: 'YOUR_NOTION_COMPETITOR_DB_ID' }, properties: { Name: { title: [{ text: { content: ($json.competitor_id || '') + ' \u2014 ' + ($json.lane || '') + ' \u2014 Week ' + ($json.week || '') } }] }, Competitor: { rich_text: [{ text: { content: String($json.competitor_id || '') } }] }, Week: { rich_text: [{ text: { content: String($json.week || '') } }] }, Lane: { rich_text: [{ text: { content: String($json.lane || '') } }] }, 'Source URL': { url: $json.source_url || null }, Confidence: { number: Number($json.confidence_score) || 0 }, Direction: { rich_text: [{ text: { content: String($json.likely_direction || '').substring(0, 2000) } }] }, 'Recommended Action': { rich_text: [{ text: { content: String($json.recommended_action || '') } }] }, 'Review Flag': { checkbox: $json.review_flag === 'TRUE' }, 'Gap vs Ping': { rich_text: [{ text: { content: String($json.gap_vs_ping || '').substring(0, 2000) } }] }, 'Parity vs Ping': { rich_text: [{ text: { content: String($json.parity_vs_ping || '').substring(0, 2000) } }] }, 'Ping Advantage': { rich_text: [{ text: { content: String($json.ping_advantage || '').substring(0, 2000) } }] }, 'Review Flag Reason': { rich_text: [{ text: { content: String($json.review_flag_reason || '').substring(0, 2000) } }] } } }) }}",
         "options": {}
       },
       "credentials": {
         "notionApi": {
-          "id": "GuZ4XSOROaBU9UEH",
+          "id": "YOUR_NOTION_CREDENTIAL_ID",
           "name": "Notion account"
         }
       },
@@ -539,9 +540,9 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "08e49753-9a0d-4c47-a297-ab84674be400",
-  "activeVersionId": "08e49753-9a0d-4c47-a297-ab84674be400",
-  "versionCounter": 76,
+  "versionId": "37151303-7a47-4061-b975-1ac63a92fce7",
+  "activeVersionId": "37151303-7a47-4061-b975-1ac63a92fce7",
+  "versionCounter": 88,
   "triggerCount": 0,
   "shared": [
     {
@@ -554,7 +555,7 @@
         "updatedAt": "2026-03-21T23:31:19.647Z",
         "createdAt": "2026-03-21T23:26:38.308Z",
         "id": "Oa57UYSvQEVoNZvh",
-        "name": "giessel razavi <giesselrazavi@gmail.com>",
+        "name": "Your Name <YOUR_EMAIL@example.com>",
         "type": "personal",
         "icon": null,
         "description": null,
@@ -564,9 +565,9 @@
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-04-03T17:18:10.052Z",
-    "createdAt": "2026-04-03T17:18:10.052Z",
-    "versionId": "08e49753-9a0d-4c47-a297-ab84674be400",
+    "updatedAt": "2026-04-05T01:02:17.920Z",
+    "createdAt": "2026-04-05T01:02:17.920Z",
+    "versionId": "37151303-7a47-4061-b975-1ac63a92fce7",
     "workflowId": "mY5wIkPWlolzcUbn",
     "nodes": [
       {
@@ -599,7 +600,7 @@
         "parameters": {
           "documentId": {
             "mode": "id",
-            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+            "value": "YOUR_GOOGLE_SHEETS_ID"
           },
           "sheetName": {
             "mode": "name",
@@ -617,14 +618,14 @@
         ],
         "credentials": {
           "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
             "name": "Google Sheets account"
           }
         }
       },
       {
         "parameters": {
-          "jsCode": "const run = $('Set Run Context').first().json;\nconst allItems = $input.all();\nconst cutoff = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();\nconst newItems = allItems.filter(i => i.json.status === 'new' && i.json.date_found >= cutoff);\nconst grouped = {};\nfor (const item of newItems) {\n  const cid = item.json.competitor_id;\n  if (!grouped[cid]) grouped[cid] = [];\n  grouped[cid].push(item.json);\n}\nconst groups = Object.entries(grouped).map(([cid, evidence]) => ({ competitor_id: cid, evidence, evidence_count: evidence.length, run_id: run.run_id, week: run.week }));\nif (groups.length === 0) return [{ json: { status: 'no_new_evidence', run_id: run.run_id } }];\nreturn groups.map(g => ({ json: g }));"
+          "jsCode": "const run = $('Set Run Context').first().json;\nconst allItems = $input.all();\nconst cutoff = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();\nconst newItems = allItems.filter(i => i.json.status === 'new' && i.json.date_found >= cutoff);\nif (newItems.length === 0) return [{ json: { status: 'no_new_evidence', run_id: run.run_id } }];\nreturn newItems.map(i => ({ json: { ...i.json, run_id: run.run_id, week: run.week } }));"
         },
         "id": "ci-filter",
         "name": "Filter New Only",
@@ -639,7 +640,7 @@
         "parameters": {
           "documentId": {
             "mode": "id",
-            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+            "value": "YOUR_GOOGLE_SHEETS_ID"
           },
           "sheetName": {
             "mode": "name",
@@ -658,7 +659,7 @@
         "alwaysOutputData": true,
         "credentials": {
           "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
             "name": "Google Sheets account"
           }
         },
@@ -679,7 +680,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Stage 3 Section 2: Maturity-aware analysis prompts\nconst capData = $input.first().json;\nconst pingCapMap = capData.ping_capability_map || {};\nconst capMapEmpty = Object.keys(pingCapMap).length === 0;\nconst capMapNote = capMapEmpty\n  ? 'Internal capability map is not yet populated. Cannot confirm gaps against Ping.'\n  : JSON.stringify(pingCapMap);\n\nconst competitorGroups = $('Filter New Only').all();\nconst results = [];\n\nfor (const g of competitorGroups) {\n  const item = g.json;\n  if (item.status === 'no_new_evidence') {\n    results.push({ json: { ...item, skip: true } });\n    continue;\n  }\n\n  const systemPrompt = `You are a senior product intelligence analyst for Ping Identity. Produce rigorous, evidence-based competitive analysis.\n\nTIER DEFINITIONS \u2014 the Ping capability map uses these tiers per lane:\n- production_mature: Versioned release history, release notes, or GA announcement confirms this capability ships in a production product.\n- documented: Developer portal or official documentation confirms capability is publicly available, but production deployment scale is unconfirmed.\n- partial: Some evidence exists but coverage is incomplete \u2014 may be beta, preview, or partial documentation.\n- unclear: Evidence was found but maturity could not be reliably assessed from available sources.\n- sample_only: Only a sample app or demo confirms this capability. Not a shipping product feature.\n- no_evidence: true means no Ping data was found for this lane. Gap and parity cannot be confirmed.\n\nREASONING ORDER \u2014 follow these steps in sequence before writing output:\n1. Identify which capability_area(s) the competitor evidence maps to.\n2. State the competitor's strongest evidence: what source type, what maturity level.\n3. Check Ping's tiers for that lane. Identify the highest tier with entries: production_mature > documented > partial > unclear > sample_only. If no_evidence is true, Ping has no data.\n4. Compare competitor tier vs Ping best tier. Apply CLAIM VOCABULARY below.\n5. Note whether any Ping entries are backed only by press_release source_type \u2014 these carry lower confidence than documentation or release_notes.\n6. Set recommended_action using DEFAULT ACTION GUIDANCE below, applying judgment based on strategic relevance, competitor strength, confidence, and uncertainty in Ping evidence.\n\nCLAIM VOCABULARY \u2014 use these as anchors for gap_vs_ping and parity_vs_ping:\n\nPing no_evidence vs any competitor \u2192 gap_vs_ping: \"requires validation \u2014 no Ping evidence found for this lane\" | parity_vs_ping: \"insufficient evidence\"\nPing unclear vs production_mature competitor \u2192 gap_vs_ping: \"requires validation \u2014 Ping evidence is unclear\" | parity_vs_ping: \"insufficient evidence\"\nPing unclear vs documented competitor \u2192 gap_vs_ping: \"requires validation \u2014 Ping evidence is unclear\" | parity_vs_ping: \"insufficient evidence\"\nPing sample_only vs production_mature competitor \u2192 gap_vs_ping: \"likely gap \u2014 Ping has sample/demo only; competitor ships production feature\" | parity_vs_ping: \"insufficient evidence\"\nPing partial vs production_mature competitor \u2192 gap_vs_ping: \"possible gap \u2014 Ping has partial coverage only\" | parity_vs_ping: \"insufficient evidence\"\nPing documented vs production_mature competitor \u2192 gap_vs_ping: \"possible gap \u2014 Ping publicly documented but production confirmation pending\" | parity_vs_ping: \"possible parity, requires validation\"\nPing production_mature vs production_mature competitor \u2192 gap_vs_ping: \"no gap detected\" | parity_vs_ping: \"likely parity based on public production evidence\"\nPing production_mature vs documented competitor \u2192 gap_vs_ping: \"no gap detected\" | parity_vs_ping: \"likely parity based on public production evidence\"\nPing documented vs documented competitor \u2192 gap_vs_ping: \"no gap detected\" | parity_vs_ping: \"public evidence suggests parity\"\nPing partial vs documented competitor \u2192 gap_vs_ping: \"possible gap \u2014 Ping has partial coverage only\" | parity_vs_ping: \"insufficient evidence\"\nPing sample_only vs documented competitor \u2192 gap_vs_ping: \"possible gap \u2014 Ping has sample/demo only\" | parity_vs_ping: \"insufficient evidence\"\n\nFor ping_advantage: use only if Ping tier is materially higher than competitor tier. Otherwise write \"insufficient evidence\".\n\nDEFAULT ACTION GUIDANCE \u2014 these are defaults, not strict rules. Apply judgment based on strategic relevance, confidence, competitor strength, and uncertainty in Ping evidence:\n- \"likely gap\" \u2192 default: Draft Brief\n- \"possible gap\" vs production_mature competitor \u2192 default: Validate\n- \"possible gap\" vs documented competitor \u2192 default: Watch\n- \"requires validation\" (unclear or no_evidence) vs production_mature \u2192 default: Validate\n- \"requires validation\" (unclear or no_evidence) vs documented \u2192 default: Watch or Validate based on strategic relevance\n- \"likely parity\" or \"no gap detected\" \u2192 default: Watch\nEscalate default action when: strategic relevance is high, competitor confidence >= 4, or Ping evidence is weak relative to a strong competitor signal.\n\nCONFIDENCE BEHAVIOR:\n- unclear or weak Ping evidence should reduce your confidence in parity and gap claims \u2014 reflect this in confidence_score.\n- press_release-backed Ping evidence alone should not materially raise confidence_score. Treat as supporting context.\n- release_notes-backed Ping evidence can support higher confidence for confirmed shipped capability.\n- Confidence floor for making strong claims (gap or parity): 4. Below that, describe observations only.\n\nSOURCE TYPE CALIBRATION:\n- press_release: Commercial/announcement signal only. Does not confirm production deployment or feature completeness.\n- release_notes: Strong evidence \u2014 confirms shipped, versioned capability.\n- documentation / developer_portal: Confirms documented support; does not confirm production deployment at scale.\n- github_repo: Quality depends on release history. Check maturity_reason for [parser-cap] flags before elevating confidence.\n- sample_app: Confirms concept only. Cannot support strong parity claims. May support weak gap interpretation when competitor evidence is materially stronger.\n\nRULES:\n1. ALWAYS separate observed facts from interpretation.\n2. No marketing language. No inferred capabilities.\n3. recommended_action options: Watch | Validate | Draft Brief\n4. Set review_flag: true when the finding warrants analyst attention \u2014 typically when there is a gap signal, validation need, or competitor confidence >= 4.\n\nOutput ONLY valid JSON with no markdown fences.`;\n\n  const userPrompt = `Competitor: ${item.competitor_id}\\nEvidence count: ${item.evidence_count}\\nEvidence:\\n${JSON.stringify(item.evidence)}\\n\\nPing Capability Map (tiered by maturity, last 30 days):\\nEach lane shows: production_mature / documented / partial / unclear / sample_only tiers, plus no_evidence flag and source_types_present.\\n${capMapNote}\\n\\nOutput ONLY valid JSON:\\n{\"what_changed\":[],\"likely_direction\":\"\",\"product_area_tags\":[],\"relevance_score\":3,\"confidence_score\":3,\"observed_facts\":\"\",\"analyst_interpretation\":\"\",\"gap_vs_ping\":\"insufficient evidence\",\"parity_vs_ping\":\"insufficient evidence\",\"ping_advantage\":\"insufficient evidence\",\"recommended_action\":\"Watch\",\"review_flag\":false,\"review_flag_reason\":\"\"}`;\n\n  results.push({ json: { ...item, skip: false, systemPrompt, userPrompt } });\n}\nreturn results;"
+          "jsCode": "// Per-evidence-item analysis prompts (redesign: one finding per evidence)\nconst capData = $input.first().json;\nconst pingCapMap = capData.ping_capability_map || {};\nconst capMapEmpty = Object.keys(pingCapMap).length === 0;\n\nconst evidenceItems = $('Filter New Only').all();\nconst results = [];\n\nfor (const g of evidenceItems) {\n  const ev = g.json;\n  if (ev.status === 'no_new_evidence') {\n    results.push({ json: { ...ev, skip: true } });\n    continue;\n  }\n\n  const lane = ev.lane || '';\n  const laneCapData = lane && pingCapMap[lane] ? { [lane]: pingCapMap[lane] } : null;\n  const capMapNote = capMapEmpty\n    ? 'Internal capability map is not yet populated. Cannot confirm gaps against Ping.'\n    : laneCapData\n      ? JSON.stringify(laneCapData)\n      : `No Ping capability data found for lane: ${lane || 'unknown'}`;\n\n  const systemPrompt = `You are a senior product intelligence analyst for Ping Identity. Produce rigorous, evidence-based competitive analysis.\\n\\nTIER DEFINITIONS \\u2014 the Ping capability map uses these tiers per lane:\\n- production_mature: Versioned release history, release notes, or GA announcement confirms this capability ships in a production product.\\n- documented: Developer portal or official documentation confirms capability is publicly available, but production deployment scale is unconfirmed.\\n- partial: Some evidence exists but coverage is incomplete \\u2014 may be beta, preview, or partial documentation.\\n- unclear: Evidence was found but maturity could not be reliably assessed from available sources.\\n- sample_only: Only a sample app or demo confirms this capability. Not a shipping product feature.\\n- no_evidence: true means no Ping data was found for this lane. Gap and parity cannot be confirmed.\\n\\nREASONING ORDER \\u2014 follow these steps in sequence before writing output:\\n1. Identify which capability_area(s) the competitor evidence maps to.\\n2. State the competitor's strongest evidence: what source type, what maturity level.\\n3. Check Ping's tiers for that lane. Identify the highest tier with entries: production_mature > documented > partial > unclear > sample_only. If no_evidence is true, Ping has no data.\\n4. Compare competitor tier vs Ping best tier. Apply CLAIM VOCABULARY below.\\n5. Note whether any Ping entries are backed only by press_release source_type \\u2014 these carry lower confidence than documentation or release_notes.\\n6. Set recommended_action using DEFAULT ACTION GUIDANCE below, applying judgment based on strategic relevance, competitor strength, confidence, and uncertainty in Ping evidence.\\n\\nEVIDENCE ROLE RESTRICTIONS\\n\\nEach evidence item has a source_role field inherited from source_registry. Apply these rules before\\nany parity analysis.\\n\\nsource_role = family_index\\n  This evidence came from a product index or hub page. It proves the product family exists.\\n  It does NOT prove specific capability support.\\n  Permitted use only: note the product family exists in the landscape summary section.\\n  Not permitted: parity claims on any specific technology, platform, framework, or feature.\\n  Do not write \\\"parity\\\" or \\\"gap\\\" based on family_index evidence alone.\\n\\nsource_role = discovery_only\\n  Ignore this evidence entirely. Make no analytical claims from it.\\n  Do not reference it in any output field.\\n\\nsource_role = sample_only\\n  Cannot support production parity claims.\\n  Sample presence does not equal production availability. Do not write parity based on sample evidence alone.\\n\\nsource_role = api_reference\\n  Supports specific documented capability evidence only.\\n  Broad parity claims require corroboration from product documentation or release_notes evidence.\\n  api_reference alone is not sufficient for \\\"parity confirmed\\\" conclusions.\\n\\nsource_role = release_notes\\n  Supports stronger shipped evidence for the capability explicitly described.\\n  Evidence is source-bounded: applies only to the specific capability documented.\\n  Do not generalize release_notes evidence to the product broadly.\\n\\nsource_role = capability_definition | platform_specific | use_case\\n  Normal analysis rules apply. PARITY SCOPE rules still govern claim specificity.\\n\\nIf source_role is blank or unrecognized, treat as capability_definition.\\n\\n---\\n\\nPARITY SCOPE \\u2014 read before applying CLAIM VOCABULARY:\\nThe claim vocabulary compares tiers only when the technologies match. Before claiming parity, verify that Ping's capability map contains evidence for the SAME specific capability, technology, language, or platform as the competitor finding.\\n- If competitor evidence is about a specific SDK, language, or platform (e.g., .NET SDK, Swift, Android widget), check whether Ping's map has an entry for THAT specific technology. Ping having other SDKs or capabilities in the same lane does NOT constitute parity for the missing technology.\\n- If no Ping entry specifically covers the competitor's technology, the comparison produces a gap or \\\"requires validation\\\" \\u2014 not parity \\u2014 even if Ping has documented capabilities elsewhere in the lane.\\n- \\\"Comparable coverage\\\" is not parity. Write the specific observation: e.g., \\\"Ping has no documented .NET SDK\\\" or \\\"Ping Login Widget has no confirmed mobile support.\\\" Do not generalize from adjacent evidence.\\n- Technology-specific parity claims require technology-specific evidence on both sides.\\n\\nCLAIM VOCABULARY \\u2014 use these as anchors for gap_vs_ping and parity_vs_ping:\\n\\nPing no_evidence vs any competitor \\u2192 gap_vs_ping: \\\"requires validation \\u2014 no Ping evidence found for this lane\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing unclear vs production_mature competitor \\u2192 gap_vs_ping: \\\"requires validation \\u2014 Ping evidence is unclear\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing unclear vs documented competitor \\u2192 gap_vs_ping: \\\"requires validation \\u2014 Ping evidence is unclear\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing sample_only vs production_mature competitor \\u2192 gap_vs_ping: \\\"likely gap \\u2014 Ping has sample/demo only; competitor ships production feature\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing partial vs production_mature competitor \\u2192 gap_vs_ping: \\\"possible gap \\u2014 Ping has partial coverage only\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing documented vs production_mature competitor \\u2192 gap_vs_ping: \\\"possible gap \\u2014 Ping publicly documented but production confirmation pending\\\" | parity_vs_ping: \\\"possible parity, requires validation\\\"\\nPing production_mature vs production_mature competitor \\u2192 gap_vs_ping: \\\"no gap detected\\\" | parity_vs_ping: \\\"likely parity based on public production evidence\\\"\\nPing production_mature vs documented competitor \\u2192 gap_vs_ping: \\\"no gap detected\\\" | parity_vs_ping: \\\"likely parity based on public production evidence\\\"\\nPing documented vs documented competitor \\u2192 gap_vs_ping: \\\"no gap detected\\\" | parity_vs_ping: \\\"public evidence suggests parity\\\"\\nPing partial vs documented competitor \\u2192 gap_vs_ping: \\\"possible gap \\u2014 Ping has partial coverage only\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\nPing sample_only vs documented competitor \\u2192 gap_vs_ping: \\\"possible gap \\u2014 Ping has sample/demo only\\\" | parity_vs_ping: \\\"insufficient evidence\\\"\\n\\nFor ping_advantage: use only if Ping tier is materially higher than competitor tier. Otherwise write \\\"insufficient evidence\\\".\\n\\nDEFAULT ACTION GUIDANCE \\u2014 these are defaults, not strict rules. Apply judgment based on strategic relevance, confidence, competitor strength, and uncertainty in Ping evidence:\\n- \\\"likely gap\\\" \\u2192 default: Draft Brief\\n- \\\"possible gap\\\" vs production_mature competitor \\u2192 default: Validate\\n- \\\"possible gap\\\" vs documented competitor \\u2192 default: Watch\\n- \\\"requires validation\\\" (unclear or no_evidence) vs production_mature \\u2192 default: Validate\\n- \\\"requires validation\\\" (unclear or no_evidence) vs documented \\u2192 default: Watch or Validate based on strategic relevance\\n- \\\"likely parity\\\" or \\\"no gap detected\\\" \\u2192 default: Watch\\nEscalate default action when: strategic relevance is high, competitor confidence >= 4, or Ping evidence is weak relative to a strong competitor signal.\\n\\nCONFIDENCE BEHAVIOR:\\n- unclear or weak Ping evidence should reduce your confidence in parity and gap claims \\u2014 reflect this in confidence_score.\\n- press_release-backed Ping evidence alone should not materially raise confidence_score. Treat as supporting context.\\n- release_notes-backed Ping evidence can support higher confidence for confirmed shipped capability.\\n- Confidence floor for making strong claims (gap or parity): 4. Below that, describe observations only.\\n\\nSOURCE TYPE CALIBRATION:\\n- press_release: Commercial/announcement signal only. Does not confirm production deployment or feature completeness.\\n- release_notes: Strong evidence \\u2014 confirms shipped, versioned capability.\\n- documentation / developer_portal: Confirms documented support; does not confirm production deployment at scale.\\n- github_repo: Quality depends on release history. Check maturity_reason for [parser-cap] flags before elevating confidence.\\n- sample_app: Confirms concept only. Cannot support strong parity claims. May support weak gap interpretation when competitor evidence is materially stronger.\\n\\nRULES:\\n1. ALWAYS separate observed facts from interpretation.\\n2. No marketing language. No inferred capabilities.\\n3. recommended_action options: Watch | Validate | Draft Brief\\n4. Set review_flag: true when the finding warrants analyst attention \\u2014 typically when there is a gap signal, validation need, or competitor confidence >= 4.\\n5. Technology-specific parity requires technology-specific evidence. If the competitor finding is about a specific SDK, language, platform, or framework, Ping must have an entry for THAT specific technology in the capability map. Ping having adjacent or related technologies in the same lane does not constitute parity for the missing technology.\\n6. Never write \\\"comparable coverage\\\" or similar generalizations when the specific technology is absent from Ping's capability map. State the specific observation (e.g., \\\"Ping has no documented .NET SDK in its capability map\\\").\\n7. If the competitor source distinguishes between embedded widget support, hosted redirect, and custom UI, the comparison must preserve those distinctions. Do not merge them into a single capability bucket. Hosted sign-in fallback is not embedded widget parity. Mobile custom UI support is not embedded widget parity. SDK presence is not widget framework parity. Each delivery model must be compared only against the same delivery model in Ping's evidence.\\n\\nOutput ONLY valid JSON with no markdown fences.`;\n\n  const userPrompt = `Competitor: ${ev.competitor_id}\\nLane: ${ev.lane || 'unknown'}\\nSource type: ${ev.source_type || 'unknown'}\\nSource URL: ${ev.source_url || 'unknown'}\\nObserved fact: ${ev.observed_fact || ''}\\nAnalyst interpretation: ${ev.analyst_interpretation || ''}\\nImportance score: ${ev.importance_score || ''}\\n\\nPing Capability Map for this lane (tiered by maturity, last 30 days):\\n${capMapNote}\\n\\nOutput ONLY valid JSON:\\n{\\\"what_changed\\\":[],\\\"likely_direction\\\":\\\"\\\",\\\"product_area_tags\\\":[],\\\"relevance_score\\\":3,\\\"confidence_score\\\":3,\\\"observed_facts\\\":\\\"\\\",\\\"analyst_interpretation\\\":\\\"\\\",\\\"gap_vs_ping\\\":\\\"insufficient evidence\\\",\\\"parity_vs_ping\\\":\\\"insufficient evidence\\\",\\\"ping_advantage\\\":\\\"insufficient evidence\\\",\\\"recommended_action\\\":\\\"Watch\\\",\\\"review_flag\\\":false,\\\"review_flag_reason\\\":\\\"\\\"}`;\n\n  results.push({ json: { ...ev, skip: false, systemPrompt, userPrompt } });\n}\nreturn results;"
         },
         "id": "ci-sonnet",
         "name": "Build Analysis Prompts",
@@ -694,6 +695,7 @@
         "parameters": {
           "conditions": {
             "options": {
+              "version": 2,
               "caseSensitive": false,
               "typeValidation": "loose",
               "leftValue": ""
@@ -702,10 +704,10 @@
               {
                 "id": "c1",
                 "leftValue": "={{ $json.skip }}",
-                "rightValue": true,
                 "operator": {
                   "type": "boolean",
-                  "operation": "false"
+                  "operation": "false",
+                  "singleValue": true
                 }
               }
             ],
@@ -757,7 +759,7 @@
         ],
         "credentials": {
           "httpHeaderAuth": {
-            "id": "P6dgBaH33wjoGxqb",
+            "id": "YOUR_ANTHROPIC_CREDENTIAL_ID",
             "name": "Header Auth account"
           }
         },
@@ -765,7 +767,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Get original competitor group data from prompt builder node\nconst item = $('Build Analysis Prompts').item.json;\n\n// Get API response\nconst apiResponse = $input.first().json;\n\nlet ai = {};\ntry {\n  const text = apiResponse.content?.[0]?.text || '{}';\n  const m = text.match(/\\{[\\s\\S]*\\}/);\n  if (m) ai = JSON.parse(m[0]);\n} catch(e) {}\n\nconst now = new Date().toISOString();\nreturn [{ json: {\n  finding_id: `SF-${item.competitor_id}-${Date.now()}`,\n  week: item.week, run_id: item.run_id, competitor_id: item.competitor_id,\n  evidence_count: item.evidence_count,\n  ev_ids: (item.evidence || []).map(e => e.ev_id).filter(Boolean),\n  what_changed: JSON.stringify(ai.what_changed || []),\n  likely_direction: ai.likely_direction || '',\n  product_area_tags: JSON.stringify(ai.product_area_tags || []),\n  relevance_score: ai.relevance_score || 2, confidence_score: ai.confidence_score || 2,\n  observed_facts: ai.observed_facts || '', analyst_interpretation: ai.analyst_interpretation || '',\n  gap_vs_ping: ai.gap_vs_ping || 'insufficient evidence',\n  parity_vs_ping: ai.parity_vs_ping || 'insufficient evidence',\n  ping_advantage: ai.ping_advantage || 'insufficient evidence',\n  recommended_action: ai.recommended_action || 'Watch',\n  review_flag: ai.review_flag ? 'TRUE' : 'FALSE',\n  review_flag_reason: ai.review_flag_reason || '',\n  status: 'draft', created_at: now\n} }];"
+          "jsCode": "const ev = $('Build Analysis Prompts').item.json;\nconst apiResponse = $input.first().json;\n\nlet ai = {};\ntry {\n  const text = apiResponse.content?.[0]?.text || '{}';\n  const m = text.match(/\\{[\\s\\S]*\\}/);\n  if (m) ai = JSON.parse(m[0]);\n} catch(e) {}\n\nconst now = new Date().toISOString();\nreturn [{ json: {\n  finding_id: `SF-${ev.competitor_id}-${ev.ev_id || Date.now()}`,\n  week: ev.week, run_id: ev.run_id, competitor_id: ev.competitor_id,\n  lane: ev.lane || '',\n  source_url: ev.source_url || '',\n  source_type: ev.source_type || '',\n  evidence_count: 1,\n  ev_ids: [ev.ev_id].filter(Boolean),\n  what_changed: JSON.stringify(ai.what_changed || []),\n  likely_direction: ai.likely_direction || '',\n  product_area_tags: JSON.stringify(ai.product_area_tags || []),\n  relevance_score: ai.relevance_score || 2, confidence_score: ai.confidence_score || 2,\n  observed_facts: ai.observed_facts || '', analyst_interpretation: ai.analyst_interpretation || '',\n  gap_vs_ping: ai.gap_vs_ping || 'insufficient evidence',\n  parity_vs_ping: ai.parity_vs_ping || 'insufficient evidence',\n  ping_advantage: ai.ping_advantage || 'insufficient evidence',\n  recommended_action: ai.recommended_action || 'Watch',\n  review_flag: ai.review_flag ? 'TRUE' : 'FALSE',\n  review_flag_reason: ai.review_flag_reason || '',\n  status: 'draft', created_at: now\n} }];"
         },
         "id": "ci-parse",
         "name": "Parse and Build Finding",
@@ -781,7 +783,7 @@
           "operation": "append",
           "documentId": {
             "mode": "id",
-            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+            "value": "YOUR_GOOGLE_SHEETS_ID"
           },
           "sheetName": {
             "mode": "name",
@@ -807,7 +809,7 @@
         ],
         "credentials": {
           "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
             "name": "Google Sheets account"
           }
         }
@@ -865,7 +867,7 @@
           "operation": "update",
           "documentId": {
             "mode": "id",
-            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+            "value": "YOUR_GOOGLE_SHEETS_ID"
           },
           "sheetName": {
             "mode": "name",
@@ -893,7 +895,7 @@
         ],
         "credentials": {
           "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
             "name": "Google Sheets account"
           }
         },
@@ -929,12 +931,12 @@
           "sendBody": true,
           "contentType": "raw",
           "rawContentType": "application/json",
-          "body": "={{ JSON.stringify({ parent: { database_id: '33166d8d085080d0b753ebe3e02098cb' }, properties: { Name: { title: [{ text: { content: ($json.competitor_id || '') + ' \u2014 Week ' + ($json.week || '') } }] }, Competitor: { rich_text: [{ text: { content: String($json.competitor_id || '') } }] }, Week: { rich_text: [{ text: { content: String($json.week || '') } }] }, Confidence: { number: Number($json.confidence_score) || 0 }, Direction: { rich_text: [{ text: { content: String($json.likely_direction || '').substring(0, 2000) } }] }, 'Recommended Action': { rich_text: [{ text: { content: String($json.recommended_action || '') } }] }, 'Review Flag': { checkbox: $json.review_flag === 'TRUE' }, 'Gap vs Ping': { rich_text: [{ text: { content: String($json.gap_vs_ping || '').substring(0, 2000) } }] }, 'Parity vs Ping': { rich_text: [{ text: { content: String($json.parity_vs_ping || '').substring(0, 2000) } }] }, 'Ping Advantage': { rich_text: [{ text: { content: String($json.ping_advantage || '').substring(0, 2000) } }] }, 'Review Flag Reason': { rich_text: [{ text: { content: String($json.review_flag_reason || '').substring(0, 2000) } }] } } }) }}",
+          "body": "={{ JSON.stringify({ parent: { database_id: 'YOUR_NOTION_COMPETITOR_DB_ID' }, properties: { Name: { title: [{ text: { content: ($json.competitor_id || '') + ' \u2014 ' + ($json.lane || '') + ' \u2014 Week ' + ($json.week || '') } }] }, Competitor: { rich_text: [{ text: { content: String($json.competitor_id || '') } }] }, Week: { rich_text: [{ text: { content: String($json.week || '') } }] }, Lane: { rich_text: [{ text: { content: String($json.lane || '') } }] }, 'Source URL': { url: $json.source_url || null }, Confidence: { number: Number($json.confidence_score) || 0 }, Direction: { rich_text: [{ text: { content: String($json.likely_direction || '').substring(0, 2000) } }] }, 'Recommended Action': { rich_text: [{ text: { content: String($json.recommended_action || '') } }] }, 'Review Flag': { checkbox: $json.review_flag === 'TRUE' }, 'Gap vs Ping': { rich_text: [{ text: { content: String($json.gap_vs_ping || '').substring(0, 2000) } }] }, 'Parity vs Ping': { rich_text: [{ text: { content: String($json.parity_vs_ping || '').substring(0, 2000) } }] }, 'Ping Advantage': { rich_text: [{ text: { content: String($json.ping_advantage || '').substring(0, 2000) } }] }, 'Review Flag Reason': { rich_text: [{ text: { content: String($json.review_flag_reason || '').substring(0, 2000) } }] } } }) }}",
           "options": {}
         },
         "credentials": {
           "notionApi": {
-            "id": "GuZ4XSOROaBU9UEH",
+            "id": "YOUR_NOTION_CREDENTIAL_ID",
             "name": "Notion account"
           }
         },
@@ -1097,18 +1099,18 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-04-03T17:18:10.104Z",
-        "id": 165,
+        "createdAt": "2026-04-05T01:02:17.950Z",
+        "id": 195,
         "workflowId": "mY5wIkPWlolzcUbn",
-        "versionId": "08e49753-9a0d-4c47-a297-ab84674be400",
+        "versionId": "37151303-7a47-4061-b975-1ac63a92fce7",
         "event": "activated",
         "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
       },
       {
-        "createdAt": "2026-04-03T17:18:10.093Z",
-        "id": 164,
+        "createdAt": "2026-04-05T01:02:17.945Z",
+        "id": 194,
         "workflowId": "mY5wIkPWlolzcUbn",
-        "versionId": "08e49753-9a0d-4c47-a297-ab84674be400",
+        "versionId": "37151303-7a47-4061-b975-1ac63a92fce7",
         "event": "deactivated",
         "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
       }

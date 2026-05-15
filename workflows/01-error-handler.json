@@ -46,7 +46,7 @@
         "operation": "append",
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -75,7 +75,7 @@
       "position": [688, 304],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -123,7 +123,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://ntfy.sh/pi-alerts-xk7r2m9q",
+        "url": "https://ntfy.sh/YOUR_NTFY_TOPIC",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Memory &amp; Audit — Product Intelligence OS</title>
+  <title>Memory &amp; Audit: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -80,7 +81,7 @@
     <table class="meta-table">
       <tr><td>Workflow ID</td><td><span class="mono">skUbNsPy00W8DiDa</span></td></tr>
       <tr><td>Triggered by</td><td>Master Orchestrator · Fridays, after Newsletter</td></tr>
-      <tr><td>AI model</td><td>None — deterministic logic only</td></tr>
+      <tr><td>AI model</td><td>None: deterministic logic only</td></tr>
       <tr><td>Writes to</td><td><code>execution_log</code> (Google Sheets)</td></tr>
       <tr><td>Reads from</td><td><code>structured_findings</code></td></tr>
     </table>
@@ -88,9 +89,9 @@
     <hr class="divider">
 
     <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
-    <p>Memory &amp; Audit is the last workflow to run each Friday. After the Newsletter has been sent, this workflow scans the week's findings for items that deserve human review — things that the automated system flagged as uncertain but potentially important.</p>
+    <p>Memory &amp; Audit is the last workflow to run each Friday. After the Newsletter has been sent, this workflow scans the week's findings for items that deserve human review: things that the automated system flagged as uncertain but potentially important.</p>
     <p style="margin-top:12px">The flagging logic is deterministic: any finding where <code>confidence_score ≤ 2</code> AND <code>relevance_score ≥ 4</code> is flagged, OR where <code>review_flag = TRUE</code> was already set by Claude during Competitor Intelligence. The audit produces a weekly quality summary: total findings, flagged count, list of flagged IDs with reasons.</p>
-    <p style="margin-top:12px">This summary is written to <code>execution_log</code> — giving a historical record of each week's quality metrics over time.</p>
+    <p style="margin-top:12px">This summary is written to <code>execution_log</code>: giving a historical record of each week's quality metrics over time.</p>
 
     <hr class="divider">
 
@@ -100,7 +101,7 @@
         <div class="step-spine"><div class="step-num">1</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Called by Orchestrator</div><span class="step-tag">executeWorkflowTrigger</span></div>
-          <div class="step-desc">Entry point. Receives the <code>run_id</code> from the Orchestrator. Runs after Newsletter has completed — last sub-workflow of the Friday run.</div>
+          <div class="step-desc">Entry point. Receives the <code>run_id</code> from the Orchestrator. Runs after Newsletter has completed: last sub-workflow of the Friday run.</div>
         </div>
       </div>
       <div class="step">
@@ -121,14 +122,14 @@
         <div class="step-spine"><div class="step-num">4</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Write Weekly Summary</div><span class="step-tag">Google Sheets</span></div>
-          <div class="step-desc">Appends the weekly audit summary (total findings, flagged count, flagged item list) to the <code>execution_log</code> tab. This provides a historical record of each week's intelligence quality — how many findings were produced, how many raised uncertainty flags.</div>
+          <div class="step-desc">Appends the weekly audit summary (total findings, flagged count, flagged item list) to the <code>execution_log</code> tab. This provides a historical record of each week's intelligence quality: how many findings were produced, how many raised uncertainty flags.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">5</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Return to Orchestrator</div><span class="step-tag">executeWorkflowTrigger</span></div>
-          <div class="step-desc">Sends <code>{ status: "success" }</code> back to the Master Orchestrator. This is the final signal of the entire Friday run — after this returns, the Orchestrator logs the run as complete.</div>
+          <div class="step-desc">Sends <code>{ status: "success" }</code> back to the Master Orchestrator. This is the final signal of the entire Friday run: after this returns, the Orchestrator logs the run as complete.</div>
         </div>
       </div>
     </div>

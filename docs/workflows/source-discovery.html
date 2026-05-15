@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Source Discovery: Product Intelligence OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
+  <div class="topbar-right">
+    <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
+    <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
+    <a href="../data/google-sheets-schema.html" class="topbar-link">Data</a>
+    <a href="../reference/ids-credentials.html" class="topbar-link">Reference</a>
+    <div class="topbar-status"><div class="topbar-status-dot"></div>Production</div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="../index.html" class="sidebar-item" data-page="home"><span class="material-icons-round">home</span> Home</a>
+      <a href="../overview/what-is-this.html" class="sidebar-item" data-page="what-is-this"><span class="material-icons-round">info</span> What is this?</a>
+      <a href="../overview/architecture.html" class="sidebar-item" data-page="architecture"><span class="material-icons-round">account_tree</span> Architecture</a>
+      <a href="../overview/tech-stack.html" class="sidebar-item" data-page="tech-stack"><span class="material-icons-round">layers</span> Tech Stack</a>
+      <a href="../overview/weekly-schedule.html" class="sidebar-item" data-page="weekly-schedule"><span class="material-icons-round">calendar_today</span> Weekly Schedule</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflows</div>
+      <a href="../workflows/master-orchestrator.html" class="sidebar-item" data-page="master-orchestrator"><span class="material-icons-round">hub</span> Master Orchestrator</a>
+      <a href="../workflows/market-watch.html" class="sidebar-item" data-page="market-watch"><span class="material-icons-round">radar</span> Market Watch</a>
+      <a href="../workflows/internal-product-specialist.html" class="sidebar-item" data-page="internal-product-specialist"><span class="material-icons-round">map</span> Internal Product Specialist</a>
+      <a href="../workflows/competitor-intelligence.html" class="sidebar-item" data-page="competitor-intelligence"><span class="material-icons-round">analytics</span> Competitor Intelligence</a>
+      <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
+      <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
+      <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item active" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Layer</div>
+      <a href="../data/google-sheets-schema.html" class="sidebar-item" data-page="google-sheets-schema"><span class="material-icons-round">table_chart</span> Google Sheets Schema</a>
+      <a href="../data/notion-databases.html" class="sidebar-item" data-page="notion-databases"><span class="material-icons-round">space_dashboard</span> Notion Databases</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Intelligence Model</div>
+      <a href="../intelligence/strategic-lanes.html" class="sidebar-item" data-page="strategic-lanes"><span class="material-icons-round">category</span> Strategic Lanes</a>
+      <a href="../intelligence/evidence-scoring.html" class="sidebar-item" data-page="evidence-scoring"><span class="material-icons-round">bar_chart</span> Evidence Scoring</a>
+      <a href="../intelligence/hallucination-prevention.html" class="sidebar-item" data-page="hallucination-prevention"><span class="material-icons-round">verified_user</span> Hallucination Prevention</a>
+      <a href="../intelligence/ai-model-tiers.html" class="sidebar-item" data-page="ai-model-tiers"><span class="material-icons-round">psychology</span> AI Model Tiers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="../reference/ids-credentials.html" class="sidebar-item" data-page="ids-credentials"><span class="material-icons-round">key</span> IDs &amp; Credentials</a>
+      <a href="../reference/architecture-quirks.html" class="sidebar-item" data-page="architecture-quirks"><span class="material-icons-round">warning_amber</span> Architecture Quirks</a>
+      <a href="../reference/stage-history.html" class="sidebar-item" data-page="stage-history"><span class="material-icons-round">history</span> Stage History</a>
+      <a href="../reference/roadmap.html" class="sidebar-item" data-page="roadmap"><span class="material-icons-round">rocket_launch</span> Roadmap</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a><span class="breadcrumb-sep">/</span>
+      <a href="#">Workflows</a><span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Source Discovery</span>
+    </div>
+    <div class="page-header">
+      <div class="page-header-meta">
+        <span class="badge badge-workflow"><span class="material-icons-round">travel_explore</span> Workflow</span>
+        <span class="badge badge-schedule"><span class="material-icons-round">schedule</span> Monthly</span>
+        <span class="badge badge-haiku"><span class="material-icons-round">psychology</span> Claude Haiku</span>
+        <span class="badge badge-stage5"><span class="material-icons-round">star</span> Stage 5</span>
+      </div>
+      <h1>Source Discovery</h1>
+      <p class="page-subtitle">Crawls Ping Identity's seed documentation pages monthly, extracts and classifies every internal link, and writes newly discovered URLs to the <code>source_registry</code> as candidates: automatically expanding the IPS source list without manual curation.</p>
+    </div>
+
+    <table class="meta-table">
+      <tr><td>Workflow ID</td><td><span class="mono">LhycJpV60D0ddoDS</span></td></tr>
+      <tr><td>Schedule</td><td>First Monday of each month · 6:30 AM ET (also manually triggerable)</td></tr>
+      <tr><td>AI model</td><td>Claude Haiku: used only for ambiguous URLs (~$0.001/call)</td></tr>
+      <tr><td>Reads from</td><td><code>source_registry</code> (seed sources with <code>source_role = family_index</code>)</td></tr>
+      <tr><td>Writes to</td><td><code>source_registry</code> (new <code>candidate</code> rows · safe metadata updates)</td></tr>
+    </table>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
+    <p>Source Discovery is the system's self-expanding index. Instead of manually adding URLs to the <code>source_registry</code>, this workflow reads every <code>family_index</code> seed from Sheets, fetches each page via the Jina reader API (which returns clean markdown), and parses every internal link found on the page.</p>
+    <p style="margin-top:12px">Each discovered link goes through a two-pass classification pipeline. First, a set of deterministic <strong>path rules</strong> assigns a <code>source_role</code> (e.g. <code>release_notes</code>, <code>platform_specific</code>, <code>api_reference</code>) based on URL patterns. Links that don't match any rule are flagged as <code>unknown</code> and forwarded to <strong>Claude Haiku</strong> for a second-pass classification using anchor text and seed context.</p>
+    <p style="margin-top:12px">After classification, the workflow reads the current <code>source_registry</code> and deduplicates. New URLs are appended as <code>status = candidate</code> rows: they don't become active sources until a human promotes them. URLs already in the registry have only their <code>last_seen</code> and <code>last_checked</code> timestamps updated (no other fields are touched).</p>
+
+    <div class="callout callout-info">
+      <div class="callout-icon"><span class="material-icons-round">info</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Stage 5: Hybrid Discovery Model</div>
+        <div class="callout-text">This workflow is the core of Stage 5. It replaces manual source curation with a monthly automated crawl. IPS reads <code>active</code> sources; Discovery writes <code>candidate</code> sources. A human review step sits between them: candidates are never activated automatically.</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-title"><span class="material-icons-round">account_tree</span> Node Breakdown</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-spine"><div class="step-num">1</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Monthly Schedule</div><span class="step-tag">Schedule Trigger</span></div>
+          <div class="step-desc">Fires on the first Monday of each month at 6:30 AM ET using the cron expression <code>30 6 1-7 * 1</code>. Designed to run independently of the daily Master Orchestrator: it's a long-running crawl that shouldn't block the daily pipeline.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">1b</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Manual Trigger</div><span class="step-tag">Manual Trigger</span></div>
+          <div class="step-desc">Allows the workflow to be triggered on-demand from the n8n UI. Useful for initial validation and one-off re-crawls without waiting for the monthly schedule.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">2</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Discovery Config</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Emits a single config item with two runtime flags: <code>USE_CLAUDE_CLASSIFICATION</code> (toggle Claude off entirely for dry runs) and <code>MAX_CLAUDE_CANDIDATES_PER_RUN</code> (cap on items sent to Claude: default 200). Both values are read by downstream nodes.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">3</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Read Seed Sources</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Reads the entire <code>source_registry</code> tab. All filtering happens in the next node: this reads the full range <code>A:Z</code> to ensure no columns are missed.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">4</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Filter Seeds</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Keeps only rows where <code>source_role = family_index</code>, <code>status</code> is <code>active</code> or <code>discovery_only</code>, and <code>source_type ≠ github_repo</code> (GitHub repos are excluded: their link structure is nav menus, not doc pages). These are the crawl seeds.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">5</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Prepare Seed Fetch</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Normalizes each seed URL and prepends the Jina reader prefix: <code>https://r.jina.ai/{url}</code>. Jina fetches the page and returns clean markdown: stripping nav, scripts, and ads so link extraction is reliable.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">6</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Fetch Seed Page</div><span class="step-tag">HTTP Request</span></div>
+          <div class="step-desc">Fetches each seed page via Jina with a 20-second timeout. <code>onError: continueRegularOutput</code> ensures that a single failed fetch doesn't stop the run: it passes through an error flag that the next node checks.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">7</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Skip If Fetch Failed</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Drops any fetch results that returned an error or returned fewer than 100 characters of content. Zips fetch results back to their original seed data (to carry forward <code>source_id</code>, <code>capability_area</code>, <code>product_name</code>).</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">8</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Extract Links</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Parses the Jina markdown for all <code>[text](url)</code> link patterns. Filters to same-hostname links only. Applies a deny list (<code>/search</code>, <code>/login</code>, <code>/tag/</code>, pagination paths, etc.). For seeds in a subsection (path depth ≥ 2), enforces a <strong>section boundary</strong>: links outside the seed's directory are hard-rejected. Root-level seeds are intentionally broad. Deduplicates by normalized URL within each seed.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">9</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Normalize URLs</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Strips URL fragments (<code>#section</code>), removes tracking parameters (<code>utm_*</code>, <code>ref</code>, <code>source</code>, <code>campaign</code>), lowercases the hostname, and removes trailing slashes. Produces a stable <code>normalized_url</code> used as the deduplication key throughout the rest of the workflow.</div>
+        </div>
+      </div>
+      <div class="step highlight">
+        <div class="step-spine"><div class="step-num">10</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Reclassify &amp; Filter</div><span class="step-tag highlight">Stage 5</span></div>
+          <div class="step-desc">Applies the path rule set before classification. Hard rejects: links at path depth ≤ 1 (root-level pages), cross-product directories (<code>/pingam/</code>, <code>/pingfederate/</code>, <code>/solution-guides/</code>), and non-MCP AIC sections. Also reclassifies SDK changelog and release-notes paths to the correct <code>product_name</code> and <code>capability_area</code> regardless of which seed they came from.</div>
+        </div>
+      </div>
+      <div class="step highlight">
+        <div class="step-spine"><div class="step-num">11</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Classify Links</div><span class="step-tag highlight">Stage 5</span></div>
+          <div class="step-desc">Rules-based <code>source_role</code> assignment. Patterns checked in order: <code>release_notes</code> (changelog/whatsnew paths) → <code>api_reference</code> (api/ paths) → <code>family_index</code> (index.html) → <code>sample_only</code> (samples/ paths) → <code>platform_specific</code> (android/ios/swift paths) → <code>use_case</code> (guide/how-to paths) → <code>unknown</code> (no match). Sets <code>suggested_priority</code> (P1/P2/P3) and flags <code>is_authoritative_classification</code> for items where the rules are definitive.</div>
+        </div>
+      </div>
+      <div class="step highlight">
+        <div class="step-spine"><div class="step-num">12</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Build Claude Prompt</div><span class="step-tag highlight">Stage 5</span></div>
+          <div class="step-desc">Prepares each item for the Claude branch. Only items with <code>source_role = unknown</code> are candidates for Claude enrichment. Applies the <code>MAX_CLAUDE_CANDIDATES_PER_RUN</code> cap: items beyond the cap are marked <code>_skip_claude: true</code> and routed around Claude with their <code>rules</code> classification kept. Confidently-classified items always skip Claude.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">13</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Needs Claude?</div><span class="step-tag">IF</span></div>
+          <div class="step-desc">Routes items: <span class="branch-true">TRUE</span> (<code>_skip_claude = false</code>) → Format Claude Prompt → Call Claude Haiku → Parse &amp; Merge. <span class="branch-false">FALSE</span> → Rejoin Classification Paths directly, keeping their rules-based classification.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">14</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Format Claude Prompt</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Builds a structured prompt per candidate using: seed page URL, product name, seed page title, candidate URL, and anchor text. Asks Claude to return <code>source_role</code>, <code>capability_tag</code> (from a curated list of ~32 tags), and <code>confidence</code> (1–5). If Claude can't classify with confidence ≥ 3, it returns <code>not_enough_context: true</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">15</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Call Claude Haiku</div><span class="step-tag">HTTP Request → Anthropic</span></div>
+          <div class="step-desc">Calls Claude Haiku with a 256-token budget: classification returns are always short. Uses <code>predefinedCredentialType: httpHeaderAuth</code> with credential <code>YOUR_ANTHROPIC_CREDENTIAL_ID</code> and the required <code>anthropic-version: 2023-06-01</code> header. <code>onError: continueRegularOutput</code> prevents API failures from breaking the run.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">16</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Parse and Merge Classification</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Merges Claude's classification with the rules output. Merge logic: if Claude agrees with the rules-assigned role → <code>claude_assisted</code>. If Claude disagrees and confidence ≥ 4 (≥ 5 for authoritative-classified items) → <code>claude_override</code>. Otherwise the rules-based role is kept. If Claude returned <code>not_enough_context</code> or failed → fall back to rules. Strips internal <code>_claude_prompt</code> and <code>_skip_claude</code> fields.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">17</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Rejoin Classification Paths</div><span class="step-tag">Merge (append)</span></div>
+          <div class="step-desc">Recombines the Claude-classified items and the rules-only items into a single stream. All items now have a final <code>source_role</code>, <code>suggested_priority</code>, and <code>classification_source</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">18</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Trigger Registry Read</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Emits a single synthetic item to trigger the Google Sheets read that follows. Required because the Merge node output needs to be separated from the deduplication read: this node acts as the initiator for the second Sheets read.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">19</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Read Existing Registry</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Re-reads the full <code>source_registry</code> tab to get the current URL list for deduplication. A second read (vs. reusing the initial read) ensures the dedup check reflects any rows written by concurrent processes.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">20</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Match &amp; Deduplicate</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Builds a URL lookup map from the existing registry, then compares each discovered candidate. Two outcomes: <strong>already exists</strong> → <code>_action: update_metadata</code> (only <code>last_seen</code> and <code>last_checked</code> updated). <strong>New URL</strong> → <code>_action: insert_candidate</code> (full row built with auto-generated <code>source_id</code> prefixed <code>disc-{seed_id}-{slug}</code>, <code>status = candidate</code>).</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">21</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">New or Existing?</div><span class="step-tag">IF</span></div>
+          <div class="step-desc">Routes by <code>_action</code>. <span class="branch-true">TRUE</span> (<code>insert_candidate</code>) → Strip Internal Fields → Write New Candidates. <span class="branch-false">FALSE</span> (<code>update_metadata</code>) → Update Safe Metadata.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">22</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Strip Internal Fields</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Removes the internal <code>_action</code> field before writing to Sheets: prevents a spurious column from appearing in the registry.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">23</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Write New Candidates</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Appends new candidate rows to <code>source_registry</code> using <code>autoMapInputData</code>. Status is always <code>candidate</code>. These rows are visible in Sheets immediately but are ignored by IPS until a human changes their status to <code>active</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">24</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Update Safe Metadata</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">For URLs already in the registry: updates only <code>last_seen</code> and <code>last_checked</code>, matched on <code>url</code>. No other fields are touched: this preserves any manual edits to <code>status</code>, <code>priority</code>, or <code>notes</code> made by the team.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-warning" style="margin-top:32px">
+      <div class="callout-icon"><span class="material-icons-round">warning_amber</span></div>
+      <div class="callout-body">
+        <div class="callout-title">First Run Not Yet Executed</div>
+        <div class="callout-text">As of Stage 5 deployment (2026-04-05), the first production discovery run has not yet been triggered. Validate by manually triggering the workflow in the n8n UI on a single seed before the first scheduled monthly run. Watch for: unexpected cross-product URLs passing the Reclassify &amp; Filter node, section boundary enforcement working correctly, and Claude fallback behavior on <code>unknown</code> items.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-info" style="margin-top:16px">
+      <div class="callout-icon"><span class="material-icons-round">tips_and_updates</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Promoting Candidates to Active</div>
+        <div class="callout-text">After a discovery run, review newly written rows in the <code>source_registry</code> tab. Change <code>status</code> from <code>candidate</code> to <code>active</code> and set the correct <code>priority</code> (P1/P2/P3) to make a source eligible for IPS crawling. Sources with <code>source_role = release_notes</code> should generally be P1. SDK changelogs are P1. API reference pages are P2.</div>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a href="error-handler.html" class="nav-card">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_back</span></div>
+        <div><div class="nav-card-label">Previous</div><div class="nav-card-title">Error Handler</div></div>
+      </a>
+      <a href="../data/google-sheets-schema.html" class="nav-card nav-card-next">
+        <div class="nav-card-icon"><span class="material-icons-round">arrow_forward</span></div>
+        <div><div class="nav-card-label">Next</div><div class="nav-card-title">Google Sheets Schema</div></div>
+      </a>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js" data-page="source-discovery"></script>
+</body>
+</html>

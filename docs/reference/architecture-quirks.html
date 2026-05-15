@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Architecture Quirks — Product Intelligence OS</title>
+  <title>Architecture Quirks: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -71,7 +72,7 @@
 
     <div class="page-header">
       <h1>Architecture Quirks</h1>
-      <p class="page-subtitle">Non-obvious rules that govern how this system is built. Each one was discovered the hard way — through failed test runs, broken nodes, or silent data loss. Read these before modifying any workflow.</p>
+      <p class="page-subtitle">Non-obvious rules that govern how this system is built. Each one was discovered the hard way: through failed test runs, broken nodes, or silent data loss. Read these before modifying any workflow.</p>
     </div>
 
     <div class="callout callout-warning">
@@ -94,7 +95,7 @@
             <span class="step-tag">Master Orchestrator</span>
           </div>
           <div class="step-desc">
-            Always reference <code>$('Initialize Run').first().json</code> — never <code>$json</code>. In the Orchestrator, <code>$json</code> reflects the output of the most recently executed node, which changes as sub-workflows return. The day-of-week flags (<code>is_monday</code>, <code>is_tue_thu</code>, <code>is_friday</code>) are set once at the start in <code>Initialize Run</code> and must be read from that specific node.
+            Always reference <code>$('Initialize Run').first().json</code>: never <code>$json</code>. In the Orchestrator, <code>$json</code> reflects the output of the most recently executed node, which changes as sub-workflows return. The day-of-week flags (<code>is_monday</code>, <code>is_tue_thu</code>, <code>is_friday</code>) are set once at the start in <code>Initialize Run</code> and must be read from that specific node.
           </div>
         </div>
       </div>
@@ -107,7 +108,7 @@
             <span class="step-tag">Newsletter</span>
           </div>
           <div class="step-desc">
-            The n8n Notion node (v2.2) is broken for <code>rich_text</code> properties — it silently discards content. Use an HTTP Request node instead: <code>POST https://api.notion.com/v1/pages</code> with <code>predefinedCredentialType: notionApi</code>. Never use the built-in Notion node for writing rich text blocks.
+            The n8n Notion node (v2.2) is broken for <code>rich_text</code> properties: it silently discards content. Use an HTTP Request node instead: <code>POST https://api.notion.com/v1/pages</code> with <code>predefinedCredentialType: notionApi</code>. Never use the built-in Notion node for writing rich text blocks.
           </div>
         </div>
       </div>
@@ -120,7 +121,7 @@
             <span class="step-tag">All HTTP Request nodes</span>
           </div>
           <div class="step-desc">
-            Use <code>contentType: "raw"</code> paired with <code>rawContentType: "application/json"</code> and <code>body: "={{ JSON.stringify({...}) }}"</code>. Do not use <code>"rawBody"</code> as the key — it is not a valid field and will be silently ignored, sending an empty body.
+            Use <code>contentType: "raw"</code> paired with <code>rawContentType: "application/json"</code> and <code>body: "={{ JSON.stringify({...}) }}"</code>. Do not use <code>"rawBody"</code> as the key: it is not a valid field and will be silently ignored, sending an empty body.
           </div>
         </div>
       </div>
@@ -133,7 +134,7 @@
             <span class="step-tag">All Code nodes</span>
           </div>
           <div class="step-desc">
-            <code>fetch</code> and <code>$helpers.httpRequest</code> are both blocked in n8n's Code node sandbox. Any HTTP call must use a dedicated HTTP Request node — a Code node cannot make network requests.
+            <code>fetch</code> and <code>$helpers.httpRequest</code> are both blocked in n8n's Code node sandbox. Any HTTP call must use a dedicated HTTP Request node: a Code node cannot make network requests.
           </div>
         </div>
       </div>
@@ -146,7 +147,7 @@
             <span class="step-tag">Anthropic HTTP calls</span>
           </div>
           <div class="step-desc">
-            Environment variables (<code>$env.MY_KEY</code>) are blocked in HTTP Request node header fields. For Anthropic API calls, use <code>predefinedCredentialType: httpHeaderAuth</code> with credential ID <code>P6dgBaH33wjoGxqb</code> — the API key is stored securely in n8n's credential vault.
+            Environment variables (<code>$env.MY_KEY</code>) are blocked in HTTP Request node header fields. For Anthropic API calls, use <code>predefinedCredentialType: httpHeaderAuth</code> with credential ID <code>YOUR_ANTHROPIC_CREDENTIAL_ID</code>: the API key is stored securely in n8n's credential vault.
           </div>
         </div>
       </div>
@@ -159,7 +160,7 @@
             <span class="step-tag">All sub-workflows</span>
           </div>
           <div class="step-desc">
-            Sub-workflows (Market Watch, IPS, CI, Newsletter, Memory &amp; Audit, Error Handler) all use <code>executeWorkflowTrigger</code> as their entry point. The <code>n8n_test_workflow</code> API tool cannot trigger this node type — it only works with webhooks and schedules. Test sub-workflows manually in the n8n UI by running them directly.
+            Sub-workflows (Market Watch, IPS, CI, Newsletter, Memory &amp; Audit, Error Handler) all use <code>executeWorkflowTrigger</code> as their entry point. The <code>n8n_test_workflow</code> API tool cannot trigger this node type: it only works with webhooks and schedules. Test sub-workflows manually in the n8n UI by running them directly.
           </div>
         </div>
       </div>
@@ -172,7 +173,7 @@
             <span class="step-tag">n8n API</span>
           </div>
           <div class="step-desc">
-            The <code>n8n_update_full_workflow</code> API call requires the <code>name</code> field to be present in the request body — even if you are not changing the workflow name. Omitting it returns a validation error. Always include the current workflow name when using this tool.
+            The <code>n8n_update_full_workflow</code> API call requires the <code>name</code> field to be present in the request body: even if you are not changing the workflow name. Omitting it returns a validation error. Always include the current workflow name when using this tool.
           </div>
         </div>
       </div>
@@ -185,7 +186,7 @@
             <span class="step-tag">n8n API</span>
           </div>
           <div class="step-desc">
-            <code>n8n_update_partial_workflow</code> cannot update nested array items — for example, changing <code>conditions[0].leftValue</code> in an IF node. Use <code>n8n_update_full_workflow</code> for any change that touches condition arrays, parameters arrays, or any nested structure.
+            <code>n8n_update_partial_workflow</code> cannot update nested array items: for example, changing <code>conditions[0].leftValue</code> in an IF node. Use <code>n8n_update_full_workflow</code> for any change that touches condition arrays, parameters arrays, or any nested structure.
           </div>
         </div>
       </div>
@@ -198,7 +199,7 @@
             <span class="step-tag">Master Orchestrator</span>
           </div>
           <div class="step-desc">
-            Every <code>executeWorkflow</code> node must have <code>continueOnFail: true</code> AND be followed by a guard Code node. The guard emits a synthetic <code>&#123; status: "success" &#125;</code> item if the sub-workflow returned 0 items — preventing the chain from silently halting. The guard must be wired as a connection — a Code node with 0 items flowing in never executes.
+            Every <code>executeWorkflow</code> node must have <code>continueOnFail: true</code> AND be followed by a guard Code node. The guard emits a synthetic <code>&#123; status: "success" &#125;</code> item if the sub-workflow returned 0 items: preventing the chain from silently halting. The guard must be wired as a connection: a Code node with 0 items flowing in never executes.
           </div>
         </div>
       </div>
@@ -212,6 +213,45 @@
           </div>
           <div class="step-desc">
             Competitor Intelligence reads only evidence from the last 3 days from <code>evidence_log</code>. If the schedule is missed (e.g., a Tuesday run is skipped), that day's evidence is not recovered on Thursday. Consistent scheduling is required to avoid evidence gaps. The cutoff exists to prevent CI from reprocessing stale findings.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">11</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">HTTP Request typeVersion 4.2 requires <code>sendBody: true</code></div>
+            <span class="step-tag">All HTTP Request nodes with bodies</span>
+          </div>
+          <div class="step-desc">
+            In HTTP Request nodes at typeVersion 4.2, the <code>body</code> parameter is silently ignored unless <code>sendBody: true</code> is also set. The node will appear to send a request but the body will be empty. This affects all nodes that call the Anthropic API or any other POST endpoint. Always set <code>sendBody: true</code> alongside <code>contentType</code> and <code>body</code>.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">12</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Custom headers: use <code>headerParameters</code>, not <code>options.headers</code></div>
+            <span class="step-tag">All HTTP Request nodes with custom headers</span>
+          </div>
+          <div class="step-desc">
+            Setting <code>options.headers.parameter</code> on an HTTP Request node saves correctly to the workflow JSON but is <strong>not applied at runtime</strong>: headers are silently dropped. Always add custom headers via <code>sendHeaders: true</code> + <code>headerParameters: &#123; parameters: [&#123; name, value &#125;] &#125;</code>. Discovered when the <code>anthropic-version</code> header was consistently missing from Anthropic API calls despite appearing in the workflow JSON.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">13</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Anthropic API requires <code>anthropic-version</code> header</div>
+            <span class="step-tag">All Anthropic HTTP Request nodes</span>
+          </div>
+          <div class="step-desc">
+            Every HTTP Request node calling the Anthropic API must include the header <code>anthropic-version: 2023-06-01</code>. The <code>httpHeaderAuth</code> credential (ID: <code>YOUR_ANTHROPIC_CREDENTIAL_ID</code>) only injects <code>x-api-key</code>: it does not add the version header. Add it explicitly via <code>headerParameters</code>. Omitting it returns a 401 or 400 error.
           </div>
         </div>
       </div>

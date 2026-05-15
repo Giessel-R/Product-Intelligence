@@ -1,0 +1,1670 @@
+{
+  "updatedAt": "2026-04-08T23:42:15.064Z",
+  "createdAt": "2026-04-05T00:36:11.270Z",
+  "id": "LhycJpV60D0ddoDS",
+  "name": "PI: Source Discovery",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "monthly-schedule",
+      "name": "Monthly Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        400
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 6 1-7 * 1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        560
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "discovery-config",
+      "name": "Discovery Config",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        400
+      ],
+      "parameters": {
+        "jsCode": "// Discovery config \u2014 explicit Code node guarantees field output.\n// USE_CLAUDE_CLASSIFICATION: set false to bypass Claude for all items.\n// MAX_CLAUDE_CANDIDATES_PER_RUN: cap on items sent to Claude per run.\nreturn [{ json: {\n  USE_CLAUDE_CLASSIFICATION: true,\n  MAX_CLAUDE_CANDIDATES_PER_RUN: 200\n} }];"
+      }
+    },
+    {
+      "id": "read-seed-sources",
+      "name": "Read Seed Sources",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        680,
+        400
+      ],
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEETS_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "source_registry",
+          "mode": "name"
+        },
+        "options": {},
+        "range": "A:Z"
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "filter-seeds",
+      "name": "Filter Seeds",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        400
+      ],
+      "parameters": {
+        "jsCode": "return $input.all().filter(item => {\n  const s = item.json;\n  const role = (s.source_role || '').trim().toLowerCase();\n  const status = (s.status || '').trim().toLowerCase();\n  const type = (s.source_type || '').trim().toLowerCase();\n  return role === 'family_index'\n    && (status === 'active' || status === 'discovery_only')\n    && type !== 'github_repo';\n});"
+      }
+    },
+    {
+      "id": "prepare-seed-fetch",
+      "name": "Prepare Seed Fetch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        400
+      ],
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const url = (item.json.url || '').trim();\n  const fullUrl = /^https?:\\/\\//i.test(url) ? url : 'https://' + url;\n  return {\n    json: {\n      ...item.json,\n      _full_url: fullUrl,\n      _fetch_url: 'https://r.jina.ai/' + fullUrl\n    }\n  };\n});"
+      }
+    },
+    {
+      "id": "fetch-seed-page",
+      "name": "Fetch Seed Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1340,
+        400
+      ],
+      "parameters": {
+        "url": "={{ $json._fetch_url }}",
+        "method": "GET",
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "skip-if-fetch-failed",
+      "name": "Skip If Fetch Failed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        400
+      ],
+      "parameters": {
+        "jsCode": "const fetchResults = $input.all();\nconst seeds = $('Prepare Seed Fetch').all();\n\nconst results = [];\nfor (let i = 0; i < fetchResults.length; i++) {\n  const fetchResult = fetchResults[i];\n  const seed = seeds[i] ? seeds[i].json : null;\n  if (!seed) continue;\n  if (fetchResult.json.error) continue;\n  const html = fetchResult.json.data || fetchResult.json.body || '';\n  if (!html || html.length < 100) continue;\n  results.push({\n    json: {\n      html,\n      source_id: seed.source_id,\n      seed_url: seed._full_url || seed.url,\n      seed_capability_area: seed.capability_area,\n      seed_product_name: seed.product_name\n    }\n  });\n}\nreturn results;"
+      }
+    },
+    {
+      "id": "extract-links",
+      "name": "Extract Links",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        400
+      ],
+      "parameters": {
+        "jsCode": "// Parse Jina markdown: links in [text](url) format.\n// in_seed_section is enforced as a HARD REJECT for seeds at section depth >= 2.\n// Seeds at depth 0-1 (root crawls) are intentionally broad \u2014 no section filtering.\n\nconst DENY_PATTERNS = [\n  '/search', '/login', '/signin', '/tag/', '/tags/', '/page/',\n  '/category/', '/categories/', '/author/', '/authors/',\n  '/archive/', '/archives/', '/feed', '/feeds/'\n];\n\nfunction getHostname(url) {\n  const m = url.match(/^https?:\\/\\/([^\\/?#]+)/i);\n  return m ? m[1].toLowerCase() : '';\n}\n\nfunction getPathname(url) {\n  const m = url.match(/^https?:\\/\\/[^\\/?#]+([^?#]*)/i);\n  return m ? m[1] : '/';\n}\n\n// Returns the seed's section prefix (directory the seed belongs to).\n// Empty string = root-level seed (no strict filtering).\nfunction getSeedSection(seedUrl) {\n  const path = getPathname(seedUrl);\n  if (!path || path === '/') return '';\n  if (path.endsWith('/')) return path.slice(0, -1); // strip trailing slash\n  const lastSlash = path.lastIndexOf('/');\n  return lastSlash > 0 ? path.slice(0, lastSlash) : '';\n}\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  const { html, seed_url, source_id, seed_capability_area, seed_product_name } = item.json;\n  if (!html) continue;\n\n  const seedHostname = getHostname(seed_url);\n  const sectionPrefix = getSeedSection(seed_url);\n  const sectionDepth = sectionPrefix.split('/').filter(Boolean).length;\n  // Only enforce section filtering for seeds in a specific subsection (depth >= 2)\n  const requireSectionMatch = sectionDepth >= 2;\n\n  const titleMatch = html.match(/^#\\s+(.+)$/m) || html.match(/^Title:\\s+(.+)$/mi);\n  const seedPageTitle = titleMatch ? titleMatch[1].trim() : '';\n\n  const linkRegex = /\\[([^\\]]*)\\]\\((https?:\\/\\/[^\\s)\"']+)\\)/g;\n  let match;\n  const seen = new Set();\n\n  while ((match = linkRegex.exec(html)) !== null) {\n    const anchorText = match[1].trim();\n    const rawHref = match[2].trim();\n\n    const linkHostname = getHostname(rawHref);\n    if (!seedHostname || linkHostname !== seedHostname) continue;\n\n    const linkPath = getPathname(rawHref).toLowerCase();\n    if (DENY_PATTERNS.some(p => linkPath.includes(p))) continue;\n\n    // HARD REJECT: links outside this seed's section\n    if (requireSectionMatch && !linkPath.startsWith(sectionPrefix.toLowerCase())) continue;\n\n    const dedupKey = (linkHostname + linkPath).replace(/\\/$/, '');\n    if (seen.has(dedupKey)) continue;\n    seen.add(dedupKey);\n\n    results.push({\n      json: {\n        raw_url: rawHref,\n        anchor_text: anchorText,\n        seed_source_id: source_id,\n        seed_url,\n        seed_capability_area,\n        seed_product_name,\n        seed_page_title: seedPageTitle,\n        in_seed_section: true\n      }\n    });\n  }\n}\n\nreturn results;"
+      }
+    },
+    {
+      "id": "normalize-urls",
+      "name": "Normalize URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        400
+      ],
+      "parameters": {
+        "jsCode": "const TRACKING = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'ref', 'source', 'campaign'];\n\nfunction normalizeUrl(raw) {\n  let url = raw.replace(/^(https?:\\/\\/[^\\/?#]*)/i, m => m.toLowerCase());\n  const fragIdx = url.indexOf('#');\n  if (fragIdx !== -1) url = url.slice(0, fragIdx);\n  url = url.replace(/([^/])\\/($|\\?)/, '$1$2');\n  const qIdx = url.indexOf('?');\n  if (qIdx !== -1) {\n    const base = url.slice(0, qIdx);\n    const kept = url.slice(qIdx + 1).split('&').filter(p => {\n      const key = p.split('=')[0].toLowerCase();\n      return p.length > 0 && !TRACKING.includes(key);\n    });\n    url = kept.length ? base + '?' + kept.join('&') : base;\n  }\n  return url;\n}\n\nreturn $input.all().map(item => ({\n  json: { ...item.json, normalized_url: normalizeUrl(item.json.raw_url) }\n}));"
+      }
+    },
+    {
+      "id": "reclassify-filter",
+      "name": "Reclassify & Filter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2220,
+        400
+      ],
+      "parameters": {
+        "jsCode": "// RECLASSIFY & FILTER \u2014 v3\n// v3 additions: depth \u2264 1 hard reject + cross-product root HTML patterns.\n\nconst PATH_RULES = [\n  // === SDK CHANGELOG RECLASSIFICATION ===\n  { match: /\\/release-notes\\/changelogs\\/changelog_android/i,      product_name: 'Android SDK',    capability_area: 'DEVELOPER_PLATFORM' },\n  { match: /\\/release-notes\\/changelogs\\/changelog_ios/i,          product_name: 'iOS SDK',        capability_area: 'DEVELOPER_PLATFORM' },\n  { match: /\\/release-notes\\/changelogs\\/changelog_javascript/i,   product_name: 'JavaScript SDK', capability_area: 'DEVELOPER_PLATFORM' },\n  { match: /\\/release-notes\\/changelogs\\/changelog_davinci/i,      product_name: 'DaVinci SDK',    capability_area: 'DEVELOPER_PLATFORM' },\n  { match: /\\/release-notes\\/changelogs\\/changelog_token_vault/i,  product_name: 'Token Vault',    capability_area: 'DEVELOPER_PLATFORM' },\n  { match: /\\/release-notes\\/changelogs\\/changelog_login_widget/i, product_name: 'Login Widget',   capability_area: 'DEVELOPER_PLATFORM' },\n  // === SHARED SDK RELEASE-NOTES SECTION ===\n  { match: /\\/sdks\\/latest\\/release-notes\\//i, product_name: 'Ping SDK', capability_area: 'DEVELOPER_PLATFORM' },\n  // === GENERIC SDK USE-CASE / CUSTOMIZE DOCS ===\n  { match: /\\/sdks\\/latest\\/sdks\\//i, product_name: 'Ping SDK', capability_area: 'DEVELOPER_PLATFORM' },\n  // === PINGGATEWAY RELEASE NOTES ===\n  { match: /\\/pinggateway\\/release-notes\\//i, capability_area: 'DEVELOPER_PLATFORM' },\n  // === PINGGATEWAY GENERAL OPS DOCS ===\n  { match: /\\/pinggateway\\/[^/]+\\/(about|getting-started|installation-guide|configure|scripting|logging|monitoring|clustering)\\//i, reject: true },\n  // === PINGONE ONBOARDING / GETTING-STARTED ===\n  { match: /\\/pingone\\/getting_started_with_pingone\\//i, reject: true },\n  // === PINGONE TUTORIALS ===\n  { match: /\\/pingone\\/pingone_tutorials\\//i, reject: true },\n  // === AIC USE-CASES SECTION ===\n  { match: /\\/pingoneaic\\/use-cases\\//i, reject: true },\n  // === CROSS-PRODUCT DIRECTORY REJECTIONS ===\n  { match: /\\/pingam\\//i,              reject: true },\n  { match: /\\/pingid-user-guide\\//i,   reject: true },\n  { match: /\\/auth-node-ref\\//i,       reject: true },\n  { match: /\\/solution-guides\\//i,     reject: true },\n  { match: /\\/pingone-solutions\\//i,   reject: true },\n  { match: /\\/enterprise-connect\\//i,  reject: true },\n  // === CROSS-PRODUCT ROOT HTML PAGES (v3: catches .html leakage not caught by directory patterns) ===\n  { match: /\\/(pingam|pingfederate|pingaccess|pingauthorize|pingdirectory|pingds|pingcentral|pingidm|pingone-solutions)\\.html$/i, reject: true },\n  // === AIC NON-MCP SECTIONS ===\n  { match: /\\/pingoneaic\\/latest\\/identity-governance\\//i, reject: true },\n  // === BLOG MARKETING RESOURCE PAGES ===\n  { match: /\\/resources\\/(downloads|identity-fundamentals|cybersecurity-fundamentals|analyst-reports)/i, reject: true }\n];\n\nconst results = [];\nfor (const item of $input.all()) {\n  const url = item.json.normalized_url || '';\n\n  // v3: Reject depth \u2264 1 links (root domain and single-segment paths are always low-value)\n  const pathDepth = url.replace(/^https?:\\/\\/[^\\/]+/, '').split('/').filter(Boolean).length;\n  if (pathDepth <= 1) continue;\n\n  const seedProduct = (item.json.seed_product_name || '').toLowerCase();\n  let rejected = false;\n  const overrides = {};\n\n  for (const rule of PATH_RULES) {\n    if (rule.match.test(url)) {\n      if (rule.reject) { rejected = true; break; }\n      if (rule.product_name)    overrides.seed_product_name    = rule.product_name;\n      if (rule.capability_area) overrides.seed_capability_area = rule.capability_area;\n      break;\n    }\n  }\n\n  if (!rejected && /\\/pingoneaic\\/latest\\//i.test(url)) {\n    if (!seedProduct.includes('pingone aic')) rejected = true;\n  }\n\n  if (!rejected) results.push({ json: { ...item.json, ...overrides } });\n}\nreturn results;"
+      }
+    },
+    {
+      "id": "classify-links",
+      "name": "Classify Links",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2440,
+        400
+      ],
+      "parameters": {
+        "jsCode": "const RELEASE_NOTES_RE = /\\/(release-notes|changelog|whatsnew|what-is-new|whats-new)/i;\nconst API_RE = /\\/(api\\/|api-reference\\/|reference\\/)/i;\nconst INDEX_RE = /\\/index(\\.html)?$/i;\nconst SAMPLE_RE = /\\/(samples\\/|sample-app\\/|starter\\/|reference-integration\\/)/i;\nconst PLATFORM_RE = /\\/(android|ios|swift|react-native|flutter|angular|vue\\/|nextjs)\\//i;\nconst USE_CASE_RE = /\\/(use-case|guide\\/|how-to|tutorial\\/)/i;\n\nfunction classify(normalizedUrl) {\n  const path = normalizedUrl.toLowerCase();\n  if (RELEASE_NOTES_RE.test(path)) return { source_role: 'release_notes', suggested_priority: 'P1', is_authoritative: true };\n  if (API_RE.test(path))           return { source_role: 'api_reference',  suggested_priority: 'P2', is_authoritative: false };\n  if (INDEX_RE.test(path))         return { source_role: 'family_index',   suggested_priority: 'P3', is_authoritative: false };\n  if (SAMPLE_RE.test(path))        return { source_role: 'sample_only',    suggested_priority: 'P3', is_authoritative: false };\n  if (PLATFORM_RE.test(path))      return { source_role: 'platform_specific', suggested_priority: 'P2', is_authoritative: false };\n  if (USE_CASE_RE.test(path))      return { source_role: 'use_case',       suggested_priority: 'P2', is_authoritative: false };\n  // Fallback: no pattern matched \u2014 mark as unknown for Claude enrichment\n  return { source_role: 'unknown', suggested_priority: 'P2', is_authoritative: false };\n}\n\nreturn $input.all().map(item => {\n  const c = classify(item.json.normalized_url);\n  return {\n    json: {\n      ...item.json,\n      source_role: c.source_role,\n      suggested_priority: c.suggested_priority,\n      is_authoritative_classification: c.is_authoritative,\n      classification_source: c.source_role === 'unknown' ? 'rules_uncertain' : 'rules'\n    }\n  };\n});"
+      }
+    },
+    {
+      "id": "build-claude-prompt",
+      "name": "Build Claude Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2660,
+        400
+      ],
+      "parameters": {
+        "jsCode": "const cfg = $('Discovery Config').first().json;\nconst useClaudeClassification = cfg.USE_CLAUDE_CLASSIFICATION === true;\nconst maxCandidates = typeof cfg.MAX_CLAUDE_CANDIDATES_PER_RUN === 'number'\n  ? cfg.MAX_CLAUDE_CANDIDATES_PER_RUN\n  : 200;\n\n// Only unknown items (rules couldn't classify) are candidates for Claude.\n// Cap applies only to those \u2014 confidently-classified items always skip Claude.\nlet claudeCount = 0;\nreturn $input.all().map(item => {\n  const needsClassification = item.json.source_role === 'unknown';\n  const withinCap = claudeCount < maxCandidates;\n  const skipClaude = !needsClassification || !useClaudeClassification || !withinCap;\n  if (!skipClaude) claudeCount++;\n  return {\n    json: {\n      ...item.json,\n      classification_source: !skipClaude ? 'claude' : item.json.classification_source,\n      _skip_claude: skipClaude\n    }\n  };\n});"
+      }
+    },
+    {
+      "id": "needs-claude",
+      "name": "Needs Claude?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-claude",
+              "leftValue": "={{ $json._skip_claude }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "format-claude-prompt",
+      "name": "Format Claude Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3100,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const KNOWN_CAPABILITY_TAGS = [\n  'hosted_pages', 'login_widget', 'sdk', 'javascript_sdk', 'mobile_sdk',\n  'biometrics', 'passkeys', 'mfa', 'social_login', 'magic_links', 'in_app_sso',\n  'device_profiling', 'mcp', 'mcp_gateway', 'ai_agents', 'a2a_protocol',\n  'token_exchange', 'token_vault', 'oidc_sdk', 'davinci_sdk', 'authenticator_module',\n  'journey_nodes', 'end_user_ui', 'design_system', 'release_notes', 'api_reference',\n  'sample_app', 'astro', 'flutter', 'android_sdk', 'ios_sdk'\n];\n\nreturn $input.all().map(item => {\n  const i = item.json;\n  const titleInfo = i.seed_page_title ? `\\nPage title of seed: \"${i.seed_page_title}\"` : '';\n  const anchorInfo = i.anchor_text ? `\\nAnchor text: \"${i.anchor_text}\"` : '';\n\n  const prompt = `You are classifying a documentation page discovered from a Ping Identity product index.\\n\\nSeed page: ${i.seed_url}\\nProduct: ${i.seed_product_name}${titleInfo}\\nCandidate URL: ${i.normalized_url}${anchorInfo}\\n\\nAssign:\\n1. source_role \u2014 one of: capability_definition | platform_specific | use_case | release_notes | api_reference | sample_only | family_index\\n2. capability_tag \u2014 one of: ${KNOWN_CAPABILITY_TAGS.join(' | ')}\\n3. confidence \u2014 integer 1\u20135\\n\\nRules:\\n- If you cannot determine source_role or capability_tag with confidence >= 3, return not_enough_context: true\\n- Do not infer from URL alone if anchor text contradicts it\\n- Return JSON only: {\"source_role\":\"...\",\"capability_tag\":\"...\",\"confidence\":N,\"not_enough_context\":false}`;\n\n  return { json: { ...i, _claude_prompt: prompt } };\n});"
+      }
+    },
+    {
+      "id": "call-claude-haiku",
+      "name": "Call Claude Haiku",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3320,
+        300
+      ],
+      "parameters": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "method": "POST",
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 256, messages: [{ role: 'user', content: $json._claude_prompt }] }) }}",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendBody": true,
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YOUR_ANTHROPIC_CREDENTIAL_ID",
+          "name": "Header Auth account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "parse-merge-classification",
+      "name": "Parse and Merge Classification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3540,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const claudeResponses = $input.all();\nconst originalItems = $('Format Claude Prompt').all();\n\nreturn claudeResponses.map((response, i) => {\n  const original = (originalItems[i] || { json: {} }).json;\n  const rulesRole = original.source_role;\n  const isAuthoritative = original.is_authoritative_classification;\n\n  let claudeResult = null;\n  try {\n    const rawContent = response.json.content?.[0]?.text || '';\n    const jsonMatch = rawContent.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) claudeResult = JSON.parse(jsonMatch[0]);\n  } catch (e) {}\n\n  if (!claudeResult || claudeResult.not_enough_context) {\n    const { _claude_prompt, _skip_claude, ...rest } = original;\n    return { json: { ...rest, classification_source: 'rules' } };\n  }\n\n  const claudeRole = claudeResult.source_role;\n  const claudeTag = claudeResult.capability_tag;\n  const claudeConf = claudeResult.confidence || 0;\n\n  let finalRole = rulesRole;\n  let finalTag = claudeTag || '';\n  let classificationSource = 'rules';\n\n  if (claudeRole === rulesRole) {\n    finalRole = claudeRole;\n    classificationSource = 'claude_assisted';\n  } else {\n    const overrideThreshold = isAuthoritative ? 5 : 4;\n    if (claudeConf >= overrideThreshold) {\n      finalRole = claudeRole;\n      classificationSource = 'claude_override';\n    } else {\n      finalRole = rulesRole;\n      finalTag = claudeConf >= 3 ? (claudeTag || '') : '';\n      classificationSource = 'rules';\n    }\n  }\n\n  const { _claude_prompt, _skip_claude, ...rest } = original;\n  return { json: { ...rest, source_role: finalRole, capability_tag: finalTag, classification_source: classificationSource } };\n});"
+      }
+    },
+    {
+      "id": "rejoin-classification-paths",
+      "name": "Rejoin Classification Paths",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3760,
+        400
+      ],
+      "parameters": {
+        "mode": "append"
+      }
+    },
+    {
+      "id": "trigger-registry-read",
+      "name": "Trigger Registry Read",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3870,
+        400
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: { _trigger: true } }];"
+      }
+    },
+    {
+      "id": "read-existing-registry",
+      "name": "Read Existing Registry",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3980,
+        400
+      ],
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEETS_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "source_registry",
+          "mode": "name"
+        },
+        "options": {},
+        "range": "A:Z"
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "match-deduplicate",
+      "name": "Match & Deduplicate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4200,
+        400
+      ],
+      "parameters": {
+        "jsCode": "const now = new Date().toISOString();\n\nconst existingRows = $input.all().map(item => item.json);\nconst existingUrlMap = new Map();\nexistingRows.forEach(row => {\n  if (row.url) existingUrlMap.set(row.url.trim(), row);\n});\n\nconst candidates = $('Rejoin Classification Paths').all();\nconst results = [];\n\nfor (const item of candidates) {\n  const url = item.json.normalized_url;\n  const existing = existingUrlMap.get(url);\n\n  if (existing) {\n    results.push({\n      json: { _action: 'update_metadata', url, last_seen: now, last_checked: now }\n    });\n  } else {\n    const slug = url\n      .replace(/^https?:\\/\\/[^\\/]+/, '')\n      .replace(/[^a-z0-9]+/gi, '-')\n      .toLowerCase()\n      .slice(0, 40)\n      .replace(/^-+|-+$/g, '');\n    const sourceId = `disc-${item.json.seed_source_id}-${slug}`;\n    results.push({\n      json: {\n        _action: 'insert_candidate',\n        source_id: sourceId,\n        parent_source_id: item.json.seed_source_id,\n        product_name: item.json.seed_product_name,\n        capability_area: item.json.seed_capability_area,\n        capability_tag: item.json.capability_tag || '',\n        source_type: 'documentation',\n        source_role: item.json.source_role,\n        priority: item.json.suggested_priority,\n        status: 'candidate',\n        url,\n        discovered_from_url: item.json.seed_url,\n        discovered_at: now,\n        last_seen: now,\n        last_checked: now,\n        classification_source: item.json.classification_source,\n        notes: ''\n      }\n    });\n  }\n}\n\nreturn results;"
+      }
+    },
+    {
+      "id": "new-or-existing",
+      "name": "New or Existing?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        4420,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-new",
+              "leftValue": "={{ $json._action }}",
+              "rightValue": "insert_candidate",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "strip-internal-fields",
+      "name": "Strip Internal Fields",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        300
+      ],
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const { _action, ...rest } = item.json;\n  return { json: rest };\n});"
+      }
+    },
+    {
+      "id": "write-new-candidates",
+      "name": "Write New Candidates",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4860,
+        300
+      ],
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEETS_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "source_registry",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "update-safe-metadata",
+      "name": "Update Safe Metadata",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4640,
+        500
+      ],
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEETS_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "source_registry",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $json.url }}",
+            "last_seen": "={{ $json.last_seen }}",
+            "last_checked": "={{ $json.last_checked }}"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_seen",
+              "displayName": "last_seen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "last_checked",
+              "displayName": "last_checked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "range": "source_registry!A:Z",
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Monthly Schedule": {
+      "main": [
+        [
+          {
+            "node": "Discovery Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Discovery Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discovery Config": {
+      "main": [
+        [
+          {
+            "node": "Read Seed Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Seed Sources": {
+      "main": [
+        [
+          {
+            "node": "Filter Seeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Seeds": {
+      "main": [
+        [
+          {
+            "node": "Prepare Seed Fetch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Seed Fetch": {
+      "main": [
+        [
+          {
+            "node": "Fetch Seed Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Seed Page": {
+      "main": [
+        [
+          {
+            "node": "Skip If Fetch Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skip If Fetch Failed": {
+      "main": [
+        [
+          {
+            "node": "Extract Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Links": {
+      "main": [
+        [
+          {
+            "node": "Normalize URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize URLs": {
+      "main": [
+        [
+          {
+            "node": "Reclassify & Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reclassify & Filter": {
+      "main": [
+        [
+          {
+            "node": "Classify Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Links": {
+      "main": [
+        [
+          {
+            "node": "Build Claude Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Claude Prompt": {
+      "main": [
+        [
+          {
+            "node": "Needs Claude?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Claude?": {
+      "main": [
+        [
+          {
+            "node": "Format Claude Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejoin Classification Paths",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Format Claude Prompt": {
+      "main": [
+        [
+          {
+            "node": "Call Claude Haiku",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Claude Haiku": {
+      "main": [
+        [
+          {
+            "node": "Parse and Merge Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse and Merge Classification": {
+      "main": [
+        [
+          {
+            "node": "Rejoin Classification Paths",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rejoin Classification Paths": {
+      "main": [
+        [
+          {
+            "node": "Trigger Registry Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Registry Read": {
+      "main": [
+        [
+          {
+            "node": "Read Existing Registry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Existing Registry": {
+      "main": [
+        [
+          {
+            "node": "Match & Deduplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match & Deduplicate": {
+      "main": [
+        [
+          {
+            "node": "New or Existing?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New or Existing?": {
+      "main": [
+        [
+          {
+            "node": "Strip Internal Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Safe Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Strip Internal Fields": {
+      "main": [
+        [
+          {
+            "node": "Write New Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": false,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Monthly Schedule": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "a7fa03c5-5296-43e3-9242-51dc839b7f5f",
+  "activeVersionId": "a7fa03c5-5296-43e3-9242-51dc839b7f5f",
+  "versionCounter": 134,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-05T00:36:11.274Z",
+      "createdAt": "2026-04-05T00:36:11.274Z",
+      "role": "workflow:owner",
+      "workflowId": "LhycJpV60D0ddoDS",
+      "projectId": "Oa57UYSvQEVoNZvh",
+      "project": {
+        "updatedAt": "2026-03-21T23:31:19.647Z",
+        "createdAt": "2026-03-21T23:26:38.308Z",
+        "id": "Oa57UYSvQEVoNZvh",
+        "name": "Your Name <YOUR_EMAIL@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-08T23:42:15.067Z",
+    "createdAt": "2026-04-08T23:42:15.067Z",
+    "versionId": "a7fa03c5-5296-43e3-9242-51dc839b7f5f",
+    "workflowId": "LhycJpV60D0ddoDS",
+    "nodes": [
+      {
+        "id": "monthly-schedule",
+        "name": "Monthly Schedule",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1,
+        "position": [
+          240,
+          400
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "30 6 1-7 * 1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "manual-trigger",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          240,
+          560
+        ],
+        "parameters": {}
+      },
+      {
+        "id": "discovery-config",
+        "name": "Discovery Config",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          460,
+          400
+        ],
+        "parameters": {
+          "jsCode": "// Discovery config \u2014 explicit Code node guarantees field output.\n// USE_CLAUDE_CLASSIFICATION: set false to bypass Claude for all items.\n// MAX_CLAUDE_CANDIDATES_PER_RUN: cap on items sent to Claude per run.\nreturn [{ json: {\n  USE_CLAUDE_CLASSIFICATION: true,\n  MAX_CLAUDE_CANDIDATES_PER_RUN: 200\n} }];"
+        }
+      },
+      {
+        "id": "read-seed-sources",
+        "name": "Read Seed Sources",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          680,
+          400
+        ],
+        "parameters": {
+          "operation": "read",
+          "documentId": {
+            "__rl": true,
+            "value": "YOUR_GOOGLE_SHEETS_ID",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "source_registry",
+            "mode": "name"
+          },
+          "options": {},
+          "range": "A:Z"
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "id": "filter-seeds",
+        "name": "Filter Seeds",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          900,
+          400
+        ],
+        "parameters": {
+          "jsCode": "return $input.all().filter(item => {\n  const s = item.json;\n  const role = (s.source_role || '').trim().toLowerCase();\n  const status = (s.status || '').trim().toLowerCase();\n  const type = (s.source_type || '').trim().toLowerCase();\n  return role === 'family_index'\n    && (status === 'active' || status === 'discovery_only')\n    && type !== 'github_repo';\n});"
+        }
+      },
+      {
+        "id": "prepare-seed-fetch",
+        "name": "Prepare Seed Fetch",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1120,
+          400
+        ],
+        "parameters": {
+          "jsCode": "return $input.all().map(item => {\n  const url = (item.json.url || '').trim();\n  const fullUrl = /^https?:\\/\\//i.test(url) ? url : 'https://' + url;\n  return {\n    json: {\n      ...item.json,\n      _full_url: fullUrl,\n      _fetch_url: 'https://r.jina.ai/' + fullUrl\n    }\n  };\n});"
+        }
+      },
+      {
+        "id": "fetch-seed-page",
+        "name": "Fetch Seed Page",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4,
+        "position": [
+          1340,
+          400
+        ],
+        "parameters": {
+          "url": "={{ $json._fetch_url }}",
+          "method": "GET",
+          "options": {
+            "timeout": 20000,
+            "response": {
+              "response": {
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "id": "skip-if-fetch-failed",
+        "name": "Skip If Fetch Failed",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1560,
+          400
+        ],
+        "parameters": {
+          "jsCode": "const fetchResults = $input.all();\nconst seeds = $('Prepare Seed Fetch').all();\n\nconst results = [];\nfor (let i = 0; i < fetchResults.length; i++) {\n  const fetchResult = fetchResults[i];\n  const seed = seeds[i] ? seeds[i].json : null;\n  if (!seed) continue;\n  if (fetchResult.json.error) continue;\n  const html = fetchResult.json.data || fetchResult.json.body || '';\n  if (!html || html.length < 100) continue;\n  results.push({\n    json: {\n      html,\n      source_id: seed.source_id,\n      seed_url: seed._full_url || seed.url,\n      seed_capability_area: seed.capability_area,\n      seed_product_name: seed.product_name\n    }\n  });\n}\nreturn results;"
+        }
+      },
+      {
+        "id": "extract-links",
+        "name": "Extract Links",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1780,
+          400
+        ],
+        "parameters": {
+          "jsCode": "// Parse Jina markdown: links in [text](url) format.\n// in_seed_section is enforced as a HARD REJECT for seeds at section depth >= 2.\n// Seeds at depth 0-1 (root crawls) are intentionally broad \u2014 no section filtering.\n\nconst DENY_PATTERNS = [\n  '/search', '/login', '/signin', '/tag/', '/tags/', '/page/',\n  '/category/', '/categories/', '/author/', '/authors/',\n  '/archive/', '/archives/', '/feed', '/feeds/'\n];\n\nfunction getHostname(url) {\n  const m = url.match(/^https?:\\/\\/([^\\/?#]+)/i);\n  return m ? m[1].toLowerCase() : '';\n}\n\nfunction getPathname(url) {\n  const m = url.match(/^https?:\\/\\/[^\\/?#]+([^?#]*)/i);\n  return m ? m[1] : '/';\n}\n\n// Returns the seed's section prefix (directory the seed belongs to).\n// Empty string = root-level seed (no strict filtering).\nfunction getSeedSection(seedUrl) {\n  const path = getPathname(seedUrl);\n  if (!path || path === '/') return '';\n  if (path.endsWith('/')) return path.slice(0, -1); // strip trailing slash\n  const lastSlash = path.lastIndexOf('/');\n  return lastSlash > 0 ? path.slice(0, lastSlash) : '';\n}\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  const { html, seed_url, source_id, seed_capability_area, seed_product_name } = item.json;\n  if (!html) continue;\n\n  const seedHostname = getHostname(seed_url);\n  const sectionPrefix = getSeedSection(seed_url);\n  const sectionDepth = sectionPrefix.split('/').filter(Boolean).length;\n  // Only enforce section filtering for seeds in a specific subsection (depth >= 2)\n  const requireSectionMatch = sectionDepth >= 2;\n\n  const titleMatch = html.match(/^#\\s+(.+)$/m) || html.match(/^Title:\\s+(.+)$/mi);\n  const seedPageTitle = titleMatch ? titleMatch[1].trim() : '';\n\n  const linkRegex = /\\[([^\\]]*)\\]\\((https?:\\/\\/[^\\s)\"']+)\\)/g;\n  let match;\n  const seen = new Set();\n\n  while ((match = linkRegex.exec(html)) !== null) {\n    const anchorText = match[1].trim();\n    const rawHref = match[2].trim();\n\n    const linkHostname = getHostname(rawHref);\n    if (!seedHostname || linkHostname !== seedHostname) continue;\n\n    const linkPath = getPathname(rawHref).toLowerCase();\n    if (DENY_PATTERNS.some(p => linkPath.includes(p))) continue;\n\n    // HARD REJECT: links outside this seed's section\n    if (requireSectionMatch && !linkPath.startsWith(sectionPrefix.toLowerCase())) continue;\n\n    const dedupKey = (linkHostname + linkPath).replace(/\\/$/, '');\n    if (seen.has(dedupKey)) continue;\n    seen.add(dedupKey);\n\n    results.push({\n      json: {\n        raw_url: rawHref,\n        anchor_text: anchorText,\n        seed_source_id: source_id,\n        seed_url,\n        seed_capability_area,\n        seed_product_name,\n        seed_page_title: seedPageTitle,\n        in_seed_section: true\n      }\n    });\n  }\n}\n\nreturn results;"
+        }
+      },
+      {
+        "id": "normalize-urls",
+        "name": "Normalize URLs",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2000,
+          400
+        ],
+        "parameters": {
+          "jsCode": "const TRACKING = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'ref', 'source', 'campaign'];\n\nfunction normalizeUrl(raw) {\n  let url = raw.replace(/^(https?:\\/\\/[^\\/?#]*)/i, m => m.toLowerCase());\n  const fragIdx = url.indexOf('#');\n  if (fragIdx !== -1) url = url.slice(0, fragIdx);\n  url = url.replace(/([^/])\\/($|\\?)/, '$1$2');\n  const qIdx = url.indexOf('?');\n  if (qIdx !== -1) {\n    const base = url.slice(0, qIdx);\n    const kept = url.slice(qIdx + 1).split('&').filter(p => {\n      const key = p.split('=')[0].toLowerCase();\n      return p.length > 0 && !TRACKING.includes(key);\n    });\n    url = kept.length ? base + '?' + kept.join('&') : base;\n  }\n  return url;\n}\n\nreturn $input.all().map(item => ({\n  json: { ...item.json, normalized_url: normalizeUrl(item.json.raw_url) }\n}));"
+        }
+      },
+      {
+        "id": "reclassify-filter",
+        "name": "Reclassify & Filter",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2220,
+          400
+        ],
+        "parameters": {
+          "jsCode": "// RECLASSIFY & FILTER \u2014 v3\n// v3 additions: depth \u2264 1 hard reject + cross-product root HTML patterns.\n\nconst PATH_RULES = [\n  // === SDK CHANGELOG RECLASSIFICATION ===\n  { match: /\\/release-notes\\/changelogs\\/changelog_android/i,      product_name: 'Android SDK',    capability_area: 'DEVELOPER_PLATFORM' },\n  { match: /\\/release-notes\\/changelogs\\/changelog_ios/i,          product_name: 'iOS SDK',        capability_area: 'DEVELOPER_PLATFORM' },\n  { match: /\\/release-notes\\/changelogs\\/changelog_javascript/i,   product_name: 'JavaScript SDK', capability_area: 'DEVELOPER_PLATFORM' },\n  { match: /\\/release-notes\\/changelogs\\/changelog_davinci/i,      product_name: 'DaVinci SDK',    capability_area: 'DEVELOPER_PLATFORM' },\n  { match: /\\/release-notes\\/changelogs\\/changelog_token_vault/i,  product_name: 'Token Vault',    capability_area: 'DEVELOPER_PLATFORM' },\n  { match: /\\/release-notes\\/changelogs\\/changelog_login_widget/i, product_name: 'Login Widget',   capability_area: 'DEVELOPER_PLATFORM' },\n  // === SHARED SDK RELEASE-NOTES SECTION ===\n  { match: /\\/sdks\\/latest\\/release-notes\\//i, product_name: 'Ping SDK', capability_area: 'DEVELOPER_PLATFORM' },\n  // === GENERIC SDK USE-CASE / CUSTOMIZE DOCS ===\n  { match: /\\/sdks\\/latest\\/sdks\\//i, product_name: 'Ping SDK', capability_area: 'DEVELOPER_PLATFORM' },\n  // === PINGGATEWAY RELEASE NOTES ===\n  { match: /\\/pinggateway\\/release-notes\\//i, capability_area: 'DEVELOPER_PLATFORM' },\n  // === PINGGATEWAY GENERAL OPS DOCS ===\n  { match: /\\/pinggateway\\/[^/]+\\/(about|getting-started|installation-guide|configure|scripting|logging|monitoring|clustering)\\//i, reject: true },\n  // === PINGONE ONBOARDING / GETTING-STARTED ===\n  { match: /\\/pingone\\/getting_started_with_pingone\\//i, reject: true },\n  // === PINGONE TUTORIALS ===\n  { match: /\\/pingone\\/pingone_tutorials\\//i, reject: true },\n  // === AIC USE-CASES SECTION ===\n  { match: /\\/pingoneaic\\/use-cases\\//i, reject: true },\n  // === CROSS-PRODUCT DIRECTORY REJECTIONS ===\n  { match: /\\/pingam\\//i,              reject: true },\n  { match: /\\/pingid-user-guide\\//i,   reject: true },\n  { match: /\\/auth-node-ref\\//i,       reject: true },\n  { match: /\\/solution-guides\\//i,     reject: true },\n  { match: /\\/pingone-solutions\\//i,   reject: true },\n  { match: /\\/enterprise-connect\\//i,  reject: true },\n  // === CROSS-PRODUCT ROOT HTML PAGES (v3: catches .html leakage not caught by directory patterns) ===\n  { match: /\\/(pingam|pingfederate|pingaccess|pingauthorize|pingdirectory|pingds|pingcentral|pingidm|pingone-solutions)\\.html$/i, reject: true },\n  // === AIC NON-MCP SECTIONS ===\n  { match: /\\/pingoneaic\\/latest\\/identity-governance\\//i, reject: true },\n  // === BLOG MARKETING RESOURCE PAGES ===\n  { match: /\\/resources\\/(downloads|identity-fundamentals|cybersecurity-fundamentals|analyst-reports)/i, reject: true }\n];\n\nconst results = [];\nfor (const item of $input.all()) {\n  const url = item.json.normalized_url || '';\n\n  // v3: Reject depth \u2264 1 links (root domain and single-segment paths are always low-value)\n  const pathDepth = url.replace(/^https?:\\/\\/[^\\/]+/, '').split('/').filter(Boolean).length;\n  if (pathDepth <= 1) continue;\n\n  const seedProduct = (item.json.seed_product_name || '').toLowerCase();\n  let rejected = false;\n  const overrides = {};\n\n  for (const rule of PATH_RULES) {\n    if (rule.match.test(url)) {\n      if (rule.reject) { rejected = true; break; }\n      if (rule.product_name)    overrides.seed_product_name    = rule.product_name;\n      if (rule.capability_area) overrides.seed_capability_area = rule.capability_area;\n      break;\n    }\n  }\n\n  if (!rejected && /\\/pingoneaic\\/latest\\//i.test(url)) {\n    if (!seedProduct.includes('pingone aic')) rejected = true;\n  }\n\n  if (!rejected) results.push({ json: { ...item.json, ...overrides } });\n}\nreturn results;"
+        }
+      },
+      {
+        "id": "classify-links",
+        "name": "Classify Links",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2440,
+          400
+        ],
+        "parameters": {
+          "jsCode": "const RELEASE_NOTES_RE = /\\/(release-notes|changelog|whatsnew|what-is-new|whats-new)/i;\nconst API_RE = /\\/(api\\/|api-reference\\/|reference\\/)/i;\nconst INDEX_RE = /\\/index(\\.html)?$/i;\nconst SAMPLE_RE = /\\/(samples\\/|sample-app\\/|starter\\/|reference-integration\\/)/i;\nconst PLATFORM_RE = /\\/(android|ios|swift|react-native|flutter|angular|vue\\/|nextjs)\\//i;\nconst USE_CASE_RE = /\\/(use-case|guide\\/|how-to|tutorial\\/)/i;\n\nfunction classify(normalizedUrl) {\n  const path = normalizedUrl.toLowerCase();\n  if (RELEASE_NOTES_RE.test(path)) return { source_role: 'release_notes', suggested_priority: 'P1', is_authoritative: true };\n  if (API_RE.test(path))           return { source_role: 'api_reference',  suggested_priority: 'P2', is_authoritative: false };\n  if (INDEX_RE.test(path))         return { source_role: 'family_index',   suggested_priority: 'P3', is_authoritative: false };\n  if (SAMPLE_RE.test(path))        return { source_role: 'sample_only',    suggested_priority: 'P3', is_authoritative: false };\n  if (PLATFORM_RE.test(path))      return { source_role: 'platform_specific', suggested_priority: 'P2', is_authoritative: false };\n  if (USE_CASE_RE.test(path))      return { source_role: 'use_case',       suggested_priority: 'P2', is_authoritative: false };\n  // Fallback: no pattern matched \u2014 mark as unknown for Claude enrichment\n  return { source_role: 'unknown', suggested_priority: 'P2', is_authoritative: false };\n}\n\nreturn $input.all().map(item => {\n  const c = classify(item.json.normalized_url);\n  return {\n    json: {\n      ...item.json,\n      source_role: c.source_role,\n      suggested_priority: c.suggested_priority,\n      is_authoritative_classification: c.is_authoritative,\n      classification_source: c.source_role === 'unknown' ? 'rules_uncertain' : 'rules'\n    }\n  };\n});"
+        }
+      },
+      {
+        "id": "build-claude-prompt",
+        "name": "Build Claude Prompt",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2660,
+          400
+        ],
+        "parameters": {
+          "jsCode": "const cfg = $('Discovery Config').first().json;\nconst useClaudeClassification = cfg.USE_CLAUDE_CLASSIFICATION === true;\nconst maxCandidates = typeof cfg.MAX_CLAUDE_CANDIDATES_PER_RUN === 'number'\n  ? cfg.MAX_CLAUDE_CANDIDATES_PER_RUN\n  : 200;\n\n// Only unknown items (rules couldn't classify) are candidates for Claude.\n// Cap applies only to those \u2014 confidently-classified items always skip Claude.\nlet claudeCount = 0;\nreturn $input.all().map(item => {\n  const needsClassification = item.json.source_role === 'unknown';\n  const withinCap = claudeCount < maxCandidates;\n  const skipClaude = !needsClassification || !useClaudeClassification || !withinCap;\n  if (!skipClaude) claudeCount++;\n  return {\n    json: {\n      ...item.json,\n      classification_source: !skipClaude ? 'claude' : item.json.classification_source,\n      _skip_claude: skipClaude\n    }\n  };\n});"
+        }
+      },
+      {
+        "id": "needs-claude",
+        "name": "Needs Claude?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          2880,
+          400
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "cond-claude",
+                "leftValue": "={{ $json._skip_claude }}",
+                "rightValue": false,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "false",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "format-claude-prompt",
+        "name": "Format Claude Prompt",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3100,
+          300
+        ],
+        "parameters": {
+          "jsCode": "const KNOWN_CAPABILITY_TAGS = [\n  'hosted_pages', 'login_widget', 'sdk', 'javascript_sdk', 'mobile_sdk',\n  'biometrics', 'passkeys', 'mfa', 'social_login', 'magic_links', 'in_app_sso',\n  'device_profiling', 'mcp', 'mcp_gateway', 'ai_agents', 'a2a_protocol',\n  'token_exchange', 'token_vault', 'oidc_sdk', 'davinci_sdk', 'authenticator_module',\n  'journey_nodes', 'end_user_ui', 'design_system', 'release_notes', 'api_reference',\n  'sample_app', 'astro', 'flutter', 'android_sdk', 'ios_sdk'\n];\n\nreturn $input.all().map(item => {\n  const i = item.json;\n  const titleInfo = i.seed_page_title ? `\\nPage title of seed: \"${i.seed_page_title}\"` : '';\n  const anchorInfo = i.anchor_text ? `\\nAnchor text: \"${i.anchor_text}\"` : '';\n\n  const prompt = `You are classifying a documentation page discovered from a Ping Identity product index.\\n\\nSeed page: ${i.seed_url}\\nProduct: ${i.seed_product_name}${titleInfo}\\nCandidate URL: ${i.normalized_url}${anchorInfo}\\n\\nAssign:\\n1. source_role \u2014 one of: capability_definition | platform_specific | use_case | release_notes | api_reference | sample_only | family_index\\n2. capability_tag \u2014 one of: ${KNOWN_CAPABILITY_TAGS.join(' | ')}\\n3. confidence \u2014 integer 1\u20135\\n\\nRules:\\n- If you cannot determine source_role or capability_tag with confidence >= 3, return not_enough_context: true\\n- Do not infer from URL alone if anchor text contradicts it\\n- Return JSON only: {\"source_role\":\"...\",\"capability_tag\":\"...\",\"confidence\":N,\"not_enough_context\":false}`;\n\n  return { json: { ...i, _claude_prompt: prompt } };\n});"
+        }
+      },
+      {
+        "id": "call-claude-haiku",
+        "name": "Call Claude Haiku",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3320,
+          300
+        ],
+        "parameters": {
+          "url": "https://api.anthropic.com/v1/messages",
+          "method": "POST",
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 256, messages: [{ role: 'user', content: $json._claude_prompt }] }) }}",
+          "options": {},
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "httpHeaderAuth",
+          "sendBody": true,
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "anthropic-version",
+                "value": "2023-06-01"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "YOUR_ANTHROPIC_CREDENTIAL_ID",
+            "name": "Header Auth account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "id": "parse-merge-classification",
+        "name": "Parse and Merge Classification",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3540,
+          300
+        ],
+        "parameters": {
+          "jsCode": "const claudeResponses = $input.all();\nconst originalItems = $('Format Claude Prompt').all();\n\nreturn claudeResponses.map((response, i) => {\n  const original = (originalItems[i] || { json: {} }).json;\n  const rulesRole = original.source_role;\n  const isAuthoritative = original.is_authoritative_classification;\n\n  let claudeResult = null;\n  try {\n    const rawContent = response.json.content?.[0]?.text || '';\n    const jsonMatch = rawContent.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) claudeResult = JSON.parse(jsonMatch[0]);\n  } catch (e) {}\n\n  if (!claudeResult || claudeResult.not_enough_context) {\n    const { _claude_prompt, _skip_claude, ...rest } = original;\n    return { json: { ...rest, classification_source: 'rules' } };\n  }\n\n  const claudeRole = claudeResult.source_role;\n  const claudeTag = claudeResult.capability_tag;\n  const claudeConf = claudeResult.confidence || 0;\n\n  let finalRole = rulesRole;\n  let finalTag = claudeTag || '';\n  let classificationSource = 'rules';\n\n  if (claudeRole === rulesRole) {\n    finalRole = claudeRole;\n    classificationSource = 'claude_assisted';\n  } else {\n    const overrideThreshold = isAuthoritative ? 5 : 4;\n    if (claudeConf >= overrideThreshold) {\n      finalRole = claudeRole;\n      classificationSource = 'claude_override';\n    } else {\n      finalRole = rulesRole;\n      finalTag = claudeConf >= 3 ? (claudeTag || '') : '';\n      classificationSource = 'rules';\n    }\n  }\n\n  const { _claude_prompt, _skip_claude, ...rest } = original;\n  return { json: { ...rest, source_role: finalRole, capability_tag: finalTag, classification_source: classificationSource } };\n});"
+        }
+      },
+      {
+        "id": "rejoin-classification-paths",
+        "name": "Rejoin Classification Paths",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          3760,
+          400
+        ],
+        "parameters": {
+          "mode": "append"
+        }
+      },
+      {
+        "id": "trigger-registry-read",
+        "name": "Trigger Registry Read",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3870,
+          400
+        ],
+        "parameters": {
+          "jsCode": "return [{ json: { _trigger: true } }];"
+        }
+      },
+      {
+        "id": "read-existing-registry",
+        "name": "Read Existing Registry",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          3980,
+          400
+        ],
+        "parameters": {
+          "operation": "read",
+          "documentId": {
+            "__rl": true,
+            "value": "YOUR_GOOGLE_SHEETS_ID",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "source_registry",
+            "mode": "name"
+          },
+          "options": {},
+          "range": "A:Z"
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "id": "match-deduplicate",
+        "name": "Match & Deduplicate",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4200,
+          400
+        ],
+        "parameters": {
+          "jsCode": "const now = new Date().toISOString();\n\nconst existingRows = $input.all().map(item => item.json);\nconst existingUrlMap = new Map();\nexistingRows.forEach(row => {\n  if (row.url) existingUrlMap.set(row.url.trim(), row);\n});\n\nconst candidates = $('Rejoin Classification Paths').all();\nconst results = [];\n\nfor (const item of candidates) {\n  const url = item.json.normalized_url;\n  const existing = existingUrlMap.get(url);\n\n  if (existing) {\n    results.push({\n      json: { _action: 'update_metadata', url, last_seen: now, last_checked: now }\n    });\n  } else {\n    const slug = url\n      .replace(/^https?:\\/\\/[^\\/]+/, '')\n      .replace(/[^a-z0-9]+/gi, '-')\n      .toLowerCase()\n      .slice(0, 40)\n      .replace(/^-+|-+$/g, '');\n    const sourceId = `disc-${item.json.seed_source_id}-${slug}`;\n    results.push({\n      json: {\n        _action: 'insert_candidate',\n        source_id: sourceId,\n        parent_source_id: item.json.seed_source_id,\n        product_name: item.json.seed_product_name,\n        capability_area: item.json.seed_capability_area,\n        capability_tag: item.json.capability_tag || '',\n        source_type: 'documentation',\n        source_role: item.json.source_role,\n        priority: item.json.suggested_priority,\n        status: 'candidate',\n        url,\n        discovered_from_url: item.json.seed_url,\n        discovered_at: now,\n        last_seen: now,\n        last_checked: now,\n        classification_source: item.json.classification_source,\n        notes: ''\n      }\n    });\n  }\n}\n\nreturn results;"
+        }
+      },
+      {
+        "id": "new-or-existing",
+        "name": "New or Existing?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          4420,
+          400
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "cond-new",
+                "leftValue": "={{ $json._action }}",
+                "rightValue": "insert_candidate",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "strip-internal-fields",
+        "name": "Strip Internal Fields",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4640,
+          300
+        ],
+        "parameters": {
+          "jsCode": "return $input.all().map(item => {\n  const { _action, ...rest } = item.json;\n  return { json: rest };\n});"
+        }
+      },
+      {
+        "id": "write-new-candidates",
+        "name": "Write New Candidates",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          4860,
+          300
+        ],
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "YOUR_GOOGLE_SHEETS_ID",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "source_registry",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {}
+          },
+          "options": {}
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "id": "update-safe-metadata",
+        "name": "Update Safe Metadata",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          4640,
+          500
+        ],
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "YOUR_GOOGLE_SHEETS_ID",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "source_registry",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "url": "={{ $json.url }}",
+              "last_seen": "={{ $json.last_seen }}",
+              "last_checked": "={{ $json.last_checked }}"
+            },
+            "matchingColumns": [
+              "url"
+            ],
+            "schema": [
+              {
+                "id": "url",
+                "displayName": "url",
+                "required": true,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "last_seen",
+                "displayName": "last_seen",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false,
+                "removed": false
+              },
+              {
+                "id": "last_checked",
+                "displayName": "last_checked",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "range": "source_registry!A:Z",
+          "options": {}
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+            "name": "Google Sheets account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Monthly Schedule": {
+        "main": [
+          [
+            {
+              "node": "Discovery Config",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "node": "Discovery Config",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Discovery Config": {
+        "main": [
+          [
+            {
+              "node": "Read Seed Sources",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read Seed Sources": {
+        "main": [
+          [
+            {
+              "node": "Filter Seeds",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Seeds": {
+        "main": [
+          [
+            {
+              "node": "Prepare Seed Fetch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Seed Fetch": {
+        "main": [
+          [
+            {
+              "node": "Fetch Seed Page",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Seed Page": {
+        "main": [
+          [
+            {
+              "node": "Skip If Fetch Failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Skip If Fetch Failed": {
+        "main": [
+          [
+            {
+              "node": "Extract Links",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Links": {
+        "main": [
+          [
+            {
+              "node": "Normalize URLs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize URLs": {
+        "main": [
+          [
+            {
+              "node": "Reclassify & Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reclassify & Filter": {
+        "main": [
+          [
+            {
+              "node": "Classify Links",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Classify Links": {
+        "main": [
+          [
+            {
+              "node": "Build Claude Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Claude Prompt": {
+        "main": [
+          [
+            {
+              "node": "Needs Claude?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Needs Claude?": {
+        "main": [
+          [
+            {
+              "node": "Format Claude Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Rejoin Classification Paths",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Format Claude Prompt": {
+        "main": [
+          [
+            {
+              "node": "Call Claude Haiku",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call Claude Haiku": {
+        "main": [
+          [
+            {
+              "node": "Parse and Merge Classification",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse and Merge Classification": {
+        "main": [
+          [
+            {
+              "node": "Rejoin Classification Paths",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rejoin Classification Paths": {
+        "main": [
+          [
+            {
+              "node": "Trigger Registry Read",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Trigger Registry Read": {
+        "main": [
+          [
+            {
+              "node": "Read Existing Registry",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read Existing Registry": {
+        "main": [
+          [
+            {
+              "node": "Match & Deduplicate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Match & Deduplicate": {
+        "main": [
+          [
+            {
+              "node": "New or Existing?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "New or Existing?": {
+        "main": [
+          [
+            {
+              "node": "Strip Internal Fields",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Update Safe Metadata",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Strip Internal Fields": {
+        "main": [
+          [
+            {
+              "node": "Write New Candidates",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "giessel razavi",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-08T23:42:15.145Z",
+        "id": 288,
+        "workflowId": "LhycJpV60D0ddoDS",
+        "versionId": "a7fa03c5-5296-43e3-9242-51dc839b7f5f",
+        "event": "activated",
+        "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
+      },
+      {
+        "createdAt": "2026-04-08T23:42:15.136Z",
+        "id": 287,
+        "workflowId": "LhycJpV60D0ddoDS",
+        "versionId": "a7fa03c5-5296-43e3-9242-51dc839b7f5f",
+        "event": "deactivated",
+        "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
+      }
+    ]
+  }
+}

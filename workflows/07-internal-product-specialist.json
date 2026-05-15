@@ -1,11 +1,26 @@
 {
-  "updatedAt": "2026-03-30T15:31:24.347Z",
+  "updatedAt": "2026-04-07T04:37:01.076Z",
   "createdAt": "2026-03-29T01:01:05.685Z",
   "id": "63fbsmdUxNtnaFXG",
   "name": "PI: Internal Product Specialist",
   "description": null,
   "active": true,
   "isArchived": false,
+  "versionId": "e42efeae-ce4a-4a33-a446-7be20225545e",
+  "activeVersionId": "e42efeae-ce4a-4a33-a446-7be20225545e",
+  "versionCounter": 71,
+  "triggerCount": 0,
+  "tags": [],
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "yiv73Orxf8eRQ0sv",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
   "nodes": [
     {
       "parameters": {
@@ -36,7 +51,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sheets.googleapis.com/v4/spreadsheets/1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo:batchUpdate",
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/YOUR_GOOGLE_SHEETS_ID:batchUpdate",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "googleSheetsOAuth2Api",
         "sendBody": true,
@@ -52,38 +67,87 @@
         688,
         400
       ],
-      "continueOnFail": true,
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/YOUR_GOOGLE_SHEETS_ID/values/internal_capability_map:clear",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "id": "ips-clear-sheet",
+      "name": "Clear ICM Sheet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEETS_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "source_registry",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "active"
+            }
+          ]
+        },
+        "options": {},
+        "range": "A:Z"
+      },
+      "id": "ips-read-registry",
+      "name": "Read Source Registry",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1136,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const runCtx = $input.first().json;\n\nconst NARROW_TEST_LANE = null;\n\nconst sources = [\n  // --- IDENTITY_EXPERIENCE ---\n  { source_id: 'ping-hosted-pages', product_name: 'PingOne AIC', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'documentation', capability_tag: 'hosted_pages', url: 'https://docs.pingidentity.com/pingoneaic/end-user/hosted-pages.html' },\n  { source_id: 'ping-customize-hosted', product_name: 'PingOne AIC', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'documentation', capability_tag: 'customization', url: 'https://docs.pingidentity.com/pingoneaic/end-user/hosted-pages-customize.html' },\n  { source_id: 'ping-localize', product_name: 'PingOne AIC', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'documentation', capability_tag: 'localization', url: 'https://docs.pingidentity.com/pingoneaic/end-user/hosted-pages-localize.html' },\n  { source_id: 'ping-account-pages', product_name: 'PingOne AIC', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'documentation', capability_tag: 'hosted_account_pages', url: 'https://docs.pingidentity.com/pingoneaic/end-user/hosted-pages-account.html' },\n  { source_id: 'ping-ux-options', product_name: 'PingOne AIC', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'documentation', capability_tag: 'end_user_ui', url: 'https://docs.pingidentity.com/pingoneaic/end-user/end-user-ux-options.html' },\n  { source_id: 'ping-end-user-ui', product_name: 'End User UI', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'github_repo', capability_tag: 'end_user_ui', url: 'https://github.com/ForgeRock/end-user-ui' },\n  { source_id: 'ping-login-widget', product_name: 'Login Widget', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'github_repo', capability_tag: 'login_widget', url: 'https://github.com/ForgeRock/forgerock-web-login-framework' },\n  { source_id: 'ping-sample-apps', product_name: 'SDK Sample Apps', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'sample_app', capability_tag: 'sample_apps', url: 'https://github.com/ForgeRock/sdk-sample-apps' },\n  // --- DEVELOPER_PLATFORM ---\n  { source_id: 'ping-developer-portal', product_name: 'Developer Portal', capability_area: 'DEVELOPER_PLATFORM', source_type: 'developer_portal', capability_tag: 'developer_portal', url: 'https://developer.pingidentity.com/' },\n  { source_id: 'ping-mobile-apps', product_name: 'PingOne AIC', capability_area: 'DEVELOPER_PLATFORM', source_type: 'developer_portal', capability_tag: 'aic_dev_experience', url: 'https://docs.pingidentity.com/pingoneaic/latest/sdks/mobile-apps.html' },\n  { source_id: 'ping-sdk-docs', product_name: 'Ping SDK', capability_area: 'DEVELOPER_PLATFORM', source_type: 'documentation', capability_tag: 'sdk', url: 'https://docs.pingidentity.com/sdks/latest/index.html' },\n  { source_id: 'ping-sdk-release-notes', product_name: 'Ping SDK', capability_area: 'DEVELOPER_PLATFORM', source_type: 'release_notes', capability_tag: 'release_notes', url: 'https://docs.pingidentity.com/sdks/latest/release-notes/index.html' },\n  { source_id: 'ping-js-sdk', product_name: 'JavaScript SDK', capability_area: 'DEVELOPER_PLATFORM', source_type: 'github_repo', capability_tag: 'javascript_sdk', url: 'https://github.com/ForgeRock/ping-javascript-sdk' },\n  { source_id: 'ping-android-sdk', product_name: 'Android SDK', capability_area: 'DEVELOPER_PLATFORM', source_type: 'github_repo', capability_tag: 'android_sdk', url: 'https://github.com/ForgeRock/ping-android-sdk' },\n  { source_id: 'ping-ios-sdk', product_name: 'iOS SDK', capability_area: 'DEVELOPER_PLATFORM', source_type: 'github_repo', capability_tag: 'ios_sdk', url: 'https://github.com/ForgeRock/ping-ios-sdk' },\n  { source_id: 'ping-flutter', product_name: 'Flutter Plugin', capability_area: 'DEVELOPER_PLATFORM', source_type: 'github_repo', capability_tag: 'flutter', url: 'https://github.com/ForgeRock/forgerock-flutter-plugins' },\n  // --- AI_AGENT_IDENTITY ---\n  // Legacy github_repo sources (kept; expected to produce few or zero rows)\n  { source_id: 'ping-aic-mcp', product_name: 'AIC MCP Server', capability_area: 'AI_AGENT_IDENTITY', source_type: 'github_repo', capability_tag: 'mcp', url: 'https://github.com/pingidentity/aic-mcp-server' },\n  { source_id: 'ping-pingone-mcp', product_name: 'PingOne MCP Server', capability_area: 'AI_AGENT_IDENTITY', source_type: 'github_repo', capability_tag: 'mcp', url: 'https://github.com/pingidentity/pingone-mcp-server' },\n  // New sources added 2026-03-30: stronger evidence for AI_AGENT_IDENTITY lane\n  { source_id: 'ping-mcp-what-is', product_name: 'Identity for AI', capability_area: 'AI_AGENT_IDENTITY', source_type: 'developer_portal', capability_tag: 'mcp', url: 'https://developer.pingidentity.com/identity-for-ai/agents/idai-what-is-mcp.html' },\n  { source_id: 'ping-mcp-securing', product_name: 'Identity for AI', capability_area: 'AI_AGENT_IDENTITY', source_type: 'developer_portal', capability_tag: 'mcp', url: 'https://developer.pingidentity.com/identity-for-ai/agents/idai-securing-mcp-servers.html' },\n  { source_id: 'ping-mcp-gateway', product_name: 'Identity for AI', capability_area: 'AI_AGENT_IDENTITY', source_type: 'documentation', capability_tag: 'mcp', url: 'https://developer.pingidentity.com/identity-for-ai/agents/idai-securing-mcp-servers-gateway.html' },\n  { source_id: 'ping-mcp-cloudflare', product_name: 'Identity for AI', capability_area: 'AI_AGENT_IDENTITY', source_type: 'documentation', capability_tag: 'mcp', url: 'https://developer.pingidentity.com/identity-for-ai/agents/idai-securing-cloudflare-pingone.html' },\n  { source_id: 'ping-pinggateway-mcp-docs', product_name: 'PingGateway', capability_area: 'AI_AGENT_IDENTITY', source_type: 'documentation', capability_tag: 'mcp_gateway', url: 'https://docs.pingidentity.com/pinggateway/2025.11/mcp/index.html' },\n  { source_id: 'ping-identity-for-ai-pr', product_name: 'Identity for AI', capability_area: 'AI_AGENT_IDENTITY', source_type: 'press_release', capability_tag: 'mcp', url: 'https://press.pingidentity.com/2026-03-24-Ping-Identity-Defines-the-Runtime-Identity-Standard-for-Autonomous-AI' },\n  // --- UI_ARCHITECTURE ---\n  { source_id: 'ping-platform-ui', product_name: 'Platform UI', capability_area: 'UI_ARCHITECTURE', source_type: 'github_repo', capability_tag: 'platform_ui', url: 'https://github.com/ForgeRock/platform-ui' },\n  { source_id: 'ping-astro', product_name: 'Astro Design System', capability_area: 'UI_ARCHITECTURE', source_type: 'github_repo', capability_tag: 'astro', url: 'https://github.com/pingidentity/astro' }\n];\n\nconst filtered = NARROW_TEST_LANE ? sources.filter(s => s.capability_area === NARROW_TEST_LANE) : sources;\nconst enriched = filtered.map(s => ({ ...s, run_id: runCtx.run_id, week: runCtx.week }));\nreturn [{ json: { sources: enriched } }];"
+        "jsCode": "const sources = $input.all().map(item => item.json);\n\nconst now = new Date();\nconst jan1 = new Date(now.getFullYear(), 0, 1);\nconst dayOfYear = Math.ceil((now - jan1) / 86400000);\nconst isoWeek = Math.ceil(dayOfYear / 7);\n\nconst FORCE_ALL_PRIORITIES = false;\nconst NARROW_TEST_LANE = null;\n\nlet activePriorities = ['P1'];\nif (FORCE_ALL_PRIORITIES) {\n  activePriorities = ['P1', 'P2', 'P3'];\n} else {\n  if (isoWeek % 2 === 0) activePriorities.push('P2');\n  if (isoWeek % 4 === 0) activePriorities.push('P3');\n}\n\nlet filtered = sources.filter(s => activePriorities.includes(s.priority));\n\nif (NARROW_TEST_LANE) {\n  filtered = filtered.filter(s => s.capability_area === NARROW_TEST_LANE);\n}\n\nlet runId, week;\ntry {\n  const ctx = $('Set Run Context').first().json;\n  runId = ctx.run_id;\n  week = ctx.week;\n} catch (e) {\n  runId = `RUN-${now.toISOString().slice(0, 10)}-${Math.random().toString(36).slice(2, 7)}`;\n  week = `${now.getFullYear()}-W${String(isoWeek).padStart(2, '0')}`;\n}\n\nreturn filtered.map(s => ({\n  json: {\n    source_id:       s.source_id,\n    product_name:    s.product_name,\n    capability_area: s.capability_area,\n    source_type:     s.source_type,\n    capability_tag:  s.capability_tag,\n    source_role:     s.source_role,\n    priority:        s.priority,\n    url:             s.url,\n    run_id:          runId,\n    week:            week\n  }\n}));"
       },
-      "id": "ips-sources",
-      "name": "Define Ping Sources",
+      "id": "ips-filter-cadence",
+      "name": "Filter by Priority Cadence",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        912,
-        400
-      ]
-    },
-    {
-      "parameters": {
-        "fieldToSplitOut": "sources",
-        "options": {}
-      },
-      "id": "ips-split",
-      "name": "Split to Individual Sources",
-      "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
-      "position": [
-        1136,
+        1360,
         400
       ]
     },
@@ -103,7 +167,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1340,
+        1568,
         400
       ],
       "continueOnFail": true
@@ -119,7 +183,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1584,
+        1808,
         400
       ]
     },
@@ -133,7 +197,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1780,
+        2016,
         400
       ]
     },
@@ -141,8 +205,10 @@
       "parameters": {
         "conditions": {
           "options": {
-            "typeValidation": "loose",
-            "leftValue": ""
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
           },
           "conditions": [
             {
@@ -164,22 +230,22 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        2000,
+        2224,
         400
       ]
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const source = $input.item.json;\n\nconst systemPrompt = `You are a product capability analyst for Ping Identity. Document Ping's actual, verifiable product capabilities from official sources.\n\nSOURCE-SPECIFIC EXTRACTION GUIDANCE (how to read each source type):\n\ndocumentation:\nLook for: clear instructions, scope description, parameter references, operational guidance, and production configuration details.\nMaturity bias: documented by default. production_mature is supportable only when the page clearly indicates real production support, operational readiness, or broad productized usage. Do not assume broad maturity from a single narrow doc page.\n\nrelease_notes:\nLook for: version numbers, dates, feature names, GA/EA labels, and rollout language. These are strong evidence of shipped capability. If a feature appears in GA release notes with a version and date, production_mature is often supportable \u2014 but only for the capability explicitly described. Extract the specific version/date as the observed_fact.\n\ndeveloper_portal:\nLook for: API references, SDK usage examples, getting-started guides, and implementation guidance.\nMaturity bias: documented. Do not assign production_mature from portal pages alone unless the page explicitly includes stronger evidence of shipped and operational support.\n\ngithub_repo:\nLook for: release tags, versioned README, explicit usage instructions, structured setup guidance, changelog, active version history, and clear feature support statements.\nMaturity bias: partial, documented, or unclear by default. production_mature is only supportable when the repo itself provides strong evidence of maintained, shipped, production-oriented support. Repo existence alone = unclear. Code presence alone is not enough.\n\nsample_app:\nTreat as weak evidence. The capability is demonstrable but not production-supported. Always assign sample_only. Do not infer production maturity from demo, reference, or sample code.\n\nCRITICAL RULES \u2014 DO NOT VIOLATE:\n1. Code in a repository is NOT evidence of a production capability unless the README has explicit usage instructions and version/release history.\n2. A sample app means a demo exists, not that the capability is mature. Never assign production_mature from a sample_app source.\n3. One documentation page does NOT mean a complete experience. Scope maturity only to what this specific page covers.\n4. Absence of a public artifact does NOT mean the capability is missing. Do not make absence claims.\n5. Marketing language (seamless, powerful, AI-native) is NOT evidence. Ignore it.\n6. If content is vague, too short, or lacks actionable detail \u2014 return [].\n7. source_weight is supporting context for your judgment, not an automatic maturity override.\n\nSUPPORT MATURITY VOCABULARY (use exactly these values):\n- production_mature: GA capability with version history, documented on at least one clear official page with release evidence. Achievable from one strong source if the evidence is clear and unambiguous.\n- documented: Official doc or developer portal page with clear, actionable instructions.\n- partial: Documentation explicitly notes limited platform coverage, partial scope, or incomplete features.\n- beta_preview: Explicitly labeled beta, preview, experimental, or early access in the source.\n- sample_only: The only evidence is a sample, demo, or reference implementation with no official doc or release note.\n- unclear: Source has content but maturity cannot be reliably determined from it.\n\nCAPABILITY TAGS \u2014 assign exactly one. Prefer the default tag when it clearly matches. Override only if the content maps more precisely to a different tag:\nmcp, sdk, sample_apps, platform_ui, end_user_ui, hosted_pages, hosted_account_pages, localization, customization, login_widget, javascript_sdk, android_sdk, ios_sdk, flutter, astro, developer_portal, aic_dev_experience, release_notes, docs\n\nCONFIDENCE: Only include capabilities with confidence >= 3. Return [] if nothing qualifies. Output raw JSON only \u2014 no markdown fences, no commentary.`;\n\nconst userPrompt = `Source ID: ${source.source_id}\\nProduct: ${source.product_name}\\nCapability area: ${source.capability_area}\\nSource type: ${source.source_type}\\nDefault capability tag: ${source.capability_tag}\\nURL: ${source.url}\\n\\nContent:\\n${source.content_preview}\\n\\nExtract documented capabilities. Apply evidence rules based on source_type above.\\nUse the default capability tag unless the content clearly maps to a different one.\\n\\nReturn a JSON array:\\n[{\"feature_name\":\"\",\"capability_tag\":\"\",\"support_maturity\":\"documented\",\"maturity_reason\":\"one sentence citing specific evidence from the content\",\"observed_fact\":\"\",\"evidence_summary\":\"\",\"confidence\":3}]\\n\\nIf nothing meets the confidence threshold, return [].`;\n\nreturn { json: { ...source, systemPrompt, userPrompt } };"
+        "jsCode": "const source = $input.item.json;\n\nconst systemPrompt = `SCOPE CEILING \u2014 SOURCE ROLE RESTRICTIONS\\n\\nEach source has a source_role field. The role determines the ceiling on what claims are permitted.\\n\\nsource_role = family_index\\n  This page is a product index or discovery hub. It proves a product family or section exists.\\n  Permitted: note that the product family exists; list visible child section names or child\\n  product names if explicitly present on the page.\\n  Not permitted: narrow capability claims, platform support claims, framework support claims,\\n  specific feature availability claims, or any claim about specific behavior based on this\\n  page alone. Do not write \"supports X\" or \"documented\" based on family_index evidence.\\n\\nsource_role = discovery_only\\n  This page is a structural discovery surface. It is not an extraction source.\\n  Action: return { not_enough_evidence: true } immediately. Extract nothing.\\n\\nsource_role = sample_only\\n  This page is a sample app, reference integration, or starter template.\\n  Hard cap: support_maturity must be sample_only. Confidence ceiling: 3.\\n  Do not claim production availability. Do not claim \"documented\" or \"production_mature\".\\n\\nsource_role = release_notes\\n  Full extraction applies.\\n  This source type supports stronger evidence for capabilities explicitly described.\\n  Evidence is source-bounded: applies to the specific capability documented, not the product broadly.\\n\\nsource_role = api_reference\\n  Full extraction applies.\\n  Supports specific documented capability evidence.\\n  Do not generalize to product-level claims from API reference alone.\\n\\nsource_role = capability_definition | platform_specific | use_case\\n  Full extraction applies. Normal extraction rules govern.\\n\\nIf source_role is blank or unrecognized, treat as capability_definition.\\n\\n---\\n\\nYou are a product capability analyst for Ping Identity. Document Ping's actual, verifiable product capabilities from official sources.\\n\\nSOURCE-SPECIFIC EXTRACTION GUIDANCE (how to read each source type):\\n\\ndocumentation:\\nLook for: clear instructions, scope description, parameter references, operational guidance, and production configuration details.\\nMaturity bias: documented by default. production_mature is supportable only when the page clearly indicates real production support, operational readiness, or broad productized usage.\\n\\nrelease_notes:\\nLook for: version numbers, dates, feature names, GA/EA labels, and rollout language. These are strong evidence of shipped capability.\\n\\ndeveloper_portal:\\nLook for: API references, SDK usage examples, getting-started guides, and implementation guidance.\\nMaturity bias: documented.\\n\\ngithub_repo:\\nLook for: release tags, versioned README, explicit usage instructions, structured setup guidance, changelog, active version history.\\nMaturity bias: partial, documented, or unclear by default.\\n\\nsample_app:\\nTreat as weak evidence. Always assign sample_only.\\n\\nCRITICAL RULES \u2014 DO NOT VIOLATE:\\n1. Code in a repository is NOT evidence of a production capability unless the README has explicit usage instructions and version/release history.\\n2. A sample app means a demo exists, not that the capability is mature. Never assign production_mature from a sample_app source.\\n3. One documentation page does NOT mean a complete experience. Scope maturity only to what this specific page covers.\\n4. Absence of a public artifact does NOT mean the capability is missing. Do not make absence claims.\\n5. Marketing language (seamless, powerful, AI-native) is NOT evidence. Ignore it.\\n6. If content is vague, too short, or lacks actionable detail \u2014 return [].\\n7. source_weight is supporting context for your judgment, not an automatic maturity override.\\n8. An index or catalog page proves those products exist \u2014 it does NOT prove any single product supports all platforms listed under other products.\\n\\nOUTPUT FORMAT \u2014 return a JSON array (no markdown fences). Each object:\\n{\\n  \\\"feature_name\\\": \\\"string \u2014 specific capability name\\\",\\n  \\\"support_maturity\\\": \\\"production_mature | documented | partial | unclear | sample_only\\\",\\n  \\\"source_type\\\": \\\"${source.source_type}\\\",\\n  \\\"evidence_summary\\\": \\\"string \u2014 1-2 sentences citing specific page content\\\",\\n  \\\"confidence_score\\\": 1-5,\\n  \\\"capability_area\\\": \\\"${source.capability_area}\\\",\\n  \\\"product_name\\\": \\\"${source.product_name}\\\",\\n  \\\"source_id\\\": \\\"${source.source_id}\\\",\\n  \\\"source_url\\\": \\\"${source.url}\\\",\\n  \\\"run_id\\\": \\\"${source.run_id}\\\",\\n  \\\"week\\\": \\\"${source.week}\\\",\\n  \\\"observed_at\\\": \\\"${new Date().toISOString().substring(0,10)}\\\"\\n}\\n\\nRules for support_maturity:\\n- sample_app source \u2192 always sample_only, confidence \u2264 3\\n- github_repo source \u2192 never production_mature unless strong release/version signals\\n- press_release source \u2192 documented at most, confidence \u2264 3\\n- release_notes with GA version+date \u2192 production_mature is supportable\\n- documentation \u2192 documented by default; production_mature only with explicit production signals\\n\\nIf you cannot find clear evidence, return [].`;\n\nconst userPrompt = `Analyze this source and extract verifiable product capabilities.\\n\\nProduct: ${source.product_name}\\nCapability Area: ${source.capability_area}\\nSource Type: ${source.source_type}\\nSource ID: ${source.source_id}\\nSource Role: ${source.source_role}\\nCapability Tag: ${source.capability_tag}\\nSource URL: ${source.url}\\n\\nPage Content:\\n${source.content_preview}\\n\\nReturn a JSON array of capability objects. No markdown, no explanation \u2014 just the array.`;\n\nreturn { json: { ...source, systemPrompt, userPrompt } };"
       },
       "id": "ips-sonnet",
       "name": "Build Sonnet Prompt",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2220,
-        300
+        2448,
+        304
       ]
     },
     {
@@ -212,29 +278,29 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2440,
-        300
+        2672,
+        304
       ],
-      "continueOnFail": true,
       "credentials": {
         "httpHeaderAuth": {
-          "id": "P6dgBaH33wjoGxqb",
+          "id": "YOUR_ANTHROPIC_CREDENTIAL_ID",
           "name": "Header Auth account"
         }
-      }
+      },
+      "continueOnFail": true
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const source = $('Build Sonnet Prompt').item.json;\nconst apiResponse = $input.item.json;\n\nfunction deriveSourceWeight(sourceType) {\n  const w = {\n    documentation: 'high',\n    release_notes: 'medium-high',\n    developer_portal: 'medium',\n    github_repo: 'medium',\n    product_page: 'medium',\n    sample_app: 'low'\n  };\n  return w[sourceType] || 'low';\n}\n\nlet capabilities = [];\ntry {\n  const text = apiResponse.content?.[0]?.text || '[]';\n  const match = text.match(/\\[[\\s\\S]*\\]/);\n  if (match) capabilities = JSON.parse(match[0]);\n  if (!Array.isArray(capabilities)) capabilities = [];\n} catch(e) { capabilities = []; }\n\ncapabilities = capabilities.filter(c => {\n  const conf = c.confidence !== undefined ? c.confidence : (c.confidence_score || 0);\n  return conf >= 3;\n});\n\nif (capabilities.length === 0) return { json: { _no_caps: true } };\n\n// Stage 2: Parser safety caps\nconst STRONG_SIGNALS = [\n  'release', 'releases', 'version', 'tag', 'v1', 'v2', 'v3',\n  'changelog', 'ga', 'generally available', 'stable', 'latest',\n  'published', 'documentation', 'docs'\n];\nconst USAGE_SIGNALS = [\n  'install', 'setup', 'usage', 'guide', 'example',\n  'how to', 'getting started', 'readme'\n];\n\ncapabilities = capabilities.map(cap => {\n  const conf = cap.confidence !== undefined ? cap.confidence : (cap.confidence_score || 3);\n  const maturity = cap.support_maturity || cap.support_level || 'unclear';\n  const evidenceText = (\n    (cap.evidence_summary || cap.summary || '') + ' ' +\n    (cap.observed_fact || '')\n  ).toLowerCase();\n\n  let cappedMaturity = maturity;\n  let cappedConfidence = conf;\n  let parserCapped = false;\n\n  // Rule 1: sample_app hard cap\n  if (source.source_type === 'sample_app') {\n    if (cappedMaturity !== 'sample_only') {\n      cappedMaturity = 'sample_only';\n      parserCapped = true;\n    }\n    if (cappedConfidence > 3) {\n      cappedConfidence = 3;\n      parserCapped = true;\n    }\n  }\n\n  // Rule 2: github_repo production_mature block\n  if (source.source_type === 'github_repo' && cappedMaturity === 'production_mature') {\n    const hasStrongSignal = STRONG_SIGNALS.some(s => evidenceText.includes(s));\n    if (!hasStrongSignal) {\n      const hasUsageSignal = USAGE_SIGNALS.some(s => evidenceText.includes(s));\n      cappedMaturity = hasUsageSignal ? 'documented' : 'partial';\n      parserCapped = true;\n    }\n  }\n\n  // Rule 3: vague evidence confidence cap\n  const evidenceSummary = (cap.evidence_summary || cap.summary || '').trim();\n  if (evidenceSummary.length < 40 && cappedConfidence > 3) {\n    cappedConfidence = 3;\n    parserCapped = true;\n  }\n\n  return {\n    ...cap,\n    support_maturity: cappedMaturity,\n    confidence: cappedConfidence,\n    maturity_reason: parserCapped\n      ? `[parser-cap] ${cap.maturity_reason || ''}`\n      : (cap.maturity_reason || '')\n  };\n});\n\nconst now = new Date().toISOString();\nconst sourceWeight = deriveSourceWeight(source.source_type);\n\nreturn { json: { _capabilities: capabilities.map(cap => {\n  const confidence = cap.confidence;\n  const capabilityTag = (cap.capability_tag && cap.capability_tag.trim())\n    ? cap.capability_tag.trim()\n    : (source.capability_tag || '');\n  return {\n    capability_id:    `PING-${source.source_id}-${Date.now()}-${Math.random().toString(36).substr(2,4)}`,\n    capability_area:  source.capability_area,\n    feature_name:     cap.feature_name || '',\n    capability_tag:   capabilityTag,\n    product_name:     source.product_name,\n    source_url:       source.url,\n    source_id:        source.source_id,\n    source_type:      source.source_type,\n    source_weight:    sourceWeight,\n    observed_fact:    cap.observed_fact || '',\n    evidence_summary: cap.evidence_summary || cap.summary || '',\n    support_maturity: cap.support_maturity,\n    maturity_reason:  cap.maturity_reason || '',\n    confidence:       confidence,\n    last_checked:     now,\n    freshness_status: 'fresh',\n    week:             source.week,\n    run_id:           source.run_id,\n    notes:            ''\n  };\n}) } };"
+        "jsCode": "const item = $input.item.json;\n\nif (!item.content || item.error) {\n  return { json: { ...item, _no_caps: true, _capabilities: [] } };\n}\n\nconst rawText = item.content?.[0]?.text || '';\n\nlet capabilities = [];\ntry {\n  const cleaned = rawText.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  capabilities = JSON.parse(cleaned);\n  if (!Array.isArray(capabilities)) capabilities = [];\n} catch (e) {\n  capabilities = [];\n}\n\nif (capabilities.length === 0) {\n  return { json: { ...item, _no_caps: true, _capabilities: [] } };\n}\n\nreturn { json: { ...item, _no_caps: false, _capabilities: capabilities } };"
       },
       "id": "ips-parse",
       "name": "Parse Capabilities",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2660,
-        300
+        2896,
+        304
       ]
     },
     {
@@ -264,8 +330,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        2880,
-        300
+        3104,
+        304
       ]
     },
     {
@@ -278,8 +344,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3100,
-        220
+        3328,
+        224
       ]
     },
     {
@@ -287,7 +353,7 @@
         "operation": "append",
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -306,12 +372,12 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        3320,
-        220
+        3552,
+        224
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -347,7 +413,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3540,
+        3776,
         400
       ]
     }
@@ -379,25 +445,36 @@
       "main": [
         [
           {
-            "node": "Define Ping Sources",
+            "node": "Clear ICM Sheet",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Define Ping Sources": {
+    "Clear ICM Sheet": {
       "main": [
         [
           {
-            "node": "Split to Individual Sources",
+            "node": "Read Source Registry",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Split to Individual Sources": {
+    "Read Source Registry": {
+      "main": [
+        [
+          {
+            "node": "Filter by Priority Cadence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter by Priority Cadence": {
       "main": [
         [
           {
@@ -531,593 +608,5 @@
         ]
       ]
     }
-  },
-  "settings": {
-    "executionOrder": "v1",
-    "errorWorkflow": "yiv73Orxf8eRQ0sv",
-    "callerPolicy": "workflowsFromSameOwner",
-    "availableInMCP": false,
-    "binaryMode": "separate"
-  },
-  "staticData": null,
-  "meta": null,
-  "pinData": {},
-  "versionId": "2057a56b-8c9e-4385-a131-78c7c8ac0fb9",
-  "activeVersionId": "2057a56b-8c9e-4385-a131-78c7c8ac0fb9",
-  "versionCounter": 43,
-  "triggerCount": 0,
-  "shared": [
-    {
-      "updatedAt": "2026-03-29T01:01:05.687Z",
-      "createdAt": "2026-03-29T01:01:05.687Z",
-      "role": "workflow:owner",
-      "workflowId": "63fbsmdUxNtnaFXG",
-      "projectId": "Oa57UYSvQEVoNZvh",
-      "project": {
-        "updatedAt": "2026-03-21T23:31:19.647Z",
-        "createdAt": "2026-03-21T23:26:38.308Z",
-        "id": "Oa57UYSvQEVoNZvh",
-        "name": "giessel razavi <giesselrazavi@gmail.com>",
-        "type": "personal",
-        "icon": null,
-        "description": null,
-        "creatorId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
-      }
-    }
-  ],
-  "tags": [],
-  "activeVersion": {
-    "updatedAt": "2026-03-30T15:31:24.354Z",
-    "createdAt": "2026-03-30T15:31:24.354Z",
-    "versionId": "2057a56b-8c9e-4385-a131-78c7c8ac0fb9",
-    "workflowId": "63fbsmdUxNtnaFXG",
-    "nodes": [
-      {
-        "parameters": {
-          "inputSource": "passthrough"
-        },
-        "id": "ips-trigger",
-        "name": "Called by Orchestrator",
-        "type": "n8n-nodes-base.executeWorkflowTrigger",
-        "typeVersion": 1.1,
-        "position": [
-          240,
-          400
-        ]
-      },
-      {
-        "parameters": {
-          "jsCode": "const parentRunId = $input.first().json.run_id || Date.now().toString();\nconst runId = `IPS-${new Date().toISOString().replace(/[:.]/g,'-')}`;\nreturn [{ json: {\n  run_id: runId,\n  parent_run_id: parentRunId,\n  week: new Date().toISOString().substring(0,7),\n  started_at: new Date().toISOString()\n} }];"
-        },
-        "id": "ips-run-ctx",
-        "name": "Set Run Context",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          464,
-          400
-        ]
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "https://sheets.googleapis.com/v4/spreadsheets/1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo:batchUpdate",
-          "authentication": "predefinedCredentialType",
-          "nodeCredentialType": "googleSheetsOAuth2Api",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "{\"requests\":[{\"addSheet\":{\"properties\":{\"title\":\"internal_capability_map\"}}}]}",
-          "options": {}
-        },
-        "id": "ips-create-sheet",
-        "name": "Create ICM Sheet",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          688,
-          400
-        ],
-        "continueOnFail": true,
-        "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
-            "name": "Google Sheets account"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "jsCode": "const runCtx = $input.first().json;\n\nconst NARROW_TEST_LANE = null;\n\nconst sources = [\n  // --- IDENTITY_EXPERIENCE ---\n  { source_id: 'ping-hosted-pages', product_name: 'PingOne AIC', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'documentation', capability_tag: 'hosted_pages', url: 'https://docs.pingidentity.com/pingoneaic/end-user/hosted-pages.html' },\n  { source_id: 'ping-customize-hosted', product_name: 'PingOne AIC', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'documentation', capability_tag: 'customization', url: 'https://docs.pingidentity.com/pingoneaic/end-user/hosted-pages-customize.html' },\n  { source_id: 'ping-localize', product_name: 'PingOne AIC', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'documentation', capability_tag: 'localization', url: 'https://docs.pingidentity.com/pingoneaic/end-user/hosted-pages-localize.html' },\n  { source_id: 'ping-account-pages', product_name: 'PingOne AIC', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'documentation', capability_tag: 'hosted_account_pages', url: 'https://docs.pingidentity.com/pingoneaic/end-user/hosted-pages-account.html' },\n  { source_id: 'ping-ux-options', product_name: 'PingOne AIC', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'documentation', capability_tag: 'end_user_ui', url: 'https://docs.pingidentity.com/pingoneaic/end-user/end-user-ux-options.html' },\n  { source_id: 'ping-end-user-ui', product_name: 'End User UI', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'github_repo', capability_tag: 'end_user_ui', url: 'https://github.com/ForgeRock/end-user-ui' },\n  { source_id: 'ping-login-widget', product_name: 'Login Widget', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'github_repo', capability_tag: 'login_widget', url: 'https://github.com/ForgeRock/forgerock-web-login-framework' },\n  { source_id: 'ping-sample-apps', product_name: 'SDK Sample Apps', capability_area: 'IDENTITY_EXPERIENCE', source_type: 'sample_app', capability_tag: 'sample_apps', url: 'https://github.com/ForgeRock/sdk-sample-apps' },\n  // --- DEVELOPER_PLATFORM ---\n  { source_id: 'ping-developer-portal', product_name: 'Developer Portal', capability_area: 'DEVELOPER_PLATFORM', source_type: 'developer_portal', capability_tag: 'developer_portal', url: 'https://developer.pingidentity.com/' },\n  { source_id: 'ping-mobile-apps', product_name: 'PingOne AIC', capability_area: 'DEVELOPER_PLATFORM', source_type: 'developer_portal', capability_tag: 'aic_dev_experience', url: 'https://docs.pingidentity.com/pingoneaic/latest/sdks/mobile-apps.html' },\n  { source_id: 'ping-sdk-docs', product_name: 'Ping SDK', capability_area: 'DEVELOPER_PLATFORM', source_type: 'documentation', capability_tag: 'sdk', url: 'https://docs.pingidentity.com/sdks/latest/index.html' },\n  { source_id: 'ping-sdk-release-notes', product_name: 'Ping SDK', capability_area: 'DEVELOPER_PLATFORM', source_type: 'release_notes', capability_tag: 'release_notes', url: 'https://docs.pingidentity.com/sdks/latest/release-notes/index.html' },\n  { source_id: 'ping-js-sdk', product_name: 'JavaScript SDK', capability_area: 'DEVELOPER_PLATFORM', source_type: 'github_repo', capability_tag: 'javascript_sdk', url: 'https://github.com/ForgeRock/ping-javascript-sdk' },\n  { source_id: 'ping-android-sdk', product_name: 'Android SDK', capability_area: 'DEVELOPER_PLATFORM', source_type: 'github_repo', capability_tag: 'android_sdk', url: 'https://github.com/ForgeRock/ping-android-sdk' },\n  { source_id: 'ping-ios-sdk', product_name: 'iOS SDK', capability_area: 'DEVELOPER_PLATFORM', source_type: 'github_repo', capability_tag: 'ios_sdk', url: 'https://github.com/ForgeRock/ping-ios-sdk' },\n  { source_id: 'ping-flutter', product_name: 'Flutter Plugin', capability_area: 'DEVELOPER_PLATFORM', source_type: 'github_repo', capability_tag: 'flutter', url: 'https://github.com/ForgeRock/forgerock-flutter-plugins' },\n  // --- AI_AGENT_IDENTITY ---\n  // Legacy github_repo sources (kept; expected to produce few or zero rows)\n  { source_id: 'ping-aic-mcp', product_name: 'AIC MCP Server', capability_area: 'AI_AGENT_IDENTITY', source_type: 'github_repo', capability_tag: 'mcp', url: 'https://github.com/pingidentity/aic-mcp-server' },\n  { source_id: 'ping-pingone-mcp', product_name: 'PingOne MCP Server', capability_area: 'AI_AGENT_IDENTITY', source_type: 'github_repo', capability_tag: 'mcp', url: 'https://github.com/pingidentity/pingone-mcp-server' },\n  // New sources added 2026-03-30: stronger evidence for AI_AGENT_IDENTITY lane\n  { source_id: 'ping-mcp-what-is', product_name: 'Identity for AI', capability_area: 'AI_AGENT_IDENTITY', source_type: 'developer_portal', capability_tag: 'mcp', url: 'https://developer.pingidentity.com/identity-for-ai/agents/idai-what-is-mcp.html' },\n  { source_id: 'ping-mcp-securing', product_name: 'Identity for AI', capability_area: 'AI_AGENT_IDENTITY', source_type: 'developer_portal', capability_tag: 'mcp', url: 'https://developer.pingidentity.com/identity-for-ai/agents/idai-securing-mcp-servers.html' },\n  { source_id: 'ping-mcp-gateway', product_name: 'Identity for AI', capability_area: 'AI_AGENT_IDENTITY', source_type: 'documentation', capability_tag: 'mcp', url: 'https://developer.pingidentity.com/identity-for-ai/agents/idai-securing-mcp-servers-gateway.html' },\n  { source_id: 'ping-mcp-cloudflare', product_name: 'Identity for AI', capability_area: 'AI_AGENT_IDENTITY', source_type: 'documentation', capability_tag: 'mcp', url: 'https://developer.pingidentity.com/identity-for-ai/agents/idai-securing-cloudflare-pingone.html' },\n  { source_id: 'ping-pinggateway-mcp-docs', product_name: 'PingGateway', capability_area: 'AI_AGENT_IDENTITY', source_type: 'documentation', capability_tag: 'mcp_gateway', url: 'https://docs.pingidentity.com/pinggateway/2025.11/mcp/index.html' },\n  { source_id: 'ping-identity-for-ai-pr', product_name: 'Identity for AI', capability_area: 'AI_AGENT_IDENTITY', source_type: 'press_release', capability_tag: 'mcp', url: 'https://press.pingidentity.com/2026-03-24-Ping-Identity-Defines-the-Runtime-Identity-Standard-for-Autonomous-AI' },\n  // --- UI_ARCHITECTURE ---\n  { source_id: 'ping-platform-ui', product_name: 'Platform UI', capability_area: 'UI_ARCHITECTURE', source_type: 'github_repo', capability_tag: 'platform_ui', url: 'https://github.com/ForgeRock/platform-ui' },\n  { source_id: 'ping-astro', product_name: 'Astro Design System', capability_area: 'UI_ARCHITECTURE', source_type: 'github_repo', capability_tag: 'astro', url: 'https://github.com/pingidentity/astro' }\n];\n\nconst filtered = NARROW_TEST_LANE ? sources.filter(s => s.capability_area === NARROW_TEST_LANE) : sources;\nconst enriched = filtered.map(s => ({ ...s, run_id: runCtx.run_id, week: runCtx.week }));\nreturn [{ json: { sources: enriched } }];"
-        },
-        "id": "ips-sources",
-        "name": "Define Ping Sources",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          912,
-          400
-        ]
-      },
-      {
-        "parameters": {
-          "fieldToSplitOut": "sources",
-          "options": {}
-        },
-        "id": "ips-split",
-        "name": "Split to Individual Sources",
-        "type": "n8n-nodes-base.splitOut",
-        "typeVersion": 1,
-        "position": [
-          1136,
-          400
-        ]
-      },
-      {
-        "parameters": {
-          "url": "={{ 'https://r.jina.ai/' + $json.url }}",
-          "options": {
-            "response": {
-              "response": {
-                "responseFormat": "text"
-              }
-            }
-          }
-        },
-        "id": "ips-fetch",
-        "name": "Fetch via Jina",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          1340,
-          400
-        ],
-        "continueOnFail": true
-      },
-      {
-        "parameters": {
-          "mode": "combine",
-          "combineBy": "combineByPosition",
-          "options": {}
-        },
-        "id": "ips-merge",
-        "name": "Merge Source and Content",
-        "type": "n8n-nodes-base.merge",
-        "typeVersion": 3.2,
-        "position": [
-          1584,
-          400
-        ]
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForEachItem",
-          "jsCode": "const d = $input.item.json;\nconst content = d.data || d.body || '';\nconst contentLength = typeof content === 'string' ? content.length : 0;\nreturn { json: { ...d, content_preview: content.substring(0, 6000), content_length: contentLength } };"
-        },
-        "id": "ips-prep",
-        "name": "Prepare Content",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          1780,
-          400
-        ]
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "options": {
-              "typeValidation": "loose",
-              "leftValue": ""
-            },
-            "conditions": [
-              {
-                "id": "c1",
-                "leftValue": "={{ $json.content_length }}",
-                "rightValue": 200,
-                "operator": {
-                  "type": "number",
-                  "operation": "gt"
-                }
-              }
-            ],
-            "combinator": "and"
-          },
-          "options": {}
-        },
-        "id": "ips-check",
-        "name": "Fetch Succeeded?",
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2,
-        "position": [
-          2000,
-          400
-        ]
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForEachItem",
-          "jsCode": "const source = $input.item.json;\n\nconst systemPrompt = `You are a product capability analyst for Ping Identity. Document Ping's actual, verifiable product capabilities from official sources.\n\nSOURCE-SPECIFIC EXTRACTION GUIDANCE (how to read each source type):\n\ndocumentation:\nLook for: clear instructions, scope description, parameter references, operational guidance, and production configuration details.\nMaturity bias: documented by default. production_mature is supportable only when the page clearly indicates real production support, operational readiness, or broad productized usage. Do not assume broad maturity from a single narrow doc page.\n\nrelease_notes:\nLook for: version numbers, dates, feature names, GA/EA labels, and rollout language. These are strong evidence of shipped capability. If a feature appears in GA release notes with a version and date, production_mature is often supportable \u2014 but only for the capability explicitly described. Extract the specific version/date as the observed_fact.\n\ndeveloper_portal:\nLook for: API references, SDK usage examples, getting-started guides, and implementation guidance.\nMaturity bias: documented. Do not assign production_mature from portal pages alone unless the page explicitly includes stronger evidence of shipped and operational support.\n\ngithub_repo:\nLook for: release tags, versioned README, explicit usage instructions, structured setup guidance, changelog, active version history, and clear feature support statements.\nMaturity bias: partial, documented, or unclear by default. production_mature is only supportable when the repo itself provides strong evidence of maintained, shipped, production-oriented support. Repo existence alone = unclear. Code presence alone is not enough.\n\nsample_app:\nTreat as weak evidence. The capability is demonstrable but not production-supported. Always assign sample_only. Do not infer production maturity from demo, reference, or sample code.\n\nCRITICAL RULES \u2014 DO NOT VIOLATE:\n1. Code in a repository is NOT evidence of a production capability unless the README has explicit usage instructions and version/release history.\n2. A sample app means a demo exists, not that the capability is mature. Never assign production_mature from a sample_app source.\n3. One documentation page does NOT mean a complete experience. Scope maturity only to what this specific page covers.\n4. Absence of a public artifact does NOT mean the capability is missing. Do not make absence claims.\n5. Marketing language (seamless, powerful, AI-native) is NOT evidence. Ignore it.\n6. If content is vague, too short, or lacks actionable detail \u2014 return [].\n7. source_weight is supporting context for your judgment, not an automatic maturity override.\n\nSUPPORT MATURITY VOCABULARY (use exactly these values):\n- production_mature: GA capability with version history, documented on at least one clear official page with release evidence. Achievable from one strong source if the evidence is clear and unambiguous.\n- documented: Official doc or developer portal page with clear, actionable instructions.\n- partial: Documentation explicitly notes limited platform coverage, partial scope, or incomplete features.\n- beta_preview: Explicitly labeled beta, preview, experimental, or early access in the source.\n- sample_only: The only evidence is a sample, demo, or reference implementation with no official doc or release note.\n- unclear: Source has content but maturity cannot be reliably determined from it.\n\nCAPABILITY TAGS \u2014 assign exactly one. Prefer the default tag when it clearly matches. Override only if the content maps more precisely to a different tag:\nmcp, sdk, sample_apps, platform_ui, end_user_ui, hosted_pages, hosted_account_pages, localization, customization, login_widget, javascript_sdk, android_sdk, ios_sdk, flutter, astro, developer_portal, aic_dev_experience, release_notes, docs\n\nCONFIDENCE: Only include capabilities with confidence >= 3. Return [] if nothing qualifies. Output raw JSON only \u2014 no markdown fences, no commentary.`;\n\nconst userPrompt = `Source ID: ${source.source_id}\\nProduct: ${source.product_name}\\nCapability area: ${source.capability_area}\\nSource type: ${source.source_type}\\nDefault capability tag: ${source.capability_tag}\\nURL: ${source.url}\\n\\nContent:\\n${source.content_preview}\\n\\nExtract documented capabilities. Apply evidence rules based on source_type above.\\nUse the default capability tag unless the content clearly maps to a different one.\\n\\nReturn a JSON array:\\n[{\"feature_name\":\"\",\"capability_tag\":\"\",\"support_maturity\":\"documented\",\"maturity_reason\":\"one sentence citing specific evidence from the content\",\"observed_fact\":\"\",\"evidence_summary\":\"\",\"confidence\":3}]\\n\\nIf nothing meets the confidence threshold, return [].`;\n\nreturn { json: { ...source, systemPrompt, userPrompt } };"
-        },
-        "id": "ips-sonnet",
-        "name": "Build Sonnet Prompt",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2220,
-          300
-        ]
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "https://api.anthropic.com/v1/messages",
-          "authentication": "predefinedCredentialType",
-          "nodeCredentialType": "httpHeaderAuth",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "anthropic-version",
-                "value": "2023-06-01"
-              },
-              {
-                "name": "content-type",
-                "value": "application/json"
-              }
-            ]
-          },
-          "sendBody": true,
-          "contentType": "raw",
-          "rawContentType": "application/json",
-          "body": "={{ JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 2000, system: $json.systemPrompt, messages: [{ role: 'user', content: $json.userPrompt }] }) }}",
-          "options": {}
-        },
-        "id": "ips-call-api",
-        "name": "Call Sonnet API",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          2440,
-          300
-        ],
-        "continueOnFail": true,
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "P6dgBaH33wjoGxqb",
-            "name": "Header Auth account"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForEachItem",
-          "jsCode": "const source = $('Build Sonnet Prompt').item.json;\nconst apiResponse = $input.item.json;\n\nfunction deriveSourceWeight(sourceType) {\n  const w = {\n    documentation: 'high',\n    release_notes: 'medium-high',\n    developer_portal: 'medium',\n    github_repo: 'medium',\n    product_page: 'medium',\n    sample_app: 'low'\n  };\n  return w[sourceType] || 'low';\n}\n\nlet capabilities = [];\ntry {\n  const text = apiResponse.content?.[0]?.text || '[]';\n  const match = text.match(/\\[[\\s\\S]*\\]/);\n  if (match) capabilities = JSON.parse(match[0]);\n  if (!Array.isArray(capabilities)) capabilities = [];\n} catch(e) { capabilities = []; }\n\ncapabilities = capabilities.filter(c => {\n  const conf = c.confidence !== undefined ? c.confidence : (c.confidence_score || 0);\n  return conf >= 3;\n});\n\nif (capabilities.length === 0) return { json: { _no_caps: true } };\n\n// Stage 2: Parser safety caps\nconst STRONG_SIGNALS = [\n  'release', 'releases', 'version', 'tag', 'v1', 'v2', 'v3',\n  'changelog', 'ga', 'generally available', 'stable', 'latest',\n  'published', 'documentation', 'docs'\n];\nconst USAGE_SIGNALS = [\n  'install', 'setup', 'usage', 'guide', 'example',\n  'how to', 'getting started', 'readme'\n];\n\ncapabilities = capabilities.map(cap => {\n  const conf = cap.confidence !== undefined ? cap.confidence : (cap.confidence_score || 3);\n  const maturity = cap.support_maturity || cap.support_level || 'unclear';\n  const evidenceText = (\n    (cap.evidence_summary || cap.summary || '') + ' ' +\n    (cap.observed_fact || '')\n  ).toLowerCase();\n\n  let cappedMaturity = maturity;\n  let cappedConfidence = conf;\n  let parserCapped = false;\n\n  // Rule 1: sample_app hard cap\n  if (source.source_type === 'sample_app') {\n    if (cappedMaturity !== 'sample_only') {\n      cappedMaturity = 'sample_only';\n      parserCapped = true;\n    }\n    if (cappedConfidence > 3) {\n      cappedConfidence = 3;\n      parserCapped = true;\n    }\n  }\n\n  // Rule 2: github_repo production_mature block\n  if (source.source_type === 'github_repo' && cappedMaturity === 'production_mature') {\n    const hasStrongSignal = STRONG_SIGNALS.some(s => evidenceText.includes(s));\n    if (!hasStrongSignal) {\n      const hasUsageSignal = USAGE_SIGNALS.some(s => evidenceText.includes(s));\n      cappedMaturity = hasUsageSignal ? 'documented' : 'partial';\n      parserCapped = true;\n    }\n  }\n\n  // Rule 3: vague evidence confidence cap\n  const evidenceSummary = (cap.evidence_summary || cap.summary || '').trim();\n  if (evidenceSummary.length < 40 && cappedConfidence > 3) {\n    cappedConfidence = 3;\n    parserCapped = true;\n  }\n\n  return {\n    ...cap,\n    support_maturity: cappedMaturity,\n    confidence: cappedConfidence,\n    maturity_reason: parserCapped\n      ? `[parser-cap] ${cap.maturity_reason || ''}`\n      : (cap.maturity_reason || '')\n  };\n});\n\nconst now = new Date().toISOString();\nconst sourceWeight = deriveSourceWeight(source.source_type);\n\nreturn { json: { _capabilities: capabilities.map(cap => {\n  const confidence = cap.confidence;\n  const capabilityTag = (cap.capability_tag && cap.capability_tag.trim())\n    ? cap.capability_tag.trim()\n    : (source.capability_tag || '');\n  return {\n    capability_id:    `PING-${source.source_id}-${Date.now()}-${Math.random().toString(36).substr(2,4)}`,\n    capability_area:  source.capability_area,\n    feature_name:     cap.feature_name || '',\n    capability_tag:   capabilityTag,\n    product_name:     source.product_name,\n    source_url:       source.url,\n    source_id:        source.source_id,\n    source_type:      source.source_type,\n    source_weight:    sourceWeight,\n    observed_fact:    cap.observed_fact || '',\n    evidence_summary: cap.evidence_summary || cap.summary || '',\n    support_maturity: cap.support_maturity,\n    maturity_reason:  cap.maturity_reason || '',\n    confidence:       confidence,\n    last_checked:     now,\n    freshness_status: 'fresh',\n    week:             source.week,\n    run_id:           source.run_id,\n    notes:            ''\n  };\n}) } };"
-        },
-        "id": "ips-parse",
-        "name": "Parse Capabilities",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2660,
-          300
-        ]
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "options": {
-              "typeValidation": "loose",
-              "leftValue": ""
-            },
-            "conditions": [
-              {
-                "id": "c1",
-                "leftValue": "={{ $json._no_caps }}",
-                "rightValue": true,
-                "operator": {
-                  "type": "boolean",
-                  "operation": "false"
-                }
-              }
-            ],
-            "combinator": "and"
-          },
-          "options": {}
-        },
-        "id": "ips-has-caps",
-        "name": "Has Capabilities?",
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2,
-        "position": [
-          2880,
-          300
-        ]
-      },
-      {
-        "parameters": {
-          "fieldToSplitOut": "_capabilities",
-          "options": {}
-        },
-        "id": "ips-split-caps",
-        "name": "Split Capabilities",
-        "type": "n8n-nodes-base.splitOut",
-        "typeVersion": 1,
-        "position": [
-          3100,
-          220
-        ]
-      },
-      {
-        "parameters": {
-          "operation": "append",
-          "documentId": {
-            "mode": "id",
-            "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
-          },
-          "sheetName": {
-            "mode": "name",
-            "value": "internal_capability_map"
-          },
-          "columns": {
-            "mappingMode": "autoMapInputData",
-            "value": {},
-            "matchingColumns": [],
-            "schema": []
-          },
-          "options": {}
-        },
-        "id": "ips-write",
-        "name": "Write to internal_capability_map",
-        "type": "n8n-nodes-base.googleSheets",
-        "typeVersion": 4.7,
-        "position": [
-          3320,
-          220
-        ],
-        "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "I253clwiMf9o1Oln",
-            "name": "Google Sheets account"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "r1",
-                "name": "status",
-                "value": "success",
-                "type": "string"
-              },
-              {
-                "id": "r2",
-                "name": "workflow",
-                "value": "PI: Internal Product Specialist",
-                "type": "string"
-              },
-              {
-                "id": "r3",
-                "name": "completed_at",
-                "value": "={{ new Date().toISOString() }}",
-                "type": "string"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "id": "ips-done",
-        "name": "Return to Orchestrator",
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          3540,
-          400
-        ]
-      }
-    ],
-    "connections": {
-      "Called by Orchestrator": {
-        "main": [
-          [
-            {
-              "node": "Set Run Context",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Set Run Context": {
-        "main": [
-          [
-            {
-              "node": "Create ICM Sheet",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Create ICM Sheet": {
-        "main": [
-          [
-            {
-              "node": "Define Ping Sources",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Define Ping Sources": {
-        "main": [
-          [
-            {
-              "node": "Split to Individual Sources",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Split to Individual Sources": {
-        "main": [
-          [
-            {
-              "node": "Fetch via Jina",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Merge Source and Content",
-              "type": "main",
-              "index": 1
-            }
-          ]
-        ]
-      },
-      "Fetch via Jina": {
-        "main": [
-          [
-            {
-              "node": "Merge Source and Content",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Merge Source and Content": {
-        "main": [
-          [
-            {
-              "node": "Prepare Content",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Content": {
-        "main": [
-          [
-            {
-              "node": "Fetch Succeeded?",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Fetch Succeeded?": {
-        "main": [
-          [
-            {
-              "node": "Build Sonnet Prompt",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Return to Orchestrator",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Build Sonnet Prompt": {
-        "main": [
-          [
-            {
-              "node": "Call Sonnet API",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Call Sonnet API": {
-        "main": [
-          [
-            {
-              "node": "Parse Capabilities",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Parse Capabilities": {
-        "main": [
-          [
-            {
-              "node": "Has Capabilities?",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Has Capabilities?": {
-        "main": [
-          [
-            {
-              "node": "Split Capabilities",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          []
-        ]
-      },
-      "Split Capabilities": {
-        "main": [
-          [
-            {
-              "node": "Write to internal_capability_map",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Write to internal_capability_map": {
-        "main": [
-          [
-            {
-              "node": "Return to Orchestrator",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      }
-    },
-    "authors": "giessel razavi",
-    "name": null,
-    "description": null,
-    "autosaved": false,
-    "workflowPublishHistory": [
-      {
-        "createdAt": "2026-03-30T15:31:24.389Z",
-        "id": 159,
-        "workflowId": "63fbsmdUxNtnaFXG",
-        "versionId": "2057a56b-8c9e-4385-a131-78c7c8ac0fb9",
-        "event": "activated",
-        "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
-      },
-      {
-        "createdAt": "2026-03-30T15:31:24.380Z",
-        "id": 158,
-        "workflowId": "63fbsmdUxNtnaFXG",
-        "versionId": "2057a56b-8c9e-4385-a131-78c7c8ac0fb9",
-        "event": "deactivated",
-        "userId": "79c67af9-91f2-4607-bfc7-9511dc3beb66"
-      }
-    ]
   }
 }

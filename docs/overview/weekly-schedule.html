@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Weekly Schedule — Product Intelligence OS</title>
+  <title>Weekly Schedule: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -70,7 +71,7 @@
     </div>
     <div class="page-header">
       <h1>Weekly Schedule</h1>
-      <p class="page-subtitle">The system runs automatically Mon–Fri at 6:30 AM ET. Market Watch runs every day; deeper analysis runs on a staggered schedule to match data availability.</p>
+      <p class="page-subtitle">The system runs automatically Mon–Fri at 7:00 AM PT (Pacific). Market Watch runs every day; deeper analysis runs on a staggered schedule to match data availability.</p>
     </div>
     <hr class="divider">
 
@@ -78,7 +79,7 @@
       <div class="callout-icon"><span class="material-icons-round">schedule</span></div>
       <div class="callout-body">
         <div class="callout-title">Run Timing</div>
-        <div class="callout-text">All runs trigger at 6:30 AM ET, Monday through Friday via cron <code>30 6 * * 1-5</code>. The Master Orchestrator handles all scheduling — sub-workflows do not have their own schedules.</div>
+        <div class="callout-text">All runs trigger at 7:00 AM PT (Pacific), Monday through Friday via cron <code>0 7 * * 1-5</code>. The Docker container runs with <code>GENERIC_TIMEZONE=America/Vancouver</code>. The Master Orchestrator handles all scheduling: sub-workflows do not have their own schedules.</div>
       </div>
     </div>
 
@@ -101,7 +102,7 @@
         <tr>
           <td><span class="badge badge-daily">Wednesday</span></td>
           <td>Market Watch only</td>
-          <td>Mid-week collection. No analysis — just accumulating evidence for Thursday's CI run.</td>
+          <td>Mid-week collection. No analysis: just accumulating evidence for Thursday's CI run.</td>
         </tr>
         <tr>
           <td><span class="badge badge-tue-thu">Thursday</span></td>
@@ -119,9 +120,9 @@
     <hr class="divider">
 
     <div class="section-title"><span class="material-icons-round">account_tree</span> Data Flow Through the Week</div>
-    <p>Market Watch runs first every day, building a continuous stream of evidence in the <code>evidence_log</code>. On Monday, IPS refreshes Ping's capability map in <code>internal_capability_map</code> — this is the "know yourself" baseline that CI compares against.</p>
+    <p>Market Watch runs first every day, building a continuous stream of evidence in the <code>evidence_log</code>. On Monday, IPS refreshes Ping's capability map in <code>internal_capability_map</code>: this is the "know yourself" baseline that CI compares against.</p>
     <p style="margin-top:12px">On Tuesday and Thursday, Competitor Intelligence reads the last 3 days of evidence from <code>evidence_log</code>, compares against the capability map, and writes structured findings to <code>structured_findings</code>. On Friday, the Newsletter workflow reads from <code>structured_findings</code> and produces the weekly briefing.</p>
-    <p style="margin-top:12px">Memory &amp; Audit runs last on Friday — it scans the week's findings for items that need human review (low confidence + high relevance), and writes a quality summary to <code>execution_log</code>.</p>
+    <p style="margin-top:12px">Memory &amp; Audit runs last on Friday: it scans the week's findings for items that need human review (low confidence + high relevance), and writes a quality summary to <code>execution_log</code>.</p>
 
     <div class="callout callout-warning" style="margin-top:20px">
       <div class="callout-icon"><span class="material-icons-round">warning_amber</span></div>

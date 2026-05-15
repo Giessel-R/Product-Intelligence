@@ -23,12 +23,13 @@ function setupPIWorkbook() {
 
   // ── 2. EVIDENCE_LOG ───────────────────────────────────────────────────────
   let ev = getOrCreate(ss, 'evidence_log');
-  ev.getRange(1, 1, 1, 18).setValues([[
+  ev.getRange(1, 1, 1, 19).setValues([[
     'ev_id', 'date_found', 'week', 'competitor_id', 'source_type', 'source_url',
     'title', 'summary', 'product_area', 'lane', 'importance_score', 'confidence_score',
-    'freshness', 'evidence_strength', 'status', 'new_hash', 'snapshot_url', 'checked_at'
+    'freshness', 'evidence_strength', 'status', 'new_hash', 'snapshot_url', 'checked_at',
+    'source_role'
   ]]);
-  styleHeader(ev, 18);
+  styleHeader(ev, 19);
 
   // ── 3. STRUCTURED_FINDINGS ────────────────────────────────────────────────
   let sf = getOrCreate(ss, 'structured_findings');
@@ -70,6 +71,16 @@ function setupPIWorkbook() {
   ]]);
   styleHeader(audit, 6);
 
+  // ── 8. SOURCE_REGISTRY ────────────────────────────────────────────────────────
+  let reg = getOrCreate(ss, 'source_registry');
+  reg.getRange(1, 1, 1, 16).setValues([[
+    'source_id', 'parent_source_id', 'product_name', 'capability_area',
+    'capability_tag', 'source_type', 'source_role', 'priority', 'status',
+    'url', 'discovered_from_url', 'discovered_at', 'last_seen',
+    'last_checked', 'classification_source', 'notes'
+  ]]);
+  styleHeader(reg, 16);
+
   // ── Remove default Sheet1 if it's still there and empty ───────────────────
   const sheet1 = ss.getSheetByName('Sheet1');
   if (sheet1 && ss.getSheets().length > 1) ss.deleteSheet(sheet1);
@@ -77,8 +88,8 @@ function setupPIWorkbook() {
   // ── Done ──────────────────────────────────────────────────────────────────
   SpreadsheetApp.getUi().alert(
     '✅ PI System workbook ready!\n\n' +
-    '7 tabs created: config, evidence_log, structured_findings,\n' +
-    'change_snapshots, execution_log, error_log, audit_log\n\n' +
+    '8 tabs created: config, evidence_log, structured_findings,\n' +
+    'change_snapshots, execution_log, error_log, audit_log, source_registry\n\n' +
     'Copy this spreadsheet ID from the URL and paste it into\n' +
     'your n8n workflows to replace REPLACE_WITH_SHEETS_ID.'
   );

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Internal Product Specialist — Product Intelligence OS</title>
+  <title>Internal Product Specialist: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -75,29 +76,30 @@
         <span class="badge badge-sonnet"><span class="material-icons-round">psychology</span> Claude Sonnet</span>
       </div>
       <h1>Internal Product Specialist</h1>
-      <p class="page-subtitle">The "know yourself" workflow. Reads Ping's own documentation every Monday to build a capability map — the source of truth used by Competitor Intelligence to identify genuine gaps vs. parity.</p>
+      <p class="page-subtitle">The "know yourself" workflow. Reads Ping's own documentation every Monday to build a capability map: the source of truth used by Competitor Intelligence to identify genuine gaps vs. parity.</p>
     </div>
 
     <table class="meta-table">
       <tr><td>Workflow ID</td><td><span class="mono">63fbsmdUxNtnaFXG</span></td></tr>
       <tr><td>Triggered by</td><td>Master Orchestrator · Mondays only</td></tr>
-      <tr><td>AI model</td><td>Claude Sonnet — nuanced capability extraction</td></tr>
+      <tr><td>AI model</td><td>Claude Sonnet: nuanced capability extraction</td></tr>
       <tr><td>Writes to</td><td><code>internal_capability_map</code> (Google Sheets)</td></tr>
-      <tr><td>Reads from</td><td>Hardcoded Ping source list (<code>Define Ping Sources</code> node)</td></tr>
+      <tr><td>Reads from</td><td><code>source_registry</code> tab (Google Sheets): active rows filtered by P1/P2/P3 cadence</td></tr>
     </table>
 
     <hr class="divider">
 
     <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
-    <p>Before the system can say "Okta has X that Ping doesn't have," it needs to know what Ping has. IPS reads approximately 26 Ping sources every Monday — developer portal, SDK docs, release notes, GitHub repos, press releases — and asks Claude Sonnet: "What capabilities does this document? Be specific. Only include things clearly supported."</p>
-    <p style="margin-top:12px">Stage 2 added parser safety caps: <code>sample_app</code> sources are hard-capped at <code>sample_only</code> maturity regardless of Claude's output. <code>github_repo</code> sources cannot return <code>production_mature</code> without strong release or version signals. When a cap fires, <code>[parser-cap]</code> is prefixed to the <code>maturity_reason</code> field — Claude's original value is not stored.</p>
-    <p style="margin-top:12px">The result: each Monday, <code>internal_capability_map</code> is rebuilt with a precise, source-calibrated picture of Ping's capabilities across all 6 strategic lanes.</p>
+    <p>Before the system can say "Okta has X that Ping doesn't have," it needs to know what Ping has. IPS reads Ping sources every Monday: pulling from the <code>source_registry</code> tab in Google Sheets (80+ active sources): and asks Claude Sonnet: "What capabilities does this document? Be specific. Only include things clearly supported."</p>
+    <p style="margin-top:12px">Stage 5 replaced the old hardcoded <code>Define Ping Sources</code> node with a live read from <code>source_registry</code>. Sources are staggered by priority cadence: P1 runs every Monday, P2 every other week, P3 once a month. New sources discovered by the Source Discovery workflow enter as <code>candidate</code> and must be promoted to <code>active</code> before IPS picks them up.</p>
+    <p style="margin-top:12px">Stage 2 added parser safety caps: <code>sample_app</code> sources are hard-capped at <code>sample_only</code> maturity regardless of Claude's output. <code>github_repo</code> sources cannot return <code>production_mature</code> without strong release or version signals. When a cap fires, <code>[parser-cap]</code> is prefixed to the <code>maturity_reason</code> field: Claude's original value is not stored.</p>
+    <p style="margin-top:12px">The result: each Monday, <code>internal_capability_map</code> is rebuilt with a precise, source-calibrated picture of Ping's capabilities across all 6 strategic lanes. The sheet is cleared at the start of every run: if it is empty, IPS has not run yet this week or found no qualifying capabilities.</p>
 
     <div class="callout callout-info">
       <div class="callout-icon"><span class="material-icons-round">info</span></div>
       <div class="callout-body">
         <div class="callout-title">Support Maturity Vocabulary</div>
-        <div class="callout-text">Always use these exact values — no others: <code>production_mature</code> | <code>documented</code> | <code>partial</code> | <code>unclear</code> | <code>sample_only</code>. Source type determines the ceiling: <code>sample_app</code> → hard cap at <code>sample_only</code>, confidence ≤ 3. <code>github_repo</code> → cannot return <code>production_mature</code> unless strong release/version signals. <code>release_notes</code> → supports <code>production_mature</code>.</div>
+        <div class="callout-text">Always use these exact values: no others: <code>production_mature</code> | <code>documented</code> | <code>partial</code> | <code>unclear</code> | <code>sample_only</code>. Source type determines the ceiling: <code>sample_app</code> → hard cap at <code>sample_only</code>, confidence ≤ 3. <code>github_repo</code> → cannot return <code>production_mature</code> unless strong release/version signals. <code>release_notes</code> → supports <code>production_mature</code>.</div>
       </div>
     </div>
 
@@ -109,7 +111,7 @@
         <div class="step-spine"><div class="step-num">1</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Called by Orchestrator</div><span class="step-tag">executeWorkflowTrigger</span></div>
-          <div class="step-desc">Entry point when launched by the Master Orchestrator. Receives the <code>run_id</code> for this session. Cannot be tested via <code>n8n_test_workflow</code> — must be triggered manually in the n8n UI for isolated testing.</div>
+          <div class="step-desc">Entry point when launched by the Master Orchestrator. Receives the <code>run_id</code> for this session. Cannot be tested via <code>n8n_test_workflow</code>: must be triggered manually in the n8n UI for isolated testing.</div>
         </div>
       </div>
       <div class="step">
@@ -122,66 +124,88 @@
       <div class="step">
         <div class="step-spine"><div class="step-num">3</div></div>
         <div class="step-content">
-          <div class="step-header"><div class="step-title">Define Ping Sources</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Hardcoded list of ~26 Ping Identity sources. Each source: <code>source_id</code>, <code>source_type</code>, <code>url</code>, <code>capability_area</code>. Source types include: <code>developer_portal</code>, <code>documentation</code>, <code>release_notes</code>, <code>github_repo</code>, <code>press_release</code>, <code>sample_app</code>. <code>NARROW_TEST_LANE</code> is <code>null</code> (full-lane operation active) — set to a lane string only for targeted testing.</div>
+          <div class="step-header"><div class="step-title">Read Source Registry</div><span class="step-tag">Google Sheets</span></div>
+          <div class="step-desc">Reads the <code>source_registry</code> tab from Google Sheets. Only rows with <code>status = active</code> are used. This replaced the old hardcoded <code>Define Ping Sources</code> Code node in Stage 5. The registry currently holds 80+ sources; new discoveries from Source Discovery enter as <code>candidate</code> until promoted.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">4</div></div>
         <div class="step-content">
-          <div class="step-header"><div class="step-title">Split to Individual Sources</div><span class="step-tag">Split Out</span></div>
-          <div class="step-desc">Splits the source list into individual items for per-source processing.</div>
+          <div class="step-header"><div class="step-title">Filter by Priority Cadence</div><span class="step-tag">Code</span></div>
+          <div class="step-desc">Applies P1/P2/P3 priority logic based on the ISO week number. P1 sources run every Monday. P2 sources run every other week. P3 sources run once a month. This staggers the workload so the workflow doesn't fetch every source on every run. <code>NARROW_TEST_LANE</code> is <code>null</code> (full-lane operation active): set to a lane string only for targeted testing.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">5</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Split to Individual Sources</div><span class="step-tag">Split Out</span></div>
+          <div class="step-desc">Splits the filtered source list into individual items for per-source processing.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">6</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Fetch via Jina</div><span class="step-tag">HTTP Request</span></div>
           <div class="step-desc">Fetches each source URL via Jina Reader (<code>r.jina.ai/{url}</code>), which returns clean Markdown. Up to 6,000 characters of content. Jina handles pagination and noise stripping from raw HTML.</div>
         </div>
       </div>
       <div class="step">
-        <div class="step-spine"><div class="step-num">6</div></div>
+        <div class="step-spine"><div class="step-num">7</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Fetch Succeeded?</div><span class="step-tag">IF</span></div>
           <div class="step-desc"><span class="branch-true">TRUE</span> (content &gt; 200 chars) → continue to Sonnet. <span class="branch-false">FALSE</span> (404, empty, or too short) → skip this source. Prevents sending blank content to Claude.</div>
         </div>
       </div>
       <div class="step">
-        <div class="step-spine"><div class="step-num">7</div></div>
+        <div class="step-spine"><div class="step-num">8</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Build Sonnet Prompt</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Stage 2: per-source extraction guidance injected into the prompt. <code>release_notes</code> → instruct Claude to expect <code>production_mature</code> with version evidence. <code>github_repo</code> → require release history signals before claiming production. <code>sample_app</code> → expect <code>sample_only</code>, warn Claude not to infer production from code examples alone.</div>
+          <div class="step-desc">Per-source extraction guidance injected into the prompt. <code>release_notes</code> → instruct Claude to expect <code>production_mature</code> with version evidence. <code>github_repo</code> → require release history signals before claiming production. <code>sample_app</code> → expect <code>sample_only</code>, warn Claude not to infer production from code examples alone. Also injects the source's <code>source_role</code> from the registry so Claude knows whether this is a full capability page or just a catalog/index.</div>
         </div>
       </div>
       <div class="step">
-        <div class="step-spine"><div class="step-num">8</div></div>
+        <div class="step-spine"><div class="step-num">9</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Call Sonnet</div><span class="step-tag">HTTP Request → Anthropic</span></div>
           <div class="step-desc">Sends the extraction prompt to Claude Sonnet. Returns a JSON array of capability objects per document. Each object: <code>feature_name</code>, <code>support_maturity</code>, <code>evidence_summary</code>, <code>confidence_score</code>, <code>maturity_reason</code>, <code>capability_tag</code>.</div>
         </div>
       </div>
       <div class="step">
-        <div class="step-spine"><div class="step-num">9</div></div>
+        <div class="step-spine"><div class="step-num">10</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Parse Capabilities</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Stage 2 parser safety caps applied here. If <code>source_type === 'sample_app'</code> and Claude returned maturity above <code>sample_only</code> → override and prepend <code>[parser-cap]</code> to <code>maturity_reason</code>. If <code>source_type === 'github_repo'</code> and maturity is <code>production_mature</code> without release signals → downgrade. Rows with valid capabilities are passed to the write step.</div>
+          <div class="step-desc">Parser safety caps applied here. If <code>source_type === 'sample_app'</code> and Claude returned maturity above <code>sample_only</code> → override and prepend <code>[parser-cap]</code> to <code>maturity_reason</code>. If <code>source_type === 'github_repo'</code> and maturity is <code>production_mature</code> without release signals → downgrade. Rows with valid capabilities are passed to the write step.</div>
         </div>
       </div>
       <div class="step">
-        <div class="step-spine"><div class="step-num">10</div></div>
+        <div class="step-spine"><div class="step-num">11</div></div>
+        <div class="step-content">
+          <div class="step-header"><div class="step-title">Any Capabilities Found?</div><span class="step-tag">IF</span></div>
+          <div class="step-desc"><span class="branch-true">TRUE</span> → write to Sheets. <span class="branch-false">FALSE</span> (Claude returned nothing useful for this source) → skip. This prevents appending empty rows.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-spine"><div class="step-num">12</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Write to internal_capability_map</div><span class="step-tag">Google Sheets</span></div>
-          <div class="step-desc">Appends each validated capability row to the <code>internal_capability_map</code> tab. This tab is rebuilt each Monday — it's the single source of truth for what Ping can do, used by Competitor Intelligence for gap analysis.</div>
+          <div class="step-desc">Appends each validated capability row to the <code>internal_capability_map</code> tab. This tab is cleared and rebuilt each Monday: it's the single source of truth for what Ping can do, used by Competitor Intelligence for gap analysis.</div>
         </div>
       </div>
     </div>
 
-    <div class="callout callout-warning" style="margin-top:32px">
+    <div class="callout callout-info" style="margin-top:32px">
+      <div class="callout-icon"><span class="material-icons-round">info</span></div>
+      <div class="callout-body">
+        <div class="callout-title">Why internal_capability_map may appear empty</div>
+        <div class="callout-text">IPS clears the sheet at the start of every Monday run and rebuilds it from scratch. Outside of Monday runs the sheet will be empty: this is expected, not a bug. If it's empty on a Monday after 9 AM PST, check the <code>execution_log</code> to confirm the run completed and inspect the <code>error_log</code> for any fetch or parse failures.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-warning" style="margin-top:16px">
       <div class="callout-icon"><span class="material-icons-round">warning_amber</span></div>
       <div class="callout-body">
         <div class="callout-title">AI_AGENT_IDENTITY Source Note</div>
-        <div class="callout-text"><code>ping-aic-mcp</code> and <code>ping-pingone-mcp</code> GitHub repos consistently produce zero rows — insufficient evidence in those repos. All useful AI_AGENT_IDENTITY evidence comes from the 6 <code>developer_portal</code>/<code>documentation</code>/<code>press_release</code> sources added 2026-03-30. Do not rely on the MCP GitHub repos for lane coverage.</div>
+        <div class="callout-text"><code>ping-aic-mcp</code> and <code>ping-pingone-mcp</code> GitHub repos consistently produce zero rows: insufficient evidence in those repos. All useful AI_AGENT_IDENTITY evidence comes from the 6 <code>developer_portal</code>/<code>documentation</code>/<code>press_release</code> sources added 2026-03-30. Do not rely on the MCP GitHub repos for lane coverage.</div>
       </div>
     </div>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Market Watch — Product Intelligence OS</title>
+  <title>Market Watch: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -82,7 +83,7 @@
     <table class="meta-table">
       <tr><td>Workflow ID</td><td><span class="mono">ppMzAEKShjv6L4EP</span></td></tr>
       <tr><td>Triggered by</td><td>Master Orchestrator · every weekday</td></tr>
-      <tr><td>AI model</td><td>Claude Haiku — ~$0.001/call</td></tr>
+      <tr><td>AI model</td><td>Claude Haiku: ~$0.001/call</td></tr>
       <tr><td>Writes to</td><td><code>evidence_log</code> · <code>change_snapshots</code></td></tr>
       <tr><td>Reads from</td><td><code>config</code> · <code>change_snapshots</code></td></tr>
     </table>
@@ -91,7 +92,7 @@
 
     <div class="section-title"><span class="material-icons-round">info</span> How It Works</div>
     <p>Market Watch is the system's eyes. It visits each competitor URL from the <code>config</code> tab every day, downloads the page content, and generates an MD5 hash. If the hash is different from the last recorded hash in <code>change_snapshots</code>, the page has changed.</p>
-    <p style="margin-top:12px">Changed pages go through a <strong>Stage 4 relevance gate</strong> before reaching Claude. The gate scores each page against a keyword list and source-type base scores — only pages scoring ≥ 3 with at least 1 keyword match reach the Haiku classification step. Low-signal pages (blog posts about company culture, homepage CSS tweaks) are silently dropped before consuming any API budget.</p>
+    <p style="margin-top:12px">Changed pages go through a <strong>Stage 4 relevance gate</strong> before reaching Claude. The gate scores each page against a keyword list and source-type base scores: only pages scoring ≥ 3 with at least 1 keyword match reach the Haiku classification step. Low-signal pages (blog posts about company culture, homepage CSS tweaks) are silently dropped before consuming any API budget.</p>
     <p style="margin-top:12px">For pages that pass the gate, Claude Haiku summarizes what changed, assigns a strategic lane, and scores importance and confidence. If Claude flags <code>not_enough_evidence: true</code>, the record is dropped. Otherwise, it's written to <code>evidence_log</code> and the snapshot is updated.</p>
 
     <div class="callout callout-info">
@@ -117,14 +118,14 @@
         <div class="step-spine"><div class="step-num">2</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Set Run ID</div><span class="step-tag">Set</span></div>
-          <div class="step-desc">Picks up the <code>run_id</code> from the orchestrator (or generates its own if run manually). Sets the current date and week — used to timestamp all records written during this run.</div>
+          <div class="step-desc">Picks up the <code>run_id</code> from the orchestrator (or generates its own if run manually). Sets the current date and week: used to timestamp all records written during this run.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">3</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Read All Snapshots</div><span class="step-tag">Google Sheets</span></div>
-          <div class="step-desc">Reads the entire <code>change_snapshots</code> tab. This tab stores the last-known MD5 hash per competitor URL — the baseline for detecting changes. Each row: <code>competitor_id</code>, <code>source_url</code>, <code>last_hash</code>, <code>last_checked</code>.</div>
+          <div class="step-desc">Reads the entire <code>change_snapshots</code> tab. This tab stores the last-known MD5 hash per competitor URL: the baseline for detecting changes. Each row: <code>competitor_id</code>, <code>source_url</code>, <code>last_hash</code>, <code>last_checked</code>.</div>
         </div>
       </div>
       <div class="step">
@@ -138,7 +139,7 @@
         <div class="step-spine"><div class="step-num">5</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Read Competitor Config</div><span class="step-tag">Google Sheets</span></div>
-          <div class="step-desc">Reads the <code>config</code> tab — the list of competitors and URLs to monitor. Only rows with <code>active = TRUE</code> are used. Each row: <code>competitor_id</code>, <code>source_type</code>, <code>url</code>.</div>
+          <div class="step-desc">Reads the <code>config</code> tab: the list of competitors and URLs to monitor. Only rows with <code>active = TRUE</code> are used. Each row: <code>competitor_id</code>, <code>source_type</code>, <code>url</code>.</div>
         </div>
       </div>
       <div class="step">
@@ -194,28 +195,28 @@
         <div class="step-spine"><div class="step-num">13</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Summarize with Haiku</div><span class="step-tag">HTTP Request → Anthropic</span></div>
-          <div class="step-desc">Sends the prompt to Claude Haiku via the Anthropic API. Uses <code>predefinedCredentialType: httpHeaderAuth</code> with credential <code>P6dgBaH33wjoGxqb</code>. Returns structured JSON: <code>summary</code>, <code>observed_fact</code>, <code>analyst_interpretation</code>, <code>lane</code>, <code>importance_score</code>, <code>confidence_score</code>, <code>evidence_strength</code>, <code>not_enough_evidence</code>.</div>
+          <div class="step-desc">Sends the prompt to Claude Haiku via the Anthropic API. Uses <code>predefinedCredentialType: httpHeaderAuth</code> with credential <code>YOUR_ANTHROPIC_CREDENTIAL_ID</code>. Returns structured JSON: <code>summary</code>, <code>observed_fact</code>, <code>analyst_interpretation</code>, <code>lane</code>, <code>importance_score</code>, <code>confidence_score</code>, <code>evidence_strength</code>, <code>not_enough_evidence</code>.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">14</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Parse AI and Build Record</div><span class="step-tag">Code</span></div>
-          <div class="step-desc">Parses Claude's JSON response. If <code>not_enough_evidence: true</code>, the record is dropped — nothing logged. Otherwise, builds a clean evidence record with a unique ID (<code>EV-{competitor}-{timestamp}</code>), all timestamps, and classification fields.</div>
+          <div class="step-desc">Parses Claude's JSON response. If <code>not_enough_evidence: true</code>, the record is dropped: nothing logged. Otherwise, builds a clean evidence record with a unique ID (<code>EV-{competitor}-{timestamp}</code>), all timestamps, and classification fields.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">15</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Write to evidence_log</div><span class="step-tag">Google Sheets</span></div>
-          <div class="step-desc">Appends the new evidence record to the <code>evidence_log</code> tab. This is the raw findings table — the source for all downstream Competitor Intelligence analysis. Status set to <code>new</code>.</div>
+          <div class="step-desc">Appends the new evidence record to the <code>evidence_log</code> tab. This is the raw findings table: the source for all downstream Competitor Intelligence analysis. Status set to <code>new</code>.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-spine"><div class="step-num">16</div></div>
         <div class="step-content">
           <div class="step-header"><div class="step-title">Update Snapshot (Changed)</div><span class="step-tag">Google Sheets</span></div>
-          <div class="step-desc">Updates the <code>change_snapshots</code> tab with the new hash and <code>last_changed</code> timestamp. Next run, this new hash becomes the baseline. The parallel <strong>Update Snapshot (Unchanged)</strong> node does the same for pages that passed the hash check but didn't change — just updating <code>last_checked</code>.</div>
+          <div class="step-desc">Updates the <code>change_snapshots</code> tab with the new hash and <code>last_changed</code> timestamp. Next run, this new hash becomes the baseline. The parallel <strong>Update Snapshot (Unchanged)</strong> node does the same for pages that passed the hash check but didn't change: just updating <code>last_checked</code>.</div>
         </div>
       </div>
     </div>

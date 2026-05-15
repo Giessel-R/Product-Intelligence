@@ -196,7 +196,7 @@ MASTER ORCHESTRATOR (runs Mon–Fri, 6:30 AM ET)
 
 ## Google Sheets Schema
 
-Single workbook ID: `1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo`
+Single workbook ID: `YOUR_GOOGLE_SHEETS_ID`
 
 ### `config` — Competitor URL registry
 
@@ -433,7 +433,7 @@ id | timestamp | run_id | workflow_name | node_name | error_message | input_data
 
 **Code nodes:** `fetch` and `$helpers.httpRequest` are blocked. All HTTP calls must use HTTP Request nodes.
 
-**`$env` in HTTP Request headers:** Blocked. Use `predefinedCredentialType: httpHeaderAuth` with credential ID `P6dgBaH33wjoGxqb`.
+**`$env` in HTTP Request headers:** Blocked. Use `predefinedCredentialType: httpHeaderAuth` with credential ID `YOUR_ANTHROPIC_CREDENTIAL_ID`.
 
 **Sub-workflows:** Use `executeWorkflowTrigger`. Cannot test via `n8n_test_workflow` — test manually in n8n UI.
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evidence Scoring — Product Intelligence OS</title>
+  <title>Evidence Scoring: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -100,7 +101,7 @@
       <div class="score-content">
         <div class="score-label">Significant feature in Ping's strategic area</div>
         <div class="score-desc">Important for Ping's roadmap and competitive positioning, but not immediately at the core of existing deals.</div>
-        <div class="score-example">Example: Auth0 ships a headless UI component library — directly relevant to Ping's UI Architecture lane</div>
+        <div class="score-example">Example: Auth0 ships a headless UI component library: directly relevant to Ping's UI Architecture lane</div>
       </div>
     </div>
     <div class="score-row">
@@ -138,7 +139,7 @@
       <div class="score-content">
         <div class="score-label">Explicit GA announcement or official changelog</div>
         <div class="score-desc">The source directly states a versioned release, general availability date, or official changelog entry. No inference required.</div>
-        <div class="score-example">Example: "v3.2 released today with MCP support — see changelog at developer.okta.com/docs/release-notes"</div>
+        <div class="score-example">Example: "v3.2 released today with MCP support: see changelog at developer.okta.com/docs/release-notes"</div>
       </div>
     </div>
     <div class="score-row">
@@ -161,14 +162,14 @@
       <div class="score-num">2</div>
       <div class="score-content">
         <div class="score-label">Inferred from content structure change</div>
-        <div class="score-desc">A new navigation section appeared, or a page structure changed in a way that implies a new feature area — but no explicit description found.</div>
-        <div class="score-example">Example: New "AI Identity" section appeared in the Okta docs navigation — no content yet</div>
+        <div class="score-desc">A new navigation section appeared, or a page structure changed in a way that implies a new feature area: but no explicit description found.</div>
+        <div class="score-example">Example: New "AI Identity" section appeared in the Okta docs navigation: no content yet</div>
       </div>
     </div>
     <div class="score-row">
       <div class="score-num">1</div>
       <div class="score-content">
-        <div class="score-label">Marketing language only — record dropped</div>
+        <div class="score-label">Marketing language only: record dropped</div>
         <div class="score-desc">The source uses marketing terms like "seamless", "AI-powered", "intelligent" without describing an actual capability. Claude returns <code>not_enough_evidence: true</code> and the record is not logged.</div>
         <div class="score-example">Example: Homepage banner: "Our AI-powered identity platform keeps you secure seamlessly"</div>
       </div>

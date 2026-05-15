@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Sheets Schema — Product Intelligence OS</title>
+  <title>Google Sheets Schema: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -80,20 +81,20 @@
       <div class="callout-icon"><span class="material-icons-round">info</span></div>
       <div class="callout-body">
         <div class="callout-title">Workbook ID</div>
-        <div class="callout-text">Workbook ID: <code>1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo</code> · Google Sheets OAuth credential: <code>I253clwiMf9o1Oln</code></div>
+        <div class="callout-text">Workbook ID: <code>YOUR_GOOGLE_SHEETS_ID</code> · Google Sheets OAuth credential: <code>YOUR_GSHEETS_CREDENTIAL_ID</code></div>
       </div>
     </div>
 
     <hr class="divider">
 
-    <h3>config — Competitor URL registry</h3>
+    <h3>config: Competitor URL registry</h3>
     <p style="margin-bottom:8px">One row per competitor URL. Add rows here to add new sources. Only rows with <code>active = TRUE</code> are processed by Market Watch.</p>
     <table class="data-table">
       <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td>competitor_id</td><td class="field-type">string</td><td>Short identifier: <code>okta</code>, <code>auth0</code></td></tr>
         <tr><td>name</td><td class="field-type">string</td><td>Display name: <code>Okta</code>, <code>Auth0</code></td></tr>
-        <tr><td>tier</td><td class="field-type">string</td><td><code>broad</code> (Phase 1 — all sources are broad tier)</td></tr>
+        <tr><td>tier</td><td class="field-type">string</td><td><code>broad</code> (Phase 1: all sources are broad tier)</td></tr>
         <tr><td>source_type</td><td class="field-type">string</td><td><code>docs</code>, <code>changelog</code>, <code>blog</code>, <code>github</code>, <code>release-notes</code>, <code>website</code></td></tr>
         <tr><td>url</td><td class="field-type">string</td><td>Full URL to monitor</td></tr>
         <tr><td>active</td><td class="field-type">boolean</td><td><code>TRUE</code> to include in daily Market Watch runs</td></tr>
@@ -102,7 +103,7 @@
 
     <hr class="divider">
 
-    <h3>change_snapshots — MD5 hash per URL</h3>
+    <h3>change_snapshots: MD5 hash per URL</h3>
     <p style="margin-bottom:8px">Stores the last-known content fingerprint for each URL. Market Watch compares against this to detect changes.</p>
     <table class="data-table">
       <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
@@ -118,7 +119,7 @@
 
     <hr class="divider">
 
-    <h3>evidence_log — Raw Market Watch findings</h3>
+    <h3>evidence_log: Raw Market Watch findings</h3>
     <p style="margin-bottom:8px">Every finding from Market Watch. Status <code>new</code> → picked up by CI. Status <code>processed</code> → already analyzed. Status <code>archived</code> → excluded from newsletters.</p>
     <table class="data-table">
       <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
@@ -129,8 +130,8 @@
         <tr><td>competitor_id</td><td class="field-type">string</td><td><code>okta</code> or <code>auth0</code></td></tr>
         <tr><td>source_type</td><td class="field-type">string</td><td>Type of source that changed</td></tr>
         <tr><td>source_url</td><td class="field-type">string</td><td>URL where the change was detected</td></tr>
-        <tr><td>observed_fact</td><td class="field-type">string</td><td>What is explicitly stated in the source — no inference</td></tr>
-        <tr><td>analyst_interpretation</td><td class="field-type">string</td><td>What this might mean strategically — labeled as interpretation</td></tr>
+        <tr><td>observed_fact</td><td class="field-type">string</td><td>What is explicitly stated in the source: no inference</td></tr>
+        <tr><td>analyst_interpretation</td><td class="field-type">string</td><td>What this might mean strategically: labeled as interpretation</td></tr>
         <tr><td>lane</td><td class="field-type">string</td><td>One of the 6 strategic lanes</td></tr>
         <tr><td>importance_score</td><td class="field-type">integer</td><td>1–5: How meaningful for Ping's product scope</td></tr>
         <tr><td>confidence_score</td><td class="field-type">integer</td><td>1–5: How certain the claim is real</td></tr>
@@ -141,8 +142,8 @@
 
     <hr class="divider">
 
-    <h3>internal_capability_map — Ping's own capabilities</h3>
-    <p style="margin-bottom:8px">Rebuilt every Monday by the Internal Product Specialist. The source of truth for gap analysis in CI. Support maturity vocabulary is controlled — only 5 values allowed.</p>
+    <h3>internal_capability_map: Ping's own capabilities</h3>
+    <p style="margin-bottom:8px">Rebuilt every Monday by the Internal Product Specialist. The source of truth for gap analysis in CI. Support maturity vocabulary is controlled: only 5 values allowed.</p>
     <table class="data-table">
       <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
       <tbody>
@@ -161,7 +162,7 @@
 
     <hr class="divider">
 
-    <h3>structured_findings — Processed CI output</h3>
+    <h3>structured_findings: Processed CI output</h3>
     <p style="margin-bottom:8px">Written by Competitor Intelligence. Cleaner and more actionable than raw evidence_log. Read by the Newsletter every Friday.</p>
     <table class="data-table">
       <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
@@ -172,7 +173,7 @@
         <tr><td>gap_vs_ping</td><td class="field-type">string</td><td>What competitors have that Ping may not (anchored vocabulary)</td></tr>
         <tr><td>parity_vs_ping</td><td class="field-type">string</td><td>Where competitors and Ping appear to match (with calibration)</td></tr>
         <tr><td>ping_advantage</td><td class="field-type">string</td><td>Where Ping appears stronger</td></tr>
-        <tr><td>recommended_action</td><td class="field-type">string</td><td><code>Watch</code> | <code>Validate</code> | <code>Draft Brief</code> — no other values</td></tr>
+        <tr><td>recommended_action</td><td class="field-type">string</td><td><code>Watch</code> | <code>Validate</code> | <code>Draft Brief</code>: no other values</td></tr>
         <tr><td>confidence_score</td><td class="field-type">integer</td><td>1–5: Overall confidence in this finding</td></tr>
         <tr><td>review_flag</td><td class="field-type">boolean</td><td><code>TRUE</code> if Claude flagged this finding for human review</td></tr>
         <tr><td>status</td><td class="field-type">string</td><td><code>new</code> | <code>reviewed</code> | <code>archived</code></td></tr>
@@ -181,7 +182,7 @@
 
     <hr class="divider">
 
-    <h3>execution_log — Orchestrator run history</h3>
+    <h3>execution_log: Orchestrator run history</h3>
     <p style="margin-bottom:8px">Every Orchestrator run is bookended here: one row opened at start, updated at completion. Also receives weekly audit summaries from Memory &amp; Audit.</p>
     <table class="data-table">
       <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
@@ -198,7 +199,7 @@
 
     <hr class="divider">
 
-    <h3>error_log — All workflow errors</h3>
+    <h3>error_log: All workflow errors</h3>
     <p style="margin-bottom:8px">Permanent audit trail of every failure across all workflows. Written by Error Handler.</p>
     <table class="data-table">
       <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>

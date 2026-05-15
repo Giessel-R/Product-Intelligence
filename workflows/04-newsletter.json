@@ -36,7 +36,7 @@
       "parameters": {
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -51,7 +51,7 @@
       "position": [464, 400],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -60,7 +60,7 @@
       "parameters": {
         "documentId": {
           "mode": "id",
-          "value": "1fodqXvtm4F92ZbhxpP94plRRLSEOoF1Z9Pt5OYIvqmo"
+          "value": "YOUR_GOOGLE_SHEETS_ID"
         },
         "sheetName": {
           "mode": "name",
@@ -75,7 +75,7 @@
       "position": [464, 608],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "I253clwiMf9o1Oln",
+          "id": "YOUR_GSHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -160,7 +160,7 @@
       "position": [1520, 512],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "P6dgBaH33wjoGxqb",
+          "id": "YOUR_ANTHROPIC_CREDENTIAL_ID",
           "name": "Header Auth account"
         }
       }
@@ -194,7 +194,7 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ parent: { database_id: '33166d8d085080868aa6c15f11408488' }, properties: { Name: { title: [{ text: { content: 'Weekly Intel \\u2014 ' + $json.week_label } }] }, Week: { rich_text: [{ text: { content: $json.week } }] }, 'Findings Count': { number: $json.findings_count }, 'Generated At': { rich_text: [{ text: { content: $json.generated_at } }] } }, children: [$json.newsletter_content.substring(0,2000), $json.newsletter_content.substring(2000,4000), $json.newsletter_content.substring(4000,6000)].filter(s => s.length > 0).map(chunk => ({ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: chunk } }] } })) }) }}",
+        "body": "={{ JSON.stringify({ parent: { database_id: 'YOUR_NOTION_NEWSLETTERS_DB_ID' }, properties: { Name: { title: [{ text: { content: 'Weekly Intel \\u2014 ' + $json.week_label } }] }, Week: { rich_text: [{ text: { content: $json.week } }] }, 'Findings Count': { number: $json.findings_count }, 'Generated At': { rich_text: [{ text: { content: $json.generated_at } }] } }, children: [$json.newsletter_content.substring(0,2000), $json.newsletter_content.substring(2000,4000), $json.newsletter_content.substring(4000,6000)].filter(s => s.length > 0).map(chunk => ({ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: chunk } }] } })) }) }}",
         "options": {}
       },
       "id": "nl-notion",
@@ -204,7 +204,7 @@
       "position": [2120, 400],
       "credentials": {
         "notionApi": {
-          "id": "GuZ4XSOROaBU9UEH",
+          "id": "YOUR_NOTION_CREDENTIAL_ID",
           "name": "Notion account"
         }
       }
@@ -212,7 +212,7 @@
     {
       "parameters": {
         "operation": "send",
-        "sendTo": "giesselrazavi@gmail.com",
+        "sendTo": "YOUR_EMAIL@example.com",
         "subject": "={{ '📊 PI Weekly Intel — ' + $json.week_label }}",
         "emailType": "html",
         "message": "={{ $json.newsletter_html }}",
@@ -228,7 +228,7 @@
       "webhookId": "5362cf6c-968f-46f2-881d-1b3d37a6d52b",
       "credentials": {
         "gmailOAuth2": {
-          "id": "o3jIrLLFpJohrwnz",
+          "id": "YOUR_GMAIL_CREDENTIAL_ID",
           "name": "Gmail account"
         }
       }

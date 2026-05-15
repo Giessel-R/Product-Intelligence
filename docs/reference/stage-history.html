@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stage History — Product Intelligence OS</title>
+  <title>Stage History: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -71,10 +72,10 @@
 
     <div class="page-header">
       <div class="page-header-meta">
-        <span class="badge badge-stage4"><span class="material-icons-round">history</span> Post-Stage 4</span>
+        <span class="badge badge-stage5"><span class="material-icons-round">history</span> Stage 5</span>
       </div>
       <h1>Stage History</h1>
-      <p class="page-subtitle">Each stage represents a validated upgrade to the intelligence pipeline. Stages are deployed incrementally — each one is tested and confirmed before the next begins.</p>
+      <p class="page-subtitle">Each stage represents a validated upgrade to the intelligence pipeline. Stages are deployed incrementally: each one is tested and confirmed before the next begins.</p>
     </div>
 
     <hr class="divider">
@@ -85,7 +86,7 @@
         <div class="step-spine"><div class="step-num">1</div></div>
         <div class="step-content">
           <div class="step-header">
-            <div class="step-title">Stage 1 — IPS Schema Strengthening</div>
+            <div class="step-title">Stage 1: IPS Schema Strengthening</div>
             <span class="step-tag">2026-03-29</span>
           </div>
           <div class="step-desc">
@@ -100,11 +101,11 @@
         <div class="step-spine"><div class="step-num">2</div></div>
         <div class="step-content">
           <div class="step-header">
-            <div class="step-title">Stage 2 — Parser Safety Caps</div>
+            <div class="step-title">Stage 2: Parser Safety Caps</div>
             <span class="step-tag">2026-03-30</span>
           </div>
           <div class="step-desc">
-            Added source-weighted extraction guidance and parser safety caps to IPS's <code>Parse Capabilities</code> Code node. Hard rules applied after Claude's response — regardless of what Claude returned:
+            Added source-weighted extraction guidance and parser safety caps to IPS's <code>Parse Capabilities</code> Code node. Hard rules applied after Claude's response: regardless of what Claude returned:
             <ul style="margin-top:8px; padding-left:18px; color:#94a3b8; font-size:12.5px; line-height:2;">
               <li><code>sample_app</code> → hard cap at <code>sample_only</code>, confidence ≤ 3</li>
               <li><code>github_repo</code> → cannot return <code>production_mature</code> without release/version signals</li>
@@ -119,15 +120,15 @@
         <div class="step-spine"><div class="step-num">3</div></div>
         <div class="step-content">
           <div class="step-header">
-            <div class="step-title">Stage 3 — Maturity-Tiered CI Analysis</div>
+            <div class="step-title">Stage 3: Maturity-Tiered CI Analysis</div>
             <span class="step-tag">2026-03-31</span>
           </div>
           <div class="step-desc">
-            Upgraded Competitor Intelligence to produce maturity-aware analysis. <strong>Node 1 — Aggregate Ping Capabilities:</strong> Restructured output from flat array → tiered object per lane, with 5 explicit tier arrays always present (<code>production_mature</code>, <code>documented</code>, <code>partial</code>, <code>unclear</code>, <code>sample_only</code>) plus <code>no_evidence: true</code> flag.
+            Upgraded Competitor Intelligence to produce maturity-aware analysis. <strong>Node 1: Aggregate Ping Capabilities:</strong> Restructured output from flat array → tiered object per lane, with 5 explicit tier arrays always present (<code>production_mature</code>, <code>documented</code>, <code>partial</code>, <code>unclear</code>, <code>sample_only</code>) plus <code>no_evidence: true</code> flag.
             <br><br>
-            <strong>Node 2 — Build Analysis Prompts:</strong> Added TIER DEFINITIONS block, REASONING ORDER (6 steps), CLAIM VOCABULARY table with anchored phrases for all tier-vs-tier combinations. <code>unclear</code> kept as its own bucket.
+            <strong>Node 2: Build Analysis Prompts:</strong> Added TIER DEFINITIONS block, REASONING ORDER (6 steps), CLAIM VOCABULARY table with anchored phrases for all tier-vs-tier combinations. <code>unclear</code> kept as its own bucket.
             <br><br>
-            <strong>Validated finding (2026-03-31):</strong> Okta AI_AGENT_IDENTITY — <code>gap_vs_ping</code> = "possible gap — Ping's production claims backed only by press_release source." Press_release confidence downgrade fired from prompt guidance alone.
+            <strong>Validated finding (2026-03-31):</strong> Okta AI_AGENT_IDENTITY: <code>gap_vs_ping</code> = "possible gap: Ping's production claims backed only by press_release source." Press_release confidence downgrade fired from prompt guidance alone.
           </div>
         </div>
       </div>
@@ -136,7 +137,7 @@
         <div class="step-spine"><div class="step-num">4</div></div>
         <div class="step-content">
           <div class="step-header">
-            <div class="step-title">Stage 4 — Market Watch Relevance Gate</div>
+            <div class="step-title">Stage 4: Market Watch Relevance Gate</div>
             <span class="step-tag">2026-03-31</span>
           </div>
           <div class="step-desc">
@@ -144,9 +145,30 @@
             <br><br>
             <strong>Score Relevance</strong> (Code node): Formula = <code>base_score(source_type) + title_matches×2 + body_matches×1</code> (body capped at 5). Pass condition: <code>score ≥ 3 AND keywords_matched ≥ 1</code>. Base scores: changelog/release_notes/docs = 3, developer_portal = 2, github/blog = 1, homepage = 0.
             <br><br>
-            <strong>Passes Relevance Gate?</strong> (IF node): Routes on <code>relevance_pass === true</code>. FALSE branch still updates the MD5 snapshot — just skips the Claude call.
+            <strong>Passes Relevance Gate?</strong> (IF node): Routes on <code>relevance_pass === true</code>. FALSE branch still updates the MD5 snapshot: just skips the Claude call.
             <br><br>
-            <strong>Initial test (2026-03-31):</strong> 10 changed pages, all passed (all were docs pages). Drop behavior not yet validated — pending a run where blog/homepage/github sources also change.
+            <strong>Initial test (2026-03-31):</strong> 10 changed pages, all passed (all were docs pages). Drop behavior not yet validated: pending a run where blog/homepage/github sources also change.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-spine"><div class="step-num">5</div></div>
+        <div class="step-content">
+          <div class="step-header">
+            <div class="step-title">Stage 5: Hybrid Discovery Model</div>
+            <span class="step-tag">2026-04-05</span>
+          </div>
+          <div class="step-desc">
+            Replaced IPS's hardcoded 80-URL source list with a live <code>source_registry</code> Google Sheets tab. Added the <code>PI: Source Discovery</code> workflow (ID: <code>LhycJpV60D0ddoDS</code>): runs monthly to auto-discover child pages from Ping documentation seed URLs using rules-based link extraction and Claude Haiku classification.
+            <br><br>
+            <strong>source_registry tab</strong> (16 columns): <code>source_id</code>, <code>source_role</code>, <code>priority</code> (P1/P2/P3), <code>status</code> (<code>active</code>/<code>candidate</code>), <code>discovered_from_url</code>, <code>classification_source</code>, and more. Launched with 80 migrated active sources; Discovery adds <code>candidate</code> rows for human promotion.
+            <br><br>
+            <strong>source_role taxonomy:</strong> <code>family_index</code> (hub/catalog pages), <code>capability_definition</code> (feature docs), <code>release_notes</code> (authoritative for maturity), <code>api_reference</code>, <code>use_case</code>, <code>platform_specific</code>, <code>sample_only</code>. Rules-based first pass; Claude Haiku enriches only <code>unknown</code> items (cap: 200/run).
+            <br><br>
+            <strong>Guard rails added:</strong> IPS now has a <code>SCOPE CEILING</code> block in its system prompt limiting what <code>family_index</code> sources can claim. CI has an <code>EVIDENCE ROLE RESTRICTIONS</code> block preventing <code>family_index</code> sources from generating narrow capability claims.
+            <br><br>
+            <strong>Validated (execution 240, 2026-04-08):</strong> Claude enrichment confirmed working. Claude fires only for <code>unknown</code> items. <code>claude_override</code> written as <code>classification_source</code> on enriched items. <code>not_enough_context: true</code> falls back correctly to <code>classification_source: rules</code>.
           </div>
         </div>
       </div>
@@ -156,8 +178,8 @@
     <div class="callout callout-info" style="margin-top:8px">
       <div class="callout-icon"><span class="material-icons-round">info</span></div>
       <div class="callout-body">
-        <div class="callout-title">Current Stage: Post-Stage 4</div>
-        <div class="callout-text">The system is in production at Stage 4. Stage 5 (run telemetry) and Stage 6 (subpage discovery) are planned but not yet built. See the Roadmap for details.</div>
+        <div class="callout-title">Current Stage: Stage 5: Hybrid Discovery Model</div>
+        <div class="callout-text">All 5 stages deployed and validated. The system is in full production. <code>source_registry</code> tab live in Google Sheets (120 active sources). <code>PI: Source Discovery</code> runs monthly on the first Monday of each month. First scheduled discovery run: May 2026.</div>
       </div>
     </div>
 

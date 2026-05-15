@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notion Databases — Product Intelligence OS</title>
+  <title>Notion Databases: Product Intelligence OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -11,7 +11,7 @@
 
 <div class="topbar">
   <div class="topbar-logo"><div class="topbar-logo-dot"></div>Product Intelligence OS</div>
-  <div class="topbar-badge">v1.0 · Stage 4</div>
+  <div class="topbar-badge">v1.0 · Stage 5</div>
   <div class="topbar-right">
     <a href="../overview/what-is-this.html" class="topbar-link">Overview</a>
     <a href="../workflows/master-orchestrator.html" class="topbar-link">Workflows</a>
@@ -40,6 +40,7 @@
       <a href="../workflows/newsletter.html" class="sidebar-item" data-page="newsletter"><span class="material-icons-round">newspaper</span> Newsletter</a>
       <a href="../workflows/memory-audit.html" class="sidebar-item" data-page="memory-audit"><span class="material-icons-round">fact_check</span> Memory &amp; Audit</a>
       <a href="../workflows/error-handler.html" class="sidebar-item" data-page="error-handler"><span class="material-icons-round">error_outline</span> Error Handler</a>
+      <a href="../workflows/source-discovery.html" class="sidebar-item" data-page="source-discovery"><span class="material-icons-round">travel_explore</span> Source Discovery</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Data Layer</div>
@@ -80,7 +81,7 @@
       <div class="callout-icon"><span class="material-icons-round">warning_amber</span></div>
       <div class="callout-body">
         <div class="callout-title">Notion Node v2.2 Bug</div>
-        <div class="callout-text">The n8n Notion node v2.2 has a rich_text bug — property values are silently sent as blank. All workflow writes to Notion use HTTP Request to <code>https://api.notion.com/v1/pages</code> directly with <code>predefinedCredentialType: notionApi</code>. Never use the n8n Notion node for writing rich text properties.</div>
+        <div class="callout-text">The n8n Notion node v2.2 has a rich_text bug: property values are silently sent as blank. All workflow writes to Notion use HTTP Request to <code>https://api.notion.com/v1/pages</code> directly with <code>predefinedCredentialType: notionApi</code>. Never use the n8n Notion node for writing rich text properties.</div>
       </div>
     </div>
 
@@ -89,15 +90,15 @@
     <div class="section-title"><span class="material-icons-round">space_dashboard</span> Active Databases</div>
     <div class="lane-grid">
       <div class="lane-card">
-        <div class="lane-card-id">33166d8d085080d0b753ebe3e02098cb</div>
+        <div class="lane-card-id">YOUR_NOTION_COMPETITOR_DB_ID</div>
         <div class="lane-card-name">Competitor Cards</div>
         <div class="lane-card-desc">One page per competitor per week, updated by Competitor Intelligence on Tuesdays and Thursdays. Contains the week's gap analysis, parity claims, recommended actions, and confidence scores.</div>
-        <div class="lane-card-example">Written by: Competitor Intelligence · Credential: <code>GuZ4XSOROaBU9UEH</code></div>
+        <div class="lane-card-example">Written by: Competitor Intelligence · Credential: <code>YOUR_NOTION_CREDENTIAL_ID</code></div>
       </div>
       <div class="lane-card">
         <div class="lane-card-id">Weekly Newsletters DB</div>
         <div class="lane-card-name">Weekly Newsletters</div>
-        <div class="lane-card-desc">Archive of every Friday newsletter. Each page: title format <em>Weekly Intel — March 2026</em>. Properties: week, findings_count, generated_at. The full newsletter text is stored as page body content.</div>
+        <div class="lane-card-desc">Archive of every Friday newsletter. Each page: title format <em>Weekly Intel: March 2026</em>. Properties: week, findings_count, generated_at. The full newsletter text is stored as page body content.</div>
         <div class="lane-card-example">Written by: Newsletter · Every Friday morning</div>
       </div>
     </div>
@@ -110,13 +111,13 @@
         <div class="lane-card-id">Not yet built</div>
         <div class="lane-card-name">Gap Board</div>
         <div class="lane-card-desc">Kanban board of competitive gaps with status tracking. Cards created from <code>Draft Brief</code> findings. Status: Open → In Review → Briefed → Closed. Phase 2 target.</div>
-        <div class="lane-card-example">Phase 2 — not yet implemented</div>
+        <div class="lane-card-example">Phase 2: not yet implemented</div>
       </div>
       <div class="lane-card" style="opacity:0.5">
         <div class="lane-card-id">Not yet built</div>
         <div class="lane-card-name">Pattern Library</div>
         <div class="lane-card-desc">Cross-competitor trend detection. Multi-week signals that indicate strategic direction rather than one-time changes. Requires Pattern Detection workflow (Phase 2).</div>
-        <div class="lane-card-example">Phase 2 — not yet implemented</div>
+        <div class="lane-card-example">Phase 2: not yet implemented</div>
       </div>
     </div>
 
@@ -131,11 +132,11 @@ Headers:
   Notion-Version: 2022-06-28
 
 Credential: predefinedCredentialType: notionApi
-             credentialId: GuZ4XSOROaBU9UEH
+             credentialId: YOUR_NOTION_CREDENTIAL_ID
 
 Body (raw JSON):
 {
-  "parent": { "database_id": "33166d8d085080d0b753ebe3e02098cb" },
+  "parent": { "database_id": "YOUR_NOTION_COMPETITOR_DB_ID" },
   "properties": {
     "Name": { "title": [{ "text": { "content": "..." } }] },
     "Week": { "rich_text": [{ "text": { "content": "..." } }] }
